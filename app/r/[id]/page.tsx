@@ -104,13 +104,19 @@ export default async function ResultPage({ params }: Props) {
           <ShareButton id={id} persona={result.persona} />
         </section>
 
-        {/* 나도 털리기 CTA */}
-        <div className="text-center pb-8">
+        {/* 하단 CTA */}
+        <div className="text-center pb-8 flex flex-col items-center gap-3">
           <Link
             href="/"
             className="inline-block px-6 py-3 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
           >
             나도 털리기 →
+          </Link>
+          <Link
+            href="/"
+            className="text-sm text-claude-cream/40 hover:text-claude-cream/60 transition-colors"
+          >
+            ← 다시 분석하기
           </Link>
         </div>
       </div>

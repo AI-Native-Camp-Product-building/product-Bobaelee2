@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { analyze } from "@/lib/analyzer";
 import PrivacyBadge from "@/components/PrivacyBadge";
 import MdInput from "@/components/MdInput";
+import ClaudeIcon from "@/components/ClaudeIcon";
 
 export default function HomePage() {
   const router = useRouter();
@@ -53,13 +54,18 @@ export default function HomePage() {
       <div className="w-full max-w-lg flex flex-col gap-8">
         {/* 헤더 */}
         <div className="flex flex-col items-center gap-4 text-center">
-          <h1 className="text-5xl font-black text-claude-orange tracking-tight">
-            MDTI
+          <h1 className="text-5xl font-black tracking-tight flex items-center gap-3">
+            <ClaudeIcon size={52} />
+            <span>
+              <span className="text-claude-cream/60 font-mono">.</span>
+              <span className="text-claude-cream/60 font-mono">md</span>
+              <span className="text-claude-orange">TI</span>
+            </span>
           </h1>
           <p className="text-xl text-claude-cream font-medium leading-snug">
-            네 CLAUDE.md가 너한테
+            당신의 CLAUDE.md가
             <br />
-            하고 싶었던 말
+            당신에게 하고 싶었던 말
           </p>
           <PrivacyBadge />
         </div>
