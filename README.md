@@ -61,9 +61,3 @@ npm run dev
 # 테스트
 npm run test:run
 ```
-
-## 만든 사람
-
-**Vivi (이보배)** — 퓨쳐스콜레 HR Lead
-
-Claude Code + Superpowers 플러그인으로 기획부터 배포까지 하루 만에 완성.
