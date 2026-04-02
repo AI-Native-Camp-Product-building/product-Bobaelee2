@@ -4,11 +4,9 @@
  * Next.js 15+: params는 Promise — 반드시 await 사용
  */
 import { ImageResponse } from "next/og";
-import { supabase } from "@/lib/supabase";
+import { getResult } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
-import type { PersonaKey, MdStats } from "@/lib/types";
-
-export const runtime = "edge";
+import type { MdStats } from "@/lib/types";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -17,19 +15,13 @@ type Props = {
 export async function GET(request: Request, { params }: Props) {
   const { id } = await params;
 
-  // Supabase에서 결과 조회
-  const { data, error } = await supabase
-    .from("results")
-    .select("persona, md_stats, scores")
-    .eq("id", id)
-    .single();
+  const result = await getResult(id);
 
-  // 결과 없으면 기본 카드 반환
-  const persona = data && !error
-    ? PERSONAS[data.persona as PersonaKey]
+  const persona = result
+    ? PERSONAS[result.persona]
     : PERSONAS["craftsman"];
 
-  const mdStats: MdStats | null = data?.md_stats ?? null;
+  const mdStats: MdStats | null = result?.mdStats ?? null;
   const toolCount = mdStats?.toolNames?.length ?? 0;
   const ruleCount = mdStats?.ruleCount ?? 0;
   const totalLines = mdStats?.totalLines ?? 0;

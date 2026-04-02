@@ -5,7 +5,7 @@
  */
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { getResult as getResultFromStore } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import type { DimensionScores, PersonaKey } from "@/lib/types";
 
@@ -25,20 +25,14 @@ const DIMENSION_LABELS: Record<keyof DimensionScores, string> = {
 
 const DIMENSION_KEYS = Object.keys(DIMENSION_LABELS) as (keyof DimensionScores)[];
 
-/** DB에서 결과 조회 */
-async function getResult(id: string) {
-  const { data, error } = await supabase
-    .from("results")
-    .select("id, persona, scores")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) return null;
-
+/** 저장소에서 결과 조회 */
+async function getMatchResult(id: string) {
+  const result = await getResultFromStore(id);
+  if (!result) return null;
   return {
-    id: data.id,
-    persona: data.persona as PersonaKey,
-    scores: data.scores as DimensionScores,
+    id: result.id,
+    persona: result.persona,
+    scores: result.scores,
   };
 }
 
@@ -79,8 +73,8 @@ export default async function MatchPage({ params }: Props) {
 
   // 두 결과 병렬 조회
   const [result1, result2] = await Promise.all([
-    getResult(id1),
-    getResult(id2),
+    getMatchResult(id1),
+    getMatchResult(id2),
   ]);
 
   if (!result1 || !result2) {

@@ -6,10 +6,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { getResult, getGlobalStats } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import { getCompatibility } from "@/lib/content/compatibility";
-import type { SavedResult, GlobalStats, PersonaKey } from "@/lib/types";
+import type { PersonaKey } from "@/lib/types";
 import ResultHero from "@/components/ResultHero";
 import RoastSection from "@/components/RoastSection";
 import StrengthSection from "@/components/StrengthSection";
@@ -21,54 +21,6 @@ import ShareButton from "@/components/ShareButton";
 type Props = {
   params: Promise<{ id: string }>;
 };
-
-/** DB에서 결과 조회 */
-async function getResult(id: string): Promise<SavedResult | null> {
-  const { data, error } = await supabase
-    .from("results")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) return null;
-
-  return {
-    id: data.id,
-    persona: data.persona as PersonaKey,
-    scores: data.scores,
-    roasts: data.roasts,
-    strengths: data.strengths,
-    prescriptions: data.prescriptions,
-    mdStats: data.md_stats,
-    createdAt: data.created_at,
-  };
-}
-
-/** 글로벌 통계 조회 */
-async function getGlobalStats(): Promise<GlobalStats> {
-  const [resultsRes, statsRes] = await Promise.all([
-    supabase.from("results").select("id", { count: "exact", head: true }),
-    supabase.from("persona_stats").select("*"),
-  ]);
-
-  const totalUsers = resultsRes.count ?? 0;
-  const stats = statsRes.data ?? [];
-
-  const personaCounts = {} as Record<PersonaKey, number>;
-  let totalLines = 0;
-
-  for (const row of stats) {
-    personaCounts[row.persona as PersonaKey] = row.count;
-    totalLines += Number(row.total_lines ?? 0);
-  }
-
-  return {
-    totalUsers,
-    personaCounts,
-    avgLines: totalUsers > 0 ? Math.round(totalLines / totalUsers) : 0,
-    userPercentile: { lines: 50, tools: 50, complexity: 50 },
-  };
-}
 
 /** OG 메타데이터 동적 생성 */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
