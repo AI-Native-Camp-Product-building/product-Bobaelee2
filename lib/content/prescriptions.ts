@@ -52,7 +52,7 @@ function universalChecks(stats: MdStats): PrescriptionItem[] {
   }
 
   // 너무 짧음
-  if (stats.totalLines < 10) {
+  if (stats.claudeMdLines < 10) {
     items.push({
       text: "CLAUDE.md를 좀 더 채워주세요. 현재 너무 짧아 Claude가 맥락을 이해하기 어렵습니다. " +
         "최소한 역할, 언어, 주요 도구, 금지 사항 정도는 명시하는 것을 권장합니다.",
@@ -61,7 +61,7 @@ function universalChecks(stats: MdStats): PrescriptionItem[] {
   }
 
   // 너무 길음
-  if (stats.totalLines > 150) {
+  if (stats.claudeMdLines > 150) {
     items.push({
       text: "CLAUDE.md가 150줄을 넘었습니다. Claude가 모든 지시를 따르기 어려울 수 있으니 " +
         "`@import`나 `.claude/rules/` 분리를 검토하세요.",
@@ -334,15 +334,15 @@ function qualityChecks(quality: QualityScores, stats: MdStats): PrescriptionItem
     });
   }
 
-  if (quality.conciseness < 30 && stats.totalLines > 150) {
+  if (quality.conciseness < 30 && stats.claudeMdLines > 150) {
     items.push({
-      text: "CLAUDE.md가 " + stats.totalLines + "줄입니다. 모델이 안정적으로 따르는 지시는 ~150개가 한계입니다. " +
+      text: "CLAUDE.md가 " + stats.claudeMdLines + "줄입니다. 모델이 안정적으로 따르는 지시는 ~150개가 한계입니다. " +
         "핵심만 남기고 나머지는 @import나 .claude/rules/로 분리하세요.",
       priority: "high",
     });
   }
 
-  if (quality.conciseness < 40 && stats.totalLines <= 150) {
+  if (quality.conciseness < 40 && stats.claudeMdLines <= 150) {
     items.push({
       text: "'clean code 작성' 같은 뻔한 지시나 린터가 처리할 스타일 규칙이 있다면 삭제하세요. " +
         "Claude는 이미 알고 있거나, 린터가 더 잘합니다.",

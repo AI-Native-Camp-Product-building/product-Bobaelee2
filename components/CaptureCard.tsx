@@ -228,7 +228,7 @@ export default function CaptureCard({ persona, roasts, mdStats, id }: CaptureCar
               justifyContent: "center",
             }}>
               {[
-                { label: "줄 수", value: String(mdStats.totalLines) },
+                { label: "줄 수", value: String(mdStats.claudeMdLines) },
                 { label: mdStats.isExpandedInput ? "에코시스템" : "도구", value: mdStats.isExpandedInput ? String(totalEcosystem) : `${mdStats.toolNames.length}` },
                 { label: "규칙", value: String(mdStats.ruleCount) },
               ].map((stat) => (

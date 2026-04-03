@@ -21,7 +21,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
     {
       text: stats.commandCount > 0
         ? `커스텀 명령어 ${stats.commandCount}개까지 만든 건 '도구를 쓰는 사람'이 아니라 '도구를 만드는 사람'이라는 뜻이에요.`
-        : `${stats.totalLines}줄의 설정은 단순한 메모가 아니라 업무 운영 체계예요. 이 수준의 시스템화를 팀에 전파하면 조직 전체가 빨라집니다.`,
+        : `${stats.claudeMdLines}줄의 설정은 단순한 메모가 아니라 업무 운영 체계예요. 이 수준의 시스템화를 팀에 전파하면 조직 전체가 빨라집니다.`,
     },
   ],
 
@@ -30,7 +30,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "실행력 하나는 끝판왕이에요. 설정에 3시간 쓰고 정작 코드 한 줄 안 짜는 사람보다 백 배 낫습니다.",
     },
     {
-      text: `${stats.totalLines}줄만으로도 결과물을 내고 있다는 건, 도구 없이도 본인 실력이 있다는 증거예요.`,
+      text: `${stats.claudeMdLines}줄만으로도 결과물을 내고 있다는 건, 도구 없이도 본인 실력이 있다는 증거예요.`,
     },
     {
       text: "오버엔지니어링 안 하는 감각. 이건 진짜 귀한 거예요. 설정 100줄 짜놓고 정작 일 안 하는 사람이 얼마나 많은지 몰라요.",
@@ -61,7 +61,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "유지보수 비용 0. 간결한 설정은 깨지지 않아요. 복잡한 설정은 언젠가 반드시 깨집니다.",
     },
     {
-      text: `${stats.totalLines}줄이지만 필요한 건 들어있다면, YAGNI 원칙을 본능적으로 실천하는 사람이에요.`,
+      text: `${stats.claudeMdLines}줄이지만 필요한 건 들어있다면, YAGNI 원칙을 본능적으로 실천하는 사람이에요.`,
     },
   ],
 
@@ -99,7 +99,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "6개 차원이 다 균형 잡혀 있다는 건 편향 없이 전체를 보는 시각이 있다는 뜻이에요. 팀 리드 포지션에서 빛나는 유형.",
     },
     {
-      text: `${stats.totalLines}줄로 자동화, 보안, 협업, 구조화를 고루 담았어요. 하나에 올인하지 않고 전체를 관리하는 능력.`,
+      text: `${stats.claudeMdLines}줄로 자동화, 보안, 협업, 구조화를 고루 담았어요. 하나에 올인하지 않고 전체를 관리하는 능력.`,
     },
     {
       text: "함께 일하면 가장 편한 사람. 극단이 없어서 팀의 균형추 역할을 해요. 그게 과소평가되고 있을 뿐이에요.",
@@ -116,7 +116,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
         : "자동화 파이프라인을 이 정밀도로 설계한 건 진짜 장인이에요. 대충 돌아가게 만드는 사람은 많지만, 제대로 만드는 사람은 드물어요.",
     },
     {
-      text: `${stats.totalLines}줄의 깊이는 해당 분야에서 Claude를 가장 효율적으로 쓰는 사람이라는 뜻이에요.`,
+      text: `${stats.claudeMdLines}줄의 깊이는 해당 분야에서 Claude를 가장 효율적으로 쓰는 사람이라는 뜻이에요.`,
     },
   ],
 
@@ -174,7 +174,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "의존성이 적다는 건 장애 포인트도 적다는 뜻이에요. 플러그인 10개 깔아놓은 사람보다 당신 시스템이 더 안정적일 수 있어요.",
     },
     {
-      text: `${stats.totalLines}줄에 군더더기 없이 실행에 집중. 단순함이 곧 안정성이라는 걸 본능적으로 아는 사람.`,
+      text: `${stats.claudeMdLines}줄에 군더더기 없이 실행에 집중. 단순함이 곧 안정성이라는 걸 본능적으로 아는 사람.`,
     },
   ],
 
@@ -183,7 +183,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "실행 속도가 압도적이에요. 아이디어에서 구현까지의 리드타임이 가장 짧은 유형. MVP 만들 때 최강.",
     },
     {
-      text: `자동화 설정은 탄탄해요. ${stats.totalLines}줄의 설정에서 자동화에 집중한 부분은 실제로 높은 효율을 만들고 있어요.`,
+      text: `자동화 설정은 탄탄해요. ${stats.claudeMdLines}줄의 설정에서 자동화에 집중한 부분은 실제로 높은 효율을 만들고 있어요.`,
     },
     {
       text: "빠른 프로토타이핑과 실험에 최적화된 설정. 초기 스타트업에서 이 스타일은 진짜 가치 있어요.",

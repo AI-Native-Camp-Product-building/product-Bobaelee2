@@ -25,7 +25,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     },
     {
       text: "자동화 파이프라인 짜는 시간 > 절약하는 시간",
-      detail: `${stats.totalLines}줄짜리 설정 유지보수하는 데 쓰는 시간, 솔직히 세어본 적 없죠? 수동으로 하면 5분이면 끝날 일을 자동화하겠다고 3시간 쓴 적, 이번 주에만 몇 번이에요.`,
+      detail: `${stats.claudeMdLines}줄짜리 설정 유지보수하는 데 쓰는 시간, 솔직히 세어본 적 없죠? 수동으로 하면 5분이면 끝날 일을 자동화하겠다고 3시간 쓴 적, 이번 주에만 몇 번이에요.`,
       color: "blue",
     },
   ],
@@ -33,7 +33,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   speedrunner: (stats) => [
     {
       text: "6개월 후의 자기 자신에게 테러하는 중",
-      detail: `${stats.totalLines}줄. 미래의 내가 이걸 보고 뭘 알 수 있을까요? '과거의 나는 대체 뭘 한 거지?' 이 말을 하게 될 겁니다.`,
+      detail: `${stats.claudeMdLines}줄. 미래의 내가 이걸 보고 뭘 알 수 있을까요? '과거의 나는 대체 뭘 한 거지?' 이 말을 하게 될 겁니다.`,
       color: "red",
     },
     {
@@ -78,8 +78,8 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     {
       text: "'Claude야 알아서 해' — 가장 비싼 프롬프트",
       detail: stats.isExpandedInput
-        ? `플러그인 ${stats.pluginCount}개 깔아놓고 CLAUDE.md는 ${stats.totalLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
-        : `${stats.totalLines}줄. 이걸로 Claude한테 뭘 기대하는 건가요? Claude는 독심술사가 아닙니다.`,
+        ? `플러그인 ${stats.pluginCount}개 깔아놓고 CLAUDE.md는 ${stats.claudeMdLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
+        : `${stats.claudeMdLines}줄. 이걸로 Claude한테 뭘 기대하는 건가요? Claude는 독심술사가 아닙니다.`,
       color: "red",
     },
     {
@@ -142,7 +142,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   craftsman: (stats) => [
     {
       text: "모든 게 적당한데, 그게 문제",
-      detail: `${stats.totalLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. 모범생 답안지 같은 CLAUDE.md예요. 근데 모범생은 기억에 안 남아요.`,
+      detail: `${stats.claudeMdLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. 모범생 답안지 같은 CLAUDE.md예요. 근데 모범생은 기억에 안 남아요.`,
       color: "red",
     },
     {
@@ -160,7 +160,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   "deep-diver": (stats) => [
     {
       text: "한 우물을 파다가 지구 반대편에 도착한 사람",
-      detail: `${stats.totalLines}줄 중 특정 주제가 절반 이상이에요. 깊이는 인정하는데, 옆 우물에 뭐가 있는지는 관심 없으시죠?`,
+      detail: `${stats.claudeMdLines}줄 중 특정 주제가 절반 이상이에요. 깊이는 인정하는데, 옆 우물에 뭐가 있는지는 관심 없으시죠?`,
       color: "red",
     },
     {
@@ -172,7 +172,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     },
     {
       text: "다른 사람이 당신의 CLAUDE.md를 읽으면 논문인 줄 알아요",
-      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.totalLines}줄. 밀도가 아니라 편집증이에요.`,
+      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.claudeMdLines}줄. 밀도가 아니라 편집증이에요.`,
       color: "blue",
     },
   ],
@@ -240,7 +240,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   macgyver: (stats) => [
     {
       text: "새 도구 깔기 싫어서 삽질하는 사람",
-      detail: `도구 ${stats.toolNames.length}개로 ${stats.totalLines}줄 분량의 자동화를 구축. MCP 하나 연결하면 5분이면 끝날 일을 curl + jq + sed로 30분 걸려 해결하고 있어요.`,
+      detail: `도구 ${stats.toolNames.length}개로 ${stats.claudeMdLines}줄 분량의 자동화를 구축. MCP 하나 연결하면 5분이면 끝날 일을 curl + jq + sed로 30분 걸려 해결하고 있어요.`,
       color: "red",
     },
     {

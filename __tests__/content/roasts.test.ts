@@ -8,15 +8,16 @@ import type { MdStats, PersonaKey } from "@/lib/types";
 
 /** 테스트용 기본 MdStats */
 function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
+  const totalLines = overrides.totalLines ?? 80;
   return {
-    totalLines: 80,
+    totalLines,
     sectionCount: 5,
     toolNames: ["Slack", "Notion", "GitHub"],
     hasMemory: true,
     hasHooks: true,
     hasProjectMd: true,
     ruleCount: 8,
-    claudeMdLines: 80,
+    claudeMdLines: totalLines,
     keywordHits: {
       automation: 5,
       control: 6,

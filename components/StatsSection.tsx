@@ -13,7 +13,7 @@ interface StatsSectionProps {
 export default function StatsSection({ mdStats, globalStats, persona }: StatsSectionProps) {
   // 평균 대비 배율 계산
   const avgLines = globalStats.avgLines || 50;
-  const lineMultiplier = (mdStats.totalLines / avgLines).toFixed(1);
+  const lineMultiplier = (mdStats.claudeMdLines / avgLines).toFixed(1);
 
   // 페르소나 점유율 계산
   const personaCount = globalStats.personaCounts[persona] ?? 0;
@@ -27,7 +27,7 @@ export default function StatsSection({ mdStats, globalStats, persona }: StatsSec
   const stats = [
     {
       label: "설정 줄 수",
-      value: mdStats.totalLines.toLocaleString(),
+      value: mdStats.claudeMdLines.toLocaleString(),
       sub: `평균의 ${lineMultiplier}배`,
     },
     {
