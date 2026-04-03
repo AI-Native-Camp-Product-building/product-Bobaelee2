@@ -56,8 +56,15 @@ export async function GET() {
 export async function POST(request: Request) {
   const supabase = await createSupabaseServer();
 
-  // 인증 확인
-  const { data: { user } } = await supabase.auth.getUser();
+  // 인증 확인 (쿠키 → Authorization 헤더 fallback)
+  let user = (await supabase.auth.getUser()).data.user;
+  if (!user) {
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "");
+    if (token) {
+      const { data } = await supabase.auth.getUser(token);
+      user = data.user;
+    }
+  }
   if (!user) {
     return Response.json({ error: "로그인이 필요합니다" }, { status: 401 });
   }

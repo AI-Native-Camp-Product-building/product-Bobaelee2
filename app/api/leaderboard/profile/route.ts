@@ -6,10 +6,24 @@
  * DELETE — 탈퇴 (프로필 + 점수 삭제)
  */
 import { createSupabaseServer } from "@/lib/supabase-server";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 
-export async function GET() {
-  const supabase = await createSupabaseServer();
+/** 쿠키 → Authorization 헤더 fallback 인증 */
+async function getAuthUser(supabase: SupabaseClient, request: Request): Promise<User | null> {
   const { data: { user } } = await supabase.auth.getUser();
+  if (user) return user;
+
+  const token = request.headers.get("Authorization")?.replace("Bearer ", "");
+  if (token) {
+    const { data } = await supabase.auth.getUser(token);
+    return data.user;
+  }
+  return null;
+}
+
+export async function GET(request: Request) {
+  const supabase = await createSupabaseServer();
+  const user = await getAuthUser(supabase, request);
 
   if (!user) {
     return Response.json({ error: "로그인이 필요합니다" }, { status: 401 });
@@ -25,7 +39,6 @@ export async function GET() {
     return Response.json({ registered: false, user: { id: user.id, name: user.user_metadata?.name, avatarUrl: user.user_metadata?.avatar_url } });
   }
 
-  // 순위 계산
   const { count: higherCount } = await supabase
     .from("leaderboard_scores")
     .select("*", { count: "exact", head: true })
@@ -56,7 +69,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase, request);
 
   if (!user) {
     return Response.json({ error: "로그인이 필요합니다" }, { status: 401 });
@@ -79,7 +92,6 @@ export async function POST(request: Request) {
     });
 
   if (error) {
-    // 이미 존재하면 PATCH로 fallback
     if (error.code === "23505") {
       const { error: updateError } = await supabase
         .from("leaderboard_profiles")
@@ -101,7 +113,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase, request);
 
   if (!user) {
     return Response.json({ error: "로그인이 필요합니다" }, { status: 401 });
@@ -113,11 +125,8 @@ export async function PATCH(request: Request) {
   const { error } = await supabase
     .from("leaderboard_profiles")
     .update({
-      nickname,
-      title,
-      organization,
-      status_message: statusMessage,
-      role,
+      nickname, title, organization,
+      status_message: statusMessage, role,
       linkedin_url: linkedinUrl,
     })
     .eq("user_id", user.id);
@@ -129,15 +138,14 @@ export async function PATCH(request: Request) {
   return Response.json({ success: true });
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   const supabase = await createSupabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase, request);
 
   if (!user) {
     return Response.json({ error: "로그인이 필요합니다" }, { status: 401 });
   }
 
-  // 점수 먼저 삭제 (FK 제약)
   await supabase.from("leaderboard_scores").delete().eq("user_id", user.id);
   await supabase.from("leaderboard_profiles").delete().eq("user_id", user.id);
 

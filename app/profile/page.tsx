@@ -51,8 +51,11 @@ export default function ProfilePage() {
           avatarUrl: u.user_metadata?.avatar_url ?? "",
         });
         // 프로필 조회
-        fetch("/api/leaderboard/profile")
-          .then((r) => r.json())
+        supabase.auth.getSession().then(({ data: { session: s } }) => {
+          return fetch("/api/leaderboard/profile", {
+            headers: { "Authorization": `Bearer ${s?.access_token ?? ""}` },
+          });
+        }).then((r) => r.json())
           .then((data) => {
             if (data.registered) {
               setRegistered(true);
@@ -111,10 +114,14 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const { data: { session: s } } = await supabase.auth.getSession();
       const method = registered ? "PATCH" : "POST";
       const res = await fetch("/api/leaderboard/profile", {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${s?.access_token ?? ""}`,
+        },
         body: JSON.stringify(profile),
       });
       if (res.ok) {
@@ -129,7 +136,11 @@ export default function ProfilePage() {
   // 탈퇴
   const handleDelete = async () => {
     if (!confirm("정말 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) return;
-    await fetch("/api/leaderboard/profile", { method: "DELETE" });
+    const { data: { session: s } } = await supabase.auth.getSession();
+    await fetch("/api/leaderboard/profile", {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${s?.access_token ?? ""}` },
+    });
     await supabase.auth.signOut();
     setUser(null);
     setRegistered(false);
