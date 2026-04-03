@@ -3,9 +3,10 @@ import { calculateQualityScores } from "@/lib/analyzer/quality";
 import type { MdStats } from "@/lib/types";
 
 function makeStats(overrides: Partial<MdStats> = {}): MdStats {
+  const totalLines = overrides.totalLines ?? 50;
   return {
-    totalLines: 50, sectionCount: 5, toolNames: [], hasMemory: false, hasHooks: false,
-    hasProjectMd: false, ruleCount: 0, keywordHits: {}, keywordUniqueHits: {},
+    totalLines, sectionCount: 5, toolNames: [], hasMemory: false, hasHooks: false,
+    hasProjectMd: false, ruleCount: 0, claudeMdLines: totalLines, keywordHits: {}, keywordUniqueHits: {},
     pluginCount: 0, mcpServerCount: 0, commandCount: 0, hookCount: 0,
     pluginNames: [], mcpServerNames: [], commandNames: [], isExpandedInput: false,
     denyCount: 0, blocksDangerousOps: false, hookPromptCount: 0, hookCommandCount: 0,

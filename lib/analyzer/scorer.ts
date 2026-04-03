@@ -118,6 +118,7 @@ export function extractMdStats(md: string): MdStats {
       hasHooks: false,
       hasProjectMd: false,
       ruleCount: 0,
+      claudeMdLines: 0,
       keywordHits: {},
       keywordUniqueHits: {},
       pluginCount: 0,
@@ -174,8 +175,15 @@ export function extractMdStats(md: string): MdStats {
     keywordUniqueHits[dim] = countUniqueSignals(md, DIMENSION_PATTERNS[dim]);
   }
 
-  // 확장 수집 신호 파싱
+  // CLAUDE.md 섹션 줄 수 (확장 입력 시 섹션만, 아니면 전체)
   const expanded = isExpandedInput(md);
+  let claudeMdLines = totalLines;
+  if (expanded) {
+    const claudeSection = md.match(/===\s+(?:.*\/)?CLAUDE\.md\s*===\n([\s\S]*?)(?:\n===|$)/);
+    claudeMdLines = claudeSection ? claudeSection[1].split("\n").length : totalLines;
+  }
+
+  // 확장 수집 신호 파싱
   const pluginNames = expanded ? extractEnabledPlugins(md) : [];
   const mcpServerNames = expanded ? extractMcpServerNames(md) : [];
   const commandNames = expanded ? extractCommandNames(md) : [];
@@ -192,6 +200,7 @@ export function extractMdStats(md: string): MdStats {
     hasHooks: hasHooks || hookCount > 0,
     hasProjectMd,
     ruleCount,
+    claudeMdLines,
     keywordHits,
     keywordUniqueHits,
     pluginCount: pluginNames.length,

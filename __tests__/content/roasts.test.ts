@@ -16,6 +16,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hasHooks: true,
     hasProjectMd: true,
     ruleCount: 8,
+    claudeMdLines: 80,
     keywordHits: {
       automation: 5,
       control: 6,

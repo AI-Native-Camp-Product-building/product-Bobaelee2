@@ -43,6 +43,7 @@ export interface MdStats {
   hasHooks: boolean;
   hasProjectMd: boolean;
   ruleCount: number;
+  claudeMdLines: number;                         // CLAUDE.md 섹션의 줄 수 (A경로: totalLines, B경로: 섹션만)
   keywordHits: Record<string, number>;          // 반복 카운트 (통계 표시용 — "총 23회 출현")
   keywordUniqueHits: Record<string, number>;    // 고유 신호 수 (점수 산출 기준 — "7종류 감지")
   /** 확장 수집 시 추가 신호 */

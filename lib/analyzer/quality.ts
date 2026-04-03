@@ -66,7 +66,8 @@ function scoreConciseness(md: string, stats: MdStats, actionabilityScore: number
   let score = 0;
 
   // A. 길이 점수 — 역U자 커브 (최대 50점)
-  const lines = stats.totalLines;
+  // 확장 입력(B경로)에서는 CLAUDE.md 섹션만의 줄 수로 측정
+  const lines = stats.claudeMdLines;
   if (lines <= 5) score += 10;
   else if (lines <= 15) score += 30;
   else if (lines <= 50) score += 50;       // 스위트 스팟
@@ -92,7 +93,7 @@ function scoreConciseness(md: string, stats: MdStats, actionabilityScore: number
   }
   score -= Math.min(30, noisePenalty);
 
-  // C. 밀도 보너스 (최대 20점)
+  // C. 밀도 보너스 (최대 20점) — CLAUDE.md 줄 수 기준
   if (lines > 0) {
     const density = actionabilityScore / lines;
     score += Math.min(20, Math.round(density * 30));
