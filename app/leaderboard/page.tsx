@@ -54,7 +54,7 @@ export default function LeaderboardPage() {
       <div className="max-w-lg mx-auto flex flex-col gap-6">
         {/* 헤더 */}
         <div className="text-center flex flex-col items-center gap-2">
-          <h1 className="text-3xl font-black tagline-sparkle inline-flex items-center gap-3">
+          <h1 className="text-5xl font-black tagline-sparkle inline-flex items-center gap-3">
             <ClaudeScouter size={40} />
             <span className="tagline-gradient">.md력 리더보드</span>
           </h1>
