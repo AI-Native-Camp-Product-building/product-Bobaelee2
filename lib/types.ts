@@ -4,7 +4,7 @@ export interface DimensionScores {
   control: number;              // 제어 성향
   toolDiversity: number;        // 도구 다양성
   contextAwareness: number;     // 컨텍스트 관리 (구 maturity)
-  collaboration: number;        // 협업 지향
+  teamImpact: number;           // 팀 임팩트
   security: number;             // 보안 의식
 }
 
@@ -21,7 +21,6 @@ export type PersonaKey =
   | "evangelist"
   | "architect"
   | "huggies"
-  | "macgyver"
   | "daredevil";
 
 /** 페르소나 정의 */
@@ -80,6 +79,21 @@ export interface StrengthItem {
 export interface PrescriptionItem {
   text: string;
   priority: "high" | "medium" | "low";
+}
+
+/** 조건부 처방전 — tag 기반 중복 제거 + 5개 고정 출력 */
+export interface ConditionalPrescription {
+  id: string;
+  text: string;
+  priority: "high" | "medium" | "low";
+  tag: string;
+  tier: "signature" | "dimensional" | "common";
+  condition: (
+    persona: PersonaKey,
+    stats: MdStats,
+    quality: QualityScores,
+    scores: DimensionScores
+  ) => boolean;
 }
 
 /** 궁합 정보 */
