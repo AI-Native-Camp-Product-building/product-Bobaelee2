@@ -148,3 +148,151 @@ export function extractToolNames(text: string): string[] {
   }
   return found;
 }
+
+// --- 확장 수집 입력 파싱 유틸리티 ---
+
+/**
+ * 전체 수집 입력인지 감지한다 (=== settings.json === 등 구분자 존재 여부)
+ */
+export function isExpandedInput(text: string): boolean {
+  return /^===\s+(settings\.json|mcp_settings\.json|commands|PROJECT MEMORY|.*AGENTS\.md)/m.test(text);
+}
+
+/**
+ * settings.json의 enabledPlugins에서 활성화된(true) 플러그인 이름을 추출한다
+ */
+export function extractEnabledPlugins(text: string): string[] {
+  const plugins: string[] = [];
+  // "pluginName@marketplace": true 패턴 매칭
+  const matches = text.matchAll(/"([^"]+)@[^"]+"\s*:\s*true/g);
+  for (const m of matches) {
+    plugins.push(m[1]);
+  }
+  return plugins;
+}
+
+/**
+ * mcp_settings.json 또는 settings.json에서 MCP 서버 이름을 추출한다
+ */
+export function extractMcpServerNames(text: string): string[] {
+  const servers: string[] = [];
+  // mcpServers 블록 내 키 이름 매칭
+  const mcpSection = text.match(/"mcpServers"\s*:\s*\{([\s\S]*?)^\s*\}/m);
+  if (mcpSection) {
+    const keyMatches = mcpSection[1].matchAll(/"([^"]+)"\s*:\s*\{/g);
+    for (const m of keyMatches) {
+      servers.push(m[1]);
+    }
+  }
+  // MCP 도구 권한에서도 추출: mcp__서버명__* 패턴
+  const mcpPermMatches = text.matchAll(/mcp__([^_]+?)__/g);
+  const fromPerms = new Set<string>();
+  for (const m of mcpPermMatches) {
+    fromPerms.add(m[1].replace(/_/g, " "));
+  }
+  return [...new Set([...servers, ...fromPerms])];
+}
+
+/**
+ * commands 섹션에서 커스텀 명령어 파일명을 추출한다
+ */
+export function extractCommandNames(text: string): string[] {
+  const commands: string[] = [];
+  // === commands === 다음 줄부터 다음 === 전까지의 .md 파일명
+  const cmdSection = text.match(/===\s*commands\s*===\n([\s\S]*?)(?:===|$)/);
+  if (cmdSection) {
+    const lines = cmdSection[1].trim().split("\n");
+    for (const line of lines) {
+      const name = line.trim().replace(/\.md$/, "");
+      if (name && name !== "") {
+        commands.push(name);
+      }
+    }
+  }
+  return commands;
+}
+
+/**
+ * settings.json의 hooks 섹션에서 hook 이벤트 수를 계산한다
+ */
+export function countHooks(text: string): number {
+  let count = 0;
+  const hookEvents = text.matchAll(/"(PreToolUse|PostToolUse|PreSendMessage|PostSendMessage|SessionEnd|SessionStart|Stop)"\s*:/g);
+  for (const _ of hookEvents) {
+    count++;
+  }
+  return count;
+}
+
+// --- 구조화된 데이터 심층 분석 ---
+
+/** 확장 입력에서 차원별 보너스 점수를 계산한다 */
+export interface ExpandedSignals {
+  // 보안 신호
+  hasDenyRules: boolean;           // permissions.deny가 있는지
+  denyCount: number;               // deny 규칙 수
+  blocksDangerousOps: boolean;     // rm -rf, force push 등 차단 여부
+  hasPreToolUseHook: boolean;      // PreToolUse hook (실수 사전 차단)
+  defaultModeIsAuto: boolean;      // defaultMode: "auto" 여부
+  // 자동화 신호
+  hasPostToolUseHook: boolean;     // PostToolUse hook (후처리 자동화)
+  hasSessionHooks: boolean;        // SessionEnd/SessionStart/Stop hook
+  hookTypePromptCount: number;     // "type": "prompt" hook 수 (AI 판단 hook)
+  hookTypeCommandCount: number;    // "type": "command" hook 수 (셸 실행 hook)
+  // 성숙도 신호
+  hasStatusLine: boolean;          // 커스텀 statusLine 설정
+  hasMultipleMarketplaces: boolean;// 여러 플러그인 마켓플레이스 사용
+  pluginEnabledRatio: number;      // 활성/설치 비율 (선별적 사용 = 성숙)
+  projectMdCount: number;          // 프로젝트별 CLAUDE.md 파일 수
+}
+
+/**
+ * 확장 수집 데이터에서 구조화된 신호를 추출한다
+ */
+export function extractExpandedSignals(text: string): ExpandedSignals {
+  // permissions.deny 분석
+  const denyMatches = text.match(/"deny"\s*:\s*\[([\s\S]*?)\]/);
+  const denyContent = denyMatches?.[1] ?? "";
+  const denyItems = denyContent.match(/"[^"]+"/g) ?? [];
+  const denyCount = denyItems.length;
+  const blocksDangerousOps = /rm\s+-rf|force|reset\s+--hard|checkout\s+\./i.test(denyContent);
+
+  // defaultMode 분석
+  const defaultModeIsAuto = /"defaultMode"\s*:\s*"auto"/.test(text);
+
+  // hook 유형 분석
+  const hasPreToolUseHook = /"PreToolUse"\s*:/.test(text);
+  const hasPostToolUseHook = /"PostToolUse"\s*:/.test(text);
+  const hasSessionHooks = /"(SessionEnd|SessionStart|Stop)"\s*:/.test(text);
+  const hookTypePromptCount = (text.match(/"type"\s*:\s*"prompt"/g) ?? []).length;
+  const hookTypeCommandCount = (text.match(/"type"\s*:\s*"command"/g) ?? []).length;
+
+  // 성숙도 신호
+  const hasStatusLine = /"statusLine"\s*:/.test(text);
+  const hasMultipleMarketplaces = /"extraKnownMarketplaces"\s*:/.test(text);
+
+  // 플러그인 활성/설치 비율
+  const enabledCount = (text.match(/"[^"]+@[^"]+"\s*:\s*true/g) ?? []).length;
+  const totalPluginEntries = (text.match(/"[^"]+@[^"]+"\s*:\s*(true|false)/g) ?? []).length;
+  const pluginEnabledRatio = totalPluginEntries > 0 ? enabledCount / totalPluginEntries : 0;
+
+  // 프로젝트 CLAUDE.md 파일 수
+  const projectMdMatches = text.match(/===\s+\/[^\n]*CLAUDE\.md\s*===/g) ?? [];
+  const projectMdCount = projectMdMatches.length;
+
+  return {
+    hasDenyRules: denyCount > 0,
+    denyCount,
+    blocksDangerousOps,
+    hasPreToolUseHook,
+    defaultModeIsAuto,
+    hasPostToolUseHook,
+    hasSessionHooks,
+    hookTypePromptCount,
+    hookTypeCommandCount,
+    hasStatusLine,
+    hasMultipleMarketplaces,
+    pluginEnabledRatio,
+    projectMdCount,
+  };
+}

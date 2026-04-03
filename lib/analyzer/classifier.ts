@@ -9,7 +9,7 @@ const DIMENSION_TO_PERSONA: Record<keyof DimensionScores, PersonaKey> = {
   control: "legislator",
   toolDiversity: "collector",
   maturity: "deep-diver",
-  collaboration: "craftsman",
+  collaboration: "evangelist",
   security: "fortress",
 };
 
@@ -84,12 +84,27 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     return "minimalist";
   }
 
-  // 규칙 3: 극단적으로 높은 점수 + 불균형 분포
-  if (max >= 80 && sd >= 30) {
-    const { automation, toolDiversity, security, control } = scores;
+  // 규칙 3: 확장 수집 에코시스템 분류
+  if (mdStats.isExpandedInput) {
+    const totalEcosystem = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.commandCount;
 
+    // 3a: S~A급 → 로데오 마스터 (하네스를 완전히 길들인 카우보이)
+    // 기준: Cherry Studio(43K★), everything-claude-code(134K★)
+    if (totalEcosystem >= 25 && mdStats.hookCount >= 5) {
+      return "architect";
+    }
+
+    // 3b: 중간급 → 하기스 아키텍트 (기저귀 단계)
+    // 에코시스템은 있는데 아직 엉성한 사람
+    if (totalEcosystem >= 10 && mdStats.hookCount >= 2 && totalEcosystem < 25) {
+      return "huggies";
+    }
+  }
+
+  // 규칙 4: 극단적으로 높은 점수 + 불균형 분포
+  if (max >= 80 && sd >= 30) {
     // 자동화+도구 다양성 모두 높으면 봇 농장주
-    if (automation >= 75 && toolDiversity >= 75) {
+    if (scores.automation >= 75 && scores.toolDiversity >= 75) {
       return "puppet-master";
     }
     // 보안이 지배적이면 요새
@@ -104,36 +119,62 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     return "deep-diver";
   }
 
-  // 규칙 4: 자동화 + 도구 다양성 모두 높음
+  // 규칙 4: 자동화 높고 보안 매우 낮음 → 위험물 취급자
+  if (scores.automation >= 50 && scores.security < 20) {
+    return "daredevil";
+  }
+
+  // 규칙 5: 자동화 + 도구 다양성 모두 높음 → 봇 농장주
   if (scores.automation >= 70 && scores.toolDiversity >= 70) {
     return "puppet-master";
   }
 
-  // 규칙 5: 보안 의식이 매우 강함
-  if (scores.security >= 75) {
+  // 규칙 6: 자동화 높고 도구 적음 → 맥가이버
+  if (scores.automation >= 65 && scores.toolDiversity < 30) {
+    return "macgyver";
+  }
+
+  // 규칙 7: 보안 의식이 매우 강함
+  if (scores.security >= 70) {
     return "fortress";
   }
 
-  // 규칙 6: 통제 성향이 매우 강함
+  // 규칙 8: 통제 성향이 매우 강함
   if (scores.control >= 75) {
     return "legislator";
   }
 
-  // 규칙 7: 도구는 많이 쓰지만 자동화는 안 함 → 수집가
+  // 규칙 9: 협업 성향이 매우 강함 → 협업 전도사
+  if (scores.collaboration >= 55) {
+    return "evangelist";
+  }
+
+  // 규칙 10: 도구는 많이 쓰지만 자동화는 안 함 → 수집가
   if (scores.toolDiversity >= 70 && scores.automation < 40) {
     return "collector";
   }
 
-  // 규칙 8: 짧고 통제/성숙도 낮음 → 스피드러너
+  // 규칙 11: 짧고 통제/성숙도 낮음 → 스피드러너
   if (mdStats.totalLines <= 30 && scores.control < 25 && scores.maturity < 30) {
     return "speedrunner";
   }
 
-  // 규칙 9: 표준편차가 낮으면 균형 잡힌 장인
+  // 규칙 12 (확장 수집): 추가 분류
+  if (mdStats.isExpandedInput) {
+    const totalEcosystem = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.commandCount;
+    if (totalEcosystem >= 10 && scores.automation < 40) {
+      return "collector";
+    }
+    if (mdStats.hookCount >= 3 && scores.toolDiversity >= 50) {
+      return "puppet-master";
+    }
+  }
+
+  // 규칙 13: 표준편차가 낮으면 균형 잡힌 장인
   if (sd < 20) {
     return "craftsman";
   }
 
-  // 규칙 10: 가장 높은 차원으로 기본 분류
+  // 규칙 14: 가장 높은 차원으로 기본 분류
   return DIMENSION_TO_PERSONA[dominant];
 }

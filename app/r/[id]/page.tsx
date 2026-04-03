@@ -17,6 +17,8 @@ import CompatSection from "@/components/CompatSection";
 import PrescriptionSection from "@/components/PrescriptionSection";
 import StatsSection from "@/components/StatsSection";
 import ShareButton from "@/components/ShareButton";
+import CaptureCard from "@/components/CaptureCard";
+import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -77,6 +79,9 @@ export default async function ResultPage({ params }: Props) {
         {/* 페르소나 히어로 */}
         <ResultHero persona={personaDef} />
 
+        {/* 확장 분석 결과 (전체 수집 시에만 표시) */}
+        <ExpandedAnalysis mdStats={result.mdStats} />
+
         {/* 로스팅 섹션 */}
         <RoastSection roasts={result.roasts} />
 
@@ -94,6 +99,14 @@ export default async function ResultPage({ params }: Props) {
           mdStats={result.mdStats}
           globalStats={globalStats}
           persona={result.persona}
+        />
+
+        {/* 캡쳐 카드 */}
+        <CaptureCard
+          persona={personaDef}
+          roasts={result.roasts}
+          mdStats={result.mdStats}
+          id={id}
         />
 
         {/* 공유 버튼 */}

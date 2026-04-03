@@ -24,6 +24,20 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
       collaboration: 3,
       security: 5,
     },
+    pluginCount: 0,
+    mcpServerCount: 0,
+    commandCount: 0,
+    hookCount: 0,
+    pluginNames: [],
+    mcpServerNames: [],
+    commandNames: [],
+    isExpandedInput: false,
+    denyCount: 0,
+    blocksDangerousOps: false,
+    hookPromptCount: 0,
+    hookCommandCount: 0,
+    pluginEnabledRatio: 0,
+    projectMdCount: 0,
     ...overrides,
   };
 }
@@ -37,11 +51,16 @@ const ALL_PERSONAS: PersonaKey[] = [
   "legislator",
   "craftsman",
   "deep-diver",
+  "evangelist",
+  "architect",
+  "huggies",
+  "macgyver",
+  "daredevil",
 ];
 
 describe("PERSONAS — 8개 페르소나 정의", () => {
-  it("8개 페르소나가 모두 정의되어야 한다", () => {
-    expect(Object.keys(PERSONAS)).toHaveLength(8);
+  it("13개 페르소나가 모두 정의되어야 한다", () => {
+    expect(Object.keys(PERSONAS)).toHaveLength(13);
   });
 
   it("각 페르소나에 필수 필드가 있어야 한다", () => {

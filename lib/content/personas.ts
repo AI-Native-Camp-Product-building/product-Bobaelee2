@@ -96,4 +96,60 @@ export const PERSONAS: Record<PersonaKey, PersonaDefinition> = {
       "특정 자동화 파이프라인에 대한 설명이 소설 분량인 당신. " +
       "깊이는 최고인데 너비가 아쉬운 진정한 전문가 기질.",
   },
+  evangelist: {
+    key: "evangelist",
+    nameKo: "협업 전도사",
+    nameEn: "The Evangelist",
+    emoji: "📢",
+    tagline: "혼자 잘 하는 것보다 같이 잘 하는 게 중요하다며?",
+    description:
+      "PR 규칙, 코드 리뷰, 팀 컨벤션, 브랜치 전략까지 CLAUDE.md에 빼곡히 적은 당신. " +
+      "Claude를 개인 비서가 아니라 팀원 교육 도구로 쓰고 있음. " +
+      "혼자서 코딩하다가도 '이거 팀에 공유해야 하지 않나' 생각이 먼저 드는 진정한 협업 중독자.",
+  },
+  architect: {
+    key: "architect",
+    nameKo: "로데오 마스터",
+    nameEn: "The Rodeo Master",
+    emoji: "🤠",
+    tagline: "하네스를 완전히 길들인 카우보이",
+    description:
+      "플러그인, 커스텀 명령어, Hook, MCP 서버, 에이전트, 스킬까지 전부 갖춘 당신. " +
+      "Claude Code라는 야생마를 완전히 길들여서 자기만의 목장을 운영 중. " +
+      "다만 이 목장 구조를 설명하려면 PPT가 10장은 필요하다는 게 함정.",
+  },
+  huggies: {
+    key: "huggies",
+    nameKo: "하기스 아키텍트",
+    nameEn: "The Huggies Architect",
+    emoji: "👶",
+    tagline: "하네스 위에 올라타긴 했는데... 아직 기저귀 단계",
+    description:
+      "플러그인도 깔아봤고, Hook도 만들어봤고, 명령어도 몇 개 만들었는데... " +
+      "뭔가 돌아가긴 하는데 왜 돌아가는지는 잘 모르는 당신. " +
+      "로데오 마스터를 꿈꾸지만 아직 말 위에서 중심을 못 잡고 있는 귀여운 단계.",
+  },
+  macgyver: {
+    key: "macgyver",
+    nameKo: "맥가이버",
+    nameEn: "The MacGyver",
+    emoji: "🔩",
+    tagline: "도구 3개로 모든 걸 해결하는 사람",
+    description:
+      "도구는 적게 쓰면서 자동화는 극한까지 밀어붙인 당신. " +
+      "다른 사람이 10개 플러그인을 깔 때, 셸 스크립트 하나로 같은 걸 해결하는 진정한 실용주의자. " +
+      "근데 그 셸 스크립트를 본인 말고 아무도 이해 못 한다는 걸 알고 계신가요?",
+  },
+  daredevil: {
+    key: "daredevil",
+    nameKo: "위험물 취급자",
+    nameEn: "The Daredevil",
+    emoji: "🎲",
+    tagline: "보안? 그거 나중에 해도 되는 거 아닌가요?",
+    description:
+      "자동화는 열심히 하면서 보안 설정은 텅 빈 당신. " +
+      "hook은 3개인데 .env 보호 규칙은 0개, API 키를 코드에 박아넣고 " +
+      "'어차피 private repo잖아'라고 자기 합리화하는 당신. " +
+      "사고가 터지기 전까지는 가장 효율적인 사람.",
+  },
 };

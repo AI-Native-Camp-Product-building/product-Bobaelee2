@@ -1,6 +1,6 @@
 /**
  * 페르소나별 로스팅 생성기
- * 발칙하고 찌르지만 웃긴 한국어 로스팅 텍스트를 동적으로 생성한다
+ * 팩폭 톤 — 짧고 날카롭게, "아 이거 나인데" 하게 만드는 한 줄
  */
 import type { PersonaKey, MdStats, RoastItem } from "@/lib/types";
 
@@ -10,172 +10,271 @@ type RoastTemplate = (stats: MdStats) => RoastItem[];
 const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   "puppet-master": (stats) => [
     {
-      text: "자동화가 삶의 목적이 된 사람",
-      detail: `CLAUDE.md에 hook이 ${stats.keywordHits?.automation ?? "수십"} 번 이상 등장합니다. ` +
-        "혹시 본인이 Claude의 주인인지, Claude 파이프라인의 노예인지 헷갈리신 적 없나요?",
+      text: "Claude 장애 공지 뜨면 심장 먼저 멈추는 사람",
+      detail: stats.hookCount > 0
+        ? `Hook ${stats.hookCount}개, MCP ${stats.mcpServerCount}개로 구축한 자동화 제국. 장애 복구 시간 동안 할 수 있는 일: 없음. 수동 대응 플랜: 없음.`
+        : `자동화 키워드 ${stats.keywordHits?.automation ?? "수십"}개. 장애 나면 할 수 있는 일이 없는 구조를 직접 만들어놓고, 그걸 효율이라고 부르고 있어요.`,
       color: "red",
     },
     {
-      text: `${stats.toolNames.length}개 도구를 연결한 사람`,
-      detail: `${stats.toolNames.slice(0, 3).join(", ")} 등 ${stats.toolNames.length}개 도구를 연동했군요. ` +
-        "이 중 마지막으로 직접 손으로 뭔가를 처리한 게 언제인지 기억하시나요?",
+      text: "당신이 만든 자동화의 유일한 사용자는 당신입니다",
+      detail: stats.commandCount > 0
+        ? `/${stats.commandNames.slice(0, 3).join(", /")} 등 ${stats.commandCount}개 명령어. 팀원한테 인수인계 해보세요. 설명하다가 본인이 먼저 포기합니다.`
+        : `${stats.toolNames.slice(0, 3).join(", ")} 등 ${stats.toolNames.length}개 도구를 엮어놨는데, 이걸 다른 사람이 이해할 수 있다고 진심으로 생각해요?`,
       color: "orange",
     },
     {
-      text: "Claude가 없으면 아무것도 못 하는 구조",
-      detail: `${stats.totalLines}줄짜리 CLAUDE.md로 구축한 자동화 제국. ` +
-        "Claude 서버 장애 날 때 본인은 뭐 하실 건가요? 그냥 퇴근?",
+      text: "자동화 파이프라인 짜는 시간 > 절약하는 시간",
+      detail: `${stats.totalLines}줄짜리 설정 유지보수하는 데 쓰는 시간, 솔직히 세어본 적 없죠? 수동으로 하면 5분이면 끝날 일을 자동화하겠다고 3시간 쓴 적, 이번 주에만 몇 번이에요.`,
       color: "blue",
     },
   ],
 
   speedrunner: (stats) => [
     {
-      text: "문서화라는 단어를 들어본 적 있나요?",
-      detail: `고작 ${stats.totalLines}줄. 이게 전부입니다. ` +
-        "6개월 후 본인이 이 CLAUDE.md를 보고 이게 뭔지 이해할 수 있을까요?",
+      text: "6개월 후의 자기 자신에게 테러하는 중",
+      detail: `${stats.totalLines}줄. 미래의 내가 이걸 보고 뭘 알 수 있을까요? '과거의 나는 대체 뭘 한 거지?' 이 말을 하게 될 겁니다.`,
       color: "red",
     },
     {
-      text: "섹션이 없다 = 생각이 없다?",
+      text: "'대충 해도 되는 거 아니야?'가 인생 모토",
       detail: stats.sectionCount < 2
-        ? "헤더 구조가 거의 없네요. CLAUDE.md도 바닥에 던져두고 나중에 주우면 된다는 주의신가요?"
-        : `섹션이 ${stats.sectionCount}개뿐이에요. 빠르게 쓴 건 알겠는데, Claude도 빠르게 잊어버립니다.`,
+        ? "섹션 구분도 없어요. Claude한테 '알아서 해줘'는 가장 비싼 프롬프트입니다. 토큰비로 환산해보세요."
+        : `섹션 ${stats.sectionCount}개뿐. 빠르게 쓴 건 알겠는데, Claude도 빠르게 잊어버려요.`,
       color: "orange",
     },
     {
-      text: "규칙 없음 = 카오스",
-      detail: stats.ruleCount === 0
-        ? "규칙이 0개입니다. Claude에게 '알아서 해줘'는 가장 비싼 선택입니다."
-        : `규칙이 ${stats.ruleCount}개뿐이에요. 이 정도면 Claude가 여러분을 설정하는 게 아니라 Claude가 여러분을 설정하는 겁니다.`,
+      text: "설정 안 하는 게 설정이라고 우기는 타입",
+      detail: `규칙 ${stats.ruleCount}개. 이 정도면 Claude가 매번 새 사람 만나는 기분일 거예요. 5분만 투자해서 역할 하나만 적어도 답변 퀄리티가 달라집니다.`,
       color: "blue",
     },
   ],
 
   fortress: (stats) => [
     {
-      text: ".env가 꿈에 나온다",
-      detail: `보안 관련 언급이 ${stats.keywordHits?.security ?? "다수"} 회나 됩니다. ` +
-        "혹시 잠자리에 들기 전 API 키가 안전한지 한 번 더 확인하시나요?",
+      text: "API 키 유출되는 악몽 꿔본 적 있죠?",
+      detail: stats.blocksDangerousOps
+        ? `deny ${stats.denyCount}개에 rm -rf까지 차단. 대단한데, 이 규칙 만드는 데 쓴 시간으로 실제 코딩 얼마나 했어요?`
+        : `보안 키워드 ${stats.keywordHits?.security ?? "다수"}회. .env 파일 보호에 진심인 건 좋은데, 정작 보호할 서비스는 아직 안 만들었잖아요.`,
       color: "red",
     },
     {
-      text: "규칙이 코드보다 많은 CLAUDE.md",
-      detail: `${stats.ruleCount}개의 규칙... 이 중 몇 개가 실제로 지켜지고 있나요? ` +
-        "헌법은 만들었는데 국민(Claude)이 읽었는지는 모르는 상황.",
+      text: stats.hookPromptCount > 0
+        ? "Claude를 못 믿어서 Claude한테 검사 시키는 모순"
+        : "보안 규칙이 기능 코드보다 많은 사람",
+      detail: stats.hookPromptCount > 0
+        ? `AI 판단 Hook ${stats.hookPromptCount}개. Claude가 코드를 쓰기 전에 Claude가 먼저 검사하는 구조... 이게 신뢰인가요, 불신인가요?`
+        : `${stats.ruleCount}개 규칙 중 절반이 '하지 마라'입니다. Claude한테 할 수 있는 걸 알려주는 게 더 효율적이에요.`,
       color: "orange",
     },
     {
-      text: "팀원들도 무서워하는 보안 담당자",
-      detail: `절대 금지가 ${stats.keywordHits?.control ?? "여러 번"} 번 이상 등장합니다. ` +
-        "팀 회식에서도 '이 가게 보안 괜찮아요?'라고 물어보신 적 있죠?",
+      text: "팀원이 .env 어딨냐고 물어보면 눈이 반짝이는 사람",
+      detail: "보안 교육할 때가 가장 신나 보이는 사람이 있는데, 그게 당신이에요. 팀원들은 무서워서 질문을 안 하는 거예요.",
       color: "blue",
     },
   ],
 
   minimalist: (stats) => [
     {
-      text: "이게 전부라고요?",
-      detail: `${stats.totalLines}줄. 이걸로 Claude한테 뭘 시키실 건가요? ` +
-        "'알아서 해줘'는 가장 많은 토큰을 소모하는 지시입니다.",
+      text: "'Claude야 알아서 해' — 가장 비싼 프롬프트",
+      detail: stats.isExpandedInput
+        ? `플러그인 ${stats.pluginCount}개 깔아놓고 CLAUDE.md는 ${stats.totalLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
+        : `${stats.totalLines}줄. 이걸로 Claude한테 뭘 기대하는 건가요? Claude는 독심술사가 아닙니다.`,
       color: "red",
     },
     {
-      text: "도구를 안 쓰는 건지, 모르는 건지",
+      text: "귀찮아서 안 쓴 건지, 뭘 써야 하는지 모르는 건지",
       detail: stats.toolNames.length === 0
-        ? "도구 언급이 없습니다. Claude Code를 메모장처럼 쓰고 계신 건 아닌가요?"
-        : `${stats.toolNames.length}개 도구만 있네요. 더 연결하면 더 강력해지는데 귀찮으신가요?`,
+        ? "도구 언급 0개. Claude Code를 ChatGPT처럼 쓰고 있어요. 터미널에서 실행하는 이유가 있거든요."
+        : `도구 ${stats.toolNames.length}개만 적어놨네요. '나머지는 알아서 해줘'가 통하는 세상이 아닙니다.`,
       color: "orange",
     },
     {
-      text: "3줄 CLAUDE.md의 용기",
-      detail: `섹션도 ${stats.sectionCount}개뿐이에요. ` +
-        "간결함인지 포기인지는 모르겠지만, Claude는 지금 방향을 잃고 표류 중입니다.",
+      text: "CLAUDE.md 빈칸이 당신의 가능성을 잡아먹고 있어요",
+      detail: `섹션 ${stats.sectionCount}개. 역할, 도구, 금지사항만 적어도 Claude의 답변 퀄리티가 2배는 올라요. 5분 투자, 매일 30분 절약.`,
       color: "blue",
     },
   ],
 
-  collector: (stats) => [
-    {
-      text: `${stats.toolNames.length}개 도구를 쌓아둔 창고 주인`,
-      detail: `${stats.toolNames.join(", ")} — 이 중 오늘 실제로 쓴 게 몇 개인가요? ` +
-        "수집과 활용은 다른 것입니다.",
-      color: "red",
-    },
-    {
-      text: "새 툴 나오면 무조건 써보는 병",
-      detail: `도구 다양성 점수가 매우 높네요. ` +
-        `연동은 했는데 ${stats.toolNames.length}개 중 실제로 자동화된 건 몇 개인가요?`,
-      color: "orange",
-    },
-    {
-      text: "플러그인이 많을수록 생산성이 높다는 착각",
-      detail: "도구함이 가득 차 있으면 뭔가 열심히 하는 것 같은 느낌이 드는 게 맞긴 해요. " +
-        "근데 실제로 처리된 태스크 수는요?",
-      color: "blue",
-    },
-  ],
+  collector: (stats) => {
+    const totalEcosystem = stats.pluginCount + stats.mcpServerCount + stats.toolNames.length;
+    return [
+      {
+        text: "도구함이 창고 수준인데 실제로 쓰는 건 3개",
+        detail: stats.pluginCount > 0
+          ? `플러그인 ${stats.pluginCount}개, MCP ${stats.mcpServerCount}개, 도구 ${stats.toolNames.length}개. 이 중 이번 주에 실제로 쓴 거 손가락으로 꼽아보세요.`
+          : `${stats.toolNames.join(", ")} — 전부 CLAUDE.md에 적어놨는데, 마지막으로 직접 연동한 게 언제예요?`,
+        color: "red" as const,
+      },
+      {
+        text: "새 도구 나오면 README부터 읽는 사람",
+        detail: stats.pluginCount > 0
+          ? `${stats.pluginNames.slice(0, 3).join(", ")} 등... 깔아놓고 한 번 써보고 끝난 플러그인이 절반 이상이죠?`
+          : "도구 다양성 점수만 높고 자동화 점수는 바닥이에요. 수집이 취미지, 활용이 취미는 아니네요.",
+        color: "orange" as const,
+      },
+      {
+        text: "구독료 합산해보면 눈물 나올 사람",
+        detail: `${totalEcosystem > 0 ? totalEcosystem + "개" : stats.toolNames.length + "개"} 도구를 관리하는 데 쓰는 인지 비용, 계산해본 적 있어요? 도구 3개 빼면 생산성이 오히려 올라갈 수도 있습니다.`,
+        color: "blue" as const,
+      },
+    ];
+  },
 
   legislator: (stats) => [
     {
-      text: "Claude에게 헌법을 부여한 사람",
-      detail: `MUST, NEVER, ALWAYS, CRITICAL, IMPORTANT가 ${stats.keywordHits?.control ?? "수십"} 번 등장합니다. ` +
-        "Claude가 규칙을 어겼을 때 실제로 속상하신 적 있나요?",
+      text: "CLAUDE.md가 사내 취업규칙보다 긴 사람",
+      detail: `MUST ${stats.keywordHits?.control ?? "수십"}회 등장. 규칙을 만드는 게 일인지 취미인지 경계가 사라졌어요. Claude는 로봇이지 공무원이 아닙니다.`,
       color: "red",
     },
     {
-      text: `${stats.ruleCount}개 규칙의 제왕`,
-      detail: `${stats.ruleCount}개의 규칙... 이 중 Claude가 실제로 지키는 건 몇 퍼센트일까요? ` +
-        "법은 많을수록 지키기 어렵다는 사실, 알고 계신가요?",
+      text: "규칙 100개 만들어놓고 Claude가 3개만 지키는 사람",
+      detail: `${stats.ruleCount}개 규칙. 솔직히 이 중 Claude가 실제로 따르는 비율이 몇 %인지 확인해본 적 있어요? 규칙은 적을수록 지켜져요.`,
       color: "orange",
     },
     {
-      text: "팀원보다 Claude 단속에 더 열심",
-      detail: "CLAUDE.md 통제 지수가 매우 높습니다. " +
-        "Claude뿐 아니라 팀원들도 당신과 대화할 때 조심하고 있을 수 있어요.",
+      text: "예외 규칙의 예외 규칙을 만들고 있는 자신을 발견한 적 있죠?",
+      detail: "규칙이 많으면 충돌이 생기고, 충돌을 해결하려고 또 규칙을 만들고. 지금 법률 지옥도 한가운데 서 계신 거 아세요?",
       color: "blue",
     },
   ],
 
   craftsman: (stats) => [
     {
-      text: "튀는 것 없는 평균의 함정",
-      detail: `${stats.totalLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. ` +
-        "모든 게 적당합니다. 근데 '적당함'이 위대함이 되진 않죠.",
+      text: "모든 게 적당한데, 그게 문제",
+      detail: `${stats.totalLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. 모범생 답안지 같은 CLAUDE.md예요. 근데 모범생은 기억에 안 남아요.`,
       color: "red",
     },
     {
-      text: "균형을 잡았지만 임팩트가 없는 사람",
-      detail: "6개 차원이 모두 비슷한 수준입니다. 안정적이긴 한데, " +
-        "Claude한테 시킨 것 중 가장 인상적인 게 뭔지 바로 떠오르시나요?",
+      text: "'무난하다'는 칭찬이 아닙니다",
+      detail: "6개 차원이 다 비슷해요. 리스크를 안 지는 건 좋은데, 임팩트도 안 내고 있어요. 가장 인상적인 자동화가 뭐였는지 3초 안에 떠올릴 수 있어요?",
       color: "orange",
     },
     {
-      text: "조용하고 무난한 게 전부인가요?",
-      detail: "뾰족한 강점이 없으면 기억에 남지 않습니다. " +
-        "당신의 CLAUDE.md는 지금 Claude에게 '그냥 대충 잘 해줘'라고 말하고 있습니다.",
+      text: "함께 일하면 편한데, 찾지는 않는 사람",
+      detail: "안정적이고 균형 잡혀 있어서 불만은 없어요. 근데 '이 사람한테 꼭 물어봐야지'라고 떠올리진 않아요. 뾰족한 게 하나 필요해요.",
       color: "blue",
     },
   ],
 
   "deep-diver": (stats) => [
     {
-      text: "한 우물만 파다 지하 5층 도달",
-      detail: `${stats.totalLines}줄 중 특정 주제에 과도하게 집중되어 있습니다. ` +
-        "깊이는 좋은데 너비가 없으면 Claude도 한쪽으로만 달립니다.",
+      text: "한 우물을 파다가 지구 반대편에 도착한 사람",
+      detail: `${stats.totalLines}줄 중 특정 주제가 절반 이상이에요. 깊이는 인정하는데, 옆 우물에 뭐가 있는지는 관심 없으시죠?`,
       color: "red",
     },
     {
-      text: "전문성과 집착의 경계선",
+      text: "전문가와 집착의 차이를 아시나요?",
       detail: stats.hasMemory
-        ? "memory, session, context 관리에 엄청난 공을 들였군요. 혹시 Claude 세션이 끊기면 하루가 망가지나요?"
-        : "특정 자동화에 극도로 집중한 CLAUDE.md입니다. 다른 영역은 아예 생략했네요.",
+        ? "memory, session, context 관리에 올인했군요. Claude 세션 끊기면 하루가 망가지는 수준이면 전문성이 아니라 의존성이에요."
+        : "특정 자동화 하나에 소설 분량을 쏟았어요. 그 시간에 다른 영역 하나만 더 건드렸으면 10배 효율이었을 텐데.",
       color: "orange",
     },
     {
-      text: "넓은 세상을 본 적이 있나요?",
-      detail: `도구 수가 ${stats.toolNames.length}개에 그칩니다. ` +
-        "우물 밖에도 넓은 세상이 있습니다. 가끔은 다른 도구도 써보세요.",
+      text: "다른 사람이 당신의 CLAUDE.md를 읽으면 논문인 줄 알아요",
+      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.totalLines}줄. 밀도가 아니라 편집증이에요.`,
+      color: "blue",
+    },
+  ],
+
+  evangelist: (stats) => [
+    {
+      text: "혼자 코딩할 때도 PR 올리는 사람",
+      detail: `협업 키워드가 CLAUDE.md를 뒤덮고 있어요. 1인 프로젝트에서도 코드 리뷰를 Claude에게 시키고 있죠? 인정하세요.`,
+      color: "red",
+    },
+    {
+      text: "팀 프로세스 만드느라 정작 본인은 코딩 안 하는 사람",
+      detail: `${stats.ruleCount}개 규칙 중 절반이 '팀원은 이렇게 하라'는 내용. Claude한테 시킨 건지 팀원한테 시킨 건지 구분이 안 돼요.`,
+      color: "orange",
+    },
+    {
+      text: "회의록 정리하는 자동화는 만들었는데, 회의를 줄이는 건 생각 안 해봤죠?",
+      detail: `${stats.sectionCount}개 섹션에 협업 관련 내용이 가득. 프로세스를 만드는 건 좋은데, 그 프로세스가 진짜 생산성을 높이고 있는지 측정해본 적 있어요?`,
+      color: "blue",
+    },
+  ],
+
+  huggies: (stats) => {
+    const eco = stats.pluginCount + stats.mcpServerCount + stats.commandCount;
+    return [
+      {
+        text: "하네스 위에 올라타긴 했는데 고삐를 못 잡고 있어요",
+        detail: `플러그인 ${stats.pluginCount}개, Hook ${stats.hookCount}개, 명령어 ${stats.commandCount}개. 숫자만 보면 그럴듯한데, 이 중 왜 이렇게 설정했는지 설명할 수 있는 게 몇 개예요?`,
+        color: "red" as const,
+      },
+      {
+        text: "로데오 마스터 따라 하다가 낙마하는 타입",
+        detail: `에코시스템 ${eco}개를 구축했는데, 솔직히 남이 쓰는 거 보고 따라 깐 거 절반 이상이죠? '일단 깔아보자'에서 '이게 뭐였지?'까지 3일이면 충분해요.`,
+        color: "orange" as const,
+      },
+      {
+        text: "기저귀 단계인 걸 본인만 몰라요",
+        detail: "설정은 복잡한데 활용은 기본 수준. 마치 레이싱 장비를 풀세트로 갖추고 동네 마트까지 운전하는 느낌이에요.",
+        color: "blue" as const,
+      },
+    ];
+  },
+
+  architect: (stats) => {
+    const eco = stats.pluginCount + stats.mcpServerCount + stats.commandCount;
+    return [
+      {
+        text: "Claude Code 위에 운영체제를 하나 더 올린 사람",
+        detail: `플러그인 ${stats.pluginCount}개, MCP ${stats.mcpServerCount}개, 명령어 ${stats.commandCount}개, Hook ${stats.hookCount}개. 이걸 설명하려면 아키텍처 다이어그램이 필요해요. 그 다이어그램도 Claude한테 그리게 시키겠죠?`,
+        color: "red" as const,
+      },
+      {
+        text: "Claude Code 업데이트 날 = 당신의 장애 대응 훈련 날",
+        detail: `${eco}개 구성요소가 서로 엮여 있어서, breaking change 하나에 반나절 디버깅. 이미 여러 번 겪었죠?`,
+        color: "orange" as const,
+      },
+      {
+        text: "이 설정을 인수인계 받을 사람이 불쌍합니다",
+        detail: `이 복잡도를 이해하려면 최소 일주일이 필요해요. 본인도 3개월 전에 왜 이렇게 설정했는지 기억 못 하는 부분이 있잖아요.`,
+        color: "blue" as const,
+      },
+    ];
+  },
+
+  macgyver: (stats) => [
+    {
+      text: "새 도구 깔기 싫어서 삽질하는 사람",
+      detail: `도구 ${stats.toolNames.length}개로 ${stats.totalLines}줄 분량의 자동화를 구축. MCP 하나 연결하면 5분이면 끝날 일을 curl + jq + sed로 30분 걸려 해결하고 있어요.`,
+      color: "red",
+    },
+    {
+      text: "그 셸 스크립트, 본인 말고 읽을 수 있는 사람 있어요?",
+      detail: "효율적인 건 맞는데, 6개월 후 본인도 '이게 왜 돌아가지?'라고 할 거예요. 주석 하나 없는 원라이너가 자랑은 아닙니다.",
+      color: "orange",
+    },
+    {
+      text: "미니멀리즘이 아니라 도구 울렁증",
+      detail: `연동 도구 ${stats.toolNames.length}개. 새 도구 배우는 게 귀찮아서 '이걸로도 되는데?'라고 자기 합리화 중이죠. 한번만 마음을 열어보세요.`,
+      color: "blue",
+    },
+  ],
+
+  daredevil: (stats) => [
+    {
+      text: "사고 터지기 전까지는 팀에서 가장 빠른 사람",
+      detail: stats.isExpandedInput
+        ? `deny 규칙 ${stats.denyCount}개. ${stats.denyCount === 0 ? "Claude가 rm -rf 쳐도 막을 수 없는 구조예요. 이게 효율인가요, 도박인가요?" : "있긴 한데 보안 전체 점수가 바닥이에요."}`
+        : `자동화 키워드 ${stats.keywordHits?.automation ?? "다수"}개 vs 보안 키워드 ${stats.keywordHits?.security ?? 0}개. 보험 없이 스카이다이빙하는 거예요.`,
+      color: "red",
+    },
+    {
+      text: stats.hookCount > 0 && !stats.blocksDangerousOps
+        ? `Hook ${stats.hookCount}개 중 보안용 0개`
+        : "'어차피 private repo잖아' — 유명한 마지막 말",
+      detail: stats.hookCount > 0
+        ? "Hook을 자동화에만 쓰고 보호에는 안 써요. 가스레인지는 쓸 줄 알면서 소화기는 없는 주방이에요."
+        : "API 키를 환경변수에 넣긴 했는데, 보호 규칙이 0개예요. public repo로 전환하는 순간 끝나요.",
+      color: "orange",
+    },
+    {
+      text: "속도와 보안은 트레이드오프가 아닌데, 트레이드오프로 만들어버린 사람",
+      detail: `deny 한 줄 추가하는 데 10초예요. 키 유출 사고 수습하는 데는 10시간이에요. 지금 10초 쓰세요.`,
       color: "blue",
     },
   ],
@@ -183,9 +282,6 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
 
 /**
  * 페르소나와 통계를 기반으로 3개의 로스팅을 생성한다
- * @param persona 페르소나 키
- * @param mdStats CLAUDE.md 통계
- * @returns 3개의 RoastItem 배열
  */
 export function generateRoasts(persona: PersonaKey, mdStats: MdStats): RoastItem[] {
   const template = ROAST_TEMPLATES[persona];

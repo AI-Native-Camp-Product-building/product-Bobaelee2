@@ -13,6 +13,20 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hasProjectMd: false,
     ruleCount: 3,
     keywordHits: {},
+    pluginCount: 0,
+    mcpServerCount: 0,
+    commandCount: 0,
+    hookCount: 0,
+    pluginNames: [],
+    mcpServerNames: [],
+    commandNames: [],
+    isExpandedInput: false,
+    denyCount: 0,
+    blocksDangerousOps: false,
+    hookPromptCount: 0,
+    hookCommandCount: 0,
+    pluginEnabledRatio: 0,
+    projectMdCount: 0,
     ...overrides,
   };
 }
@@ -152,6 +166,7 @@ describe("classifyPersona — 경계값 테스트", () => {
     const validKeys = [
       "puppet-master", "speedrunner", "fortress", "minimalist",
       "collector", "legislator", "craftsman", "deep-diver",
+      "evangelist", "architect", "huggies", "macgyver", "daredevil",
     ];
     // 다양한 점수 조합 테스트
     const testCases = [

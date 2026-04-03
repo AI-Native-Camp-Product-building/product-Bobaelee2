@@ -21,16 +21,23 @@ export default function StatsSection({ mdStats, globalStats, persona }: StatsSec
   const personaPercent =
     personaCount > 0 ? Math.round((personaCount / totalUsers) * 100) : 0;
 
+  // 확장 수집 시 에코시스템 총합 계산
+  const totalEcosystem = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.toolNames.length;
+
   const stats = [
     {
-      label: "CLAUDE.md 줄 수",
+      label: "설정 줄 수",
       value: mdStats.totalLines.toLocaleString(),
       sub: `평균의 ${lineMultiplier}배`,
     },
     {
-      label: "연동 도구",
-      value: mdStats.toolNames.length.toLocaleString(),
-      sub: "개",
+      label: mdStats.isExpandedInput ? "에코시스템" : "연동 도구",
+      value: mdStats.isExpandedInput
+        ? totalEcosystem.toLocaleString()
+        : mdStats.toolNames.length.toLocaleString(),
+      sub: mdStats.isExpandedInput
+        ? `플러그인 ${mdStats.pluginCount} + MCP ${mdStats.mcpServerCount} + 도구 ${mdStats.toolNames.length}`
+        : "개",
     },
     {
       label: "같은 페르소나",

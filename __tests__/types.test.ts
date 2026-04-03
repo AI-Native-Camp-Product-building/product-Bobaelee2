@@ -22,11 +22,16 @@ const PERSONA_KEYS: PersonaKey[] = [
   "legislator",
   "craftsman",
   "deep-diver",
+  "evangelist",
+  "architect",
+  "huggies",
+  "macgyver",
+  "daredevil",
 ];
 
 describe("PersonaKey", () => {
-  it("8개 페르소나 키가 존재해야 한다", () => {
-    expect(PERSONA_KEYS).toHaveLength(8);
+  it("13개 페르소나 키가 존재해야 한다", () => {
+    expect(PERSONA_KEYS).toHaveLength(13);
   });
 
   it("모든 키가 문자열이어야 한다", () => {
@@ -37,7 +42,7 @@ describe("PersonaKey", () => {
 
   it("중복 없이 고유한 키여야 한다", () => {
     const unique = new Set(PERSONA_KEYS);
-    expect(unique.size).toBe(8);
+    expect(unique.size).toBe(13);
   });
 });
 
@@ -90,6 +95,20 @@ describe("MdStats", () => {
       hasProjectMd: true,
       ruleCount: 10,
       keywordHits: { automation: 3, security: 2 },
+      pluginCount: 0,
+      mcpServerCount: 0,
+      commandCount: 0,
+      hookCount: 0,
+      pluginNames: [],
+      mcpServerNames: [],
+      commandNames: [],
+      isExpandedInput: false,
+      denyCount: 0,
+      blocksDangerousOps: false,
+      hookPromptCount: 0,
+      hookCommandCount: 0,
+      pluginEnabledRatio: 0,
+      projectMdCount: 0,
     };
 
     expect(stats.totalLines).toBeDefined();
@@ -141,6 +160,20 @@ describe("AnalysisResult", () => {
         hasProjectMd: true,
         ruleCount: 20,
         keywordHits: {},
+        pluginCount: 0,
+        mcpServerCount: 0,
+        commandCount: 0,
+        hookCount: 0,
+        pluginNames: [],
+        mcpServerNames: [],
+        commandNames: [],
+        isExpandedInput: false,
+      denyCount: 0,
+      blocksDangerousOps: false,
+      hookPromptCount: 0,
+      hookCommandCount: 0,
+      pluginEnabledRatio: 0,
+      projectMdCount: 0,
       },
     };
 
@@ -179,6 +212,20 @@ describe("SavedResult", () => {
         hasProjectMd: false,
         ruleCount: 0,
         keywordHits: {},
+        pluginCount: 0,
+        mcpServerCount: 0,
+        commandCount: 0,
+        hookCount: 0,
+        pluginNames: [],
+        mcpServerNames: [],
+        commandNames: [],
+        isExpandedInput: false,
+      denyCount: 0,
+      blocksDangerousOps: false,
+      hookPromptCount: 0,
+      hookCommandCount: 0,
+      pluginEnabledRatio: 0,
+      projectMdCount: 0,
       },
     };
 
@@ -200,6 +247,11 @@ describe("GlobalStats", () => {
         legislator: 100,
         craftsman: 150,
         "deep-diver": 150,
+        evangelist: 0,
+        architect: 0,
+        huggies: 0,
+        macgyver: 0,
+        daredevil: 0,
       },
       avgLines: 85,
       userPercentile: {

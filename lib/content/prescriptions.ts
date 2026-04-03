@@ -69,6 +69,36 @@ function universalChecks(stats: MdStats): PrescriptionItem[] {
     });
   }
 
+  // 확장 수집 기반 추가 체크
+  if (stats.isExpandedInput) {
+    // MCP 서버 없음
+    if (stats.mcpServerCount === 0) {
+      items.push({
+        text: "MCP 서버를 연동해보세요. Slack, Notion, GitHub 등 자주 쓰는 도구를 " +
+          "MCP로 연결하면 Claude가 직접 도구를 사용할 수 있어 생산성이 크게 높아집니다.",
+        priority: "high",
+      });
+    }
+
+    // 커스텀 명령어 없음
+    if (stats.commandCount === 0) {
+      items.push({
+        text: "커스텀 슬래시 명령어를 만들어보세요. `~/.claude/commands/` 폴더에 " +
+          "자주 하는 작업을 명령어로 저장하면 `/명령어`로 즉시 실행할 수 있습니다.",
+        priority: "medium",
+      });
+    }
+
+    // 플러그인 없음
+    if (stats.pluginCount === 0) {
+      items.push({
+        text: "Claude Code 플러그인을 설치해보세요. superpowers, session-wrap, hookify 등 " +
+          "커뮤니티 플러그인이 워크플로우를 크게 향상시킵니다.",
+        priority: "medium",
+      });
+    }
+  }
+
   return items;
 }
 
@@ -216,6 +246,97 @@ const PERSONA_PRESCRIPTIONS: Record<PersonaKey, PrescriptionItem[]> = {
       text: "협업 관련 규칙을 추가해보세요. 혼자만 쓰는 CLAUDE.md는 개인 최적화에 머물지만, " +
         "팀과 공유 가능한 설정을 만들면 영향력이 팀 전체로 확장됩니다.",
       priority: "low",
+    },
+  ],
+
+  evangelist: [
+    {
+      text: "개인 작업 효율을 높이는 자동화도 추가해보세요. " +
+        "협업 규칙은 훌륭하지만, 본인의 반복 작업을 줄이는 hook이나 커스텀 명령어가 없으면 " +
+        "남 챙기느라 정작 본인은 비효율적으로 일하고 있을 수 있습니다.",
+      priority: "high",
+    },
+    {
+      text: "보안 규칙도 팀 관점에서 추가해보세요. " +
+        "PR 규칙은 있는데 API 키 관리 규칙이 없으면, 팀원의 실수를 미리 잡을 기회를 놓칩니다.",
+      priority: "medium",
+    },
+    {
+      text: "협업 규칙의 '왜'를 적어두세요. 규칙만 나열하면 Claude가 예외 상황을 판단하기 어렵습니다. " +
+        "'이 규칙은 지난 스프린트 머지 충돌 때문에 만들었다' 같은 맥락이 중요합니다.",
+      priority: "medium",
+    },
+  ],
+
+  huggies: [
+    {
+      text: "지금 깔려있는 플러그인과 Hook을 하나씩 설명해보세요. 설명 못 하는 건 필요 없는 거예요. " +
+        "정리하면 오히려 시스템이 안정적으로 돌아갑니다.",
+      priority: "high",
+    },
+    {
+      text: "로데오 마스터가 되려면 '왜 이 설정인가'를 적어두세요. " +
+        "각 Hook과 명령어에 주석 한 줄만 추가해도 3개월 후 본인이 감사합니다.",
+      priority: "medium",
+    },
+    {
+      text: "한 번에 다 만들려고 하지 마세요. 가장 자주 하는 작업 하나를 완벽하게 자동화한 뒤, " +
+        "그 다음으로 넘어가세요. 기저귀를 떼려면 한 발씩.",
+      priority: "medium",
+    },
+  ],
+
+  architect: [
+    {
+      text: "생태계 구성도(아키텍처 다이어그램)를 CLAUDE.md에 추가하세요. " +
+        "플러그인, Hook, MCP가 어떻게 연결되는지 한눈에 보이면 유지보수와 인수인계가 쉬워집니다.",
+      priority: "high",
+    },
+    {
+      text: "각 플러그인/Hook의 역할을 한 줄씩 설명해두세요. " +
+        "6개월 후의 나를 위한 문서화입니다. 지금 기억나는 게 나중에는 안 떠오릅니다.",
+      priority: "medium",
+    },
+    {
+      text: "분기별로 사용하지 않는 플러그인이나 Hook을 정리하세요. " +
+        "생태계가 복잡할수록 불필요한 구성요소가 성능과 안정성을 떨어뜨립니다.",
+      priority: "low",
+    },
+  ],
+
+  macgyver: [
+    {
+      text: "MCP 서버 1~2개만 연동해보세요. Slack이나 Notion을 MCP로 연결하면 " +
+        "curl로 짜던 스크립트가 한 줄로 줄어듭니다. 도구를 쓰는 것도 실력입니다.",
+      priority: "high",
+    },
+    {
+      text: "자동화 스크립트에 주석을 추가하세요. " +
+        "본인만 이해하는 셸 스크립트는 6개월 후 본인에게도 암호문이 됩니다.",
+      priority: "medium",
+    },
+    {
+      text: "플러그인을 하나만 써보세요. superpowers나 hookify 같은 플러그인은 " +
+        "직접 스크립트 짜는 것보다 안정적이고 커뮤니티가 유지보수해줍니다.",
+      priority: "medium",
+    },
+  ],
+
+  daredevil: [
+    {
+      text: "지금 당장 .env 보호 규칙을 CLAUDE.md에 추가하세요. " +
+        "'절대 .env 파일을 커밋하지 마라' 한 줄이면 됩니다. 이것만으로도 대형 사고를 예방합니다.",
+      priority: "high",
+    },
+    {
+      text: "PreToolUse hook으로 민감 파일 수정을 차단하세요. " +
+        "settings.json에 hook 하나 추가하면 Claude가 .env를 건드리려 할 때 자동으로 막아줍니다.",
+      priority: "high",
+    },
+    {
+      text: "API 키는 반드시 환경변수로 분리하고, CLAUDE.md에 이 규칙을 명시하세요. " +
+        "코드에 키를 하드코딩하는 습관은 public repo 전환 시 재앙이 됩니다.",
+      priority: "medium",
     },
   ],
 };

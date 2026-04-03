@@ -8,7 +8,7 @@ export interface DimensionScores {
   security: number;        // 보안 의식
 }
 
-/** 8가지 페르소나 키 */
+/** 13가지 페르소나 키 */
 export type PersonaKey =
   | "puppet-master"
   | "speedrunner"
@@ -17,7 +17,12 @@ export type PersonaKey =
   | "collector"
   | "legislator"
   | "craftsman"
-  | "deep-diver";
+  | "deep-diver"
+  | "evangelist"
+  | "architect"
+  | "huggies"
+  | "macgyver"
+  | "daredevil";
 
 /** 페르소나 정의 */
 export interface PersonaDefinition {
@@ -39,6 +44,22 @@ export interface MdStats {
   hasProjectMd: boolean;
   ruleCount: number;
   keywordHits: Record<string, number>;
+  /** 확장 수집 시 추가 신호 */
+  pluginCount: number;         // 활성화된 플러그인 수
+  mcpServerCount: number;      // 연동된 MCP 서버 수
+  commandCount: number;        // 커스텀 슬래시 명령어 수
+  hookCount: number;           // 설정된 hook 수
+  pluginNames: string[];       // 활성화된 플러그인 이름 목록
+  mcpServerNames: string[];    // MCP 서버 이름 목록
+  commandNames: string[];      // 커스텀 명령어 이름 목록
+  isExpandedInput: boolean;    // 전체 수집 데이터 여부
+  /** 심층 분석 신호 (확장 수집 시) */
+  denyCount: number;           // deny 규칙 수
+  blocksDangerousOps: boolean; // rm -rf, force push 등 차단 여부
+  hookPromptCount: number;     // AI 판단 hook 수
+  hookCommandCount: number;    // 셸 실행 hook 수
+  pluginEnabledRatio: number;  // 플러그인 활성/설치 비율
+  projectMdCount: number;      // 프로젝트별 CLAUDE.md 수
 }
 
 /** 로스팅 아이템 — 찌르는 한 마디 */
