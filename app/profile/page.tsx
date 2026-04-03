@@ -111,17 +111,19 @@ export default function ProfilePage() {
     setRegistered(false);
   };
 
-  // 프로필 저장
+  // 프로필 저장 (미등록 시 INSERT, 등록 후 PATCH)
   const handleSave = async () => {
     setSaving(true);
     try {
+      const method = registered ? "PATCH" : "POST";
       const res = await fetch("/api/leaderboard/profile", {
-        method: "PATCH",
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profile),
       });
       if (res.ok) {
         setSaved(true);
+        setRegistered(true);
         setTimeout(() => router.push("/leaderboard"), 1000);
       }
     } catch { /* ignore */ }
