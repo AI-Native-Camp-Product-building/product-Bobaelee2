@@ -31,19 +31,20 @@ export function analyze(md: string): AnalysisResult {
   // 2. 파일 통계 추출
   const mdStats = extractMdStats(md);
 
-  // 3. 페르소나 분류
-  const persona = classifyPersona(scores, mdStats);
+  // 3. 페르소나 분류 (주 + 부 페르소나)
+  const personaResult = classifyPersona(scores, mdStats);
 
-  // 4. 로스팅, 강점, 처방전 생성
-  const roasts = generateRoasts(persona, mdStats);
-  const strengths = generateStrengths(persona, mdStats);
-  const prescriptions = generatePrescriptions(persona, mdStats);
+  // 4. 로스팅, 강점, 처방전 생성 (primary 기반)
+  const roasts = generateRoasts(personaResult.primary, mdStats);
+  const strengths = generateStrengths(personaResult.primary, mdStats);
+  const prescriptions = generatePrescriptions(personaResult.primary, mdStats);
 
   // 5. .md력 점수 산출
   const mdPower = calculateMdPower(scores, mdStats);
 
   return {
-    persona,
+    persona: personaResult.primary,
+    secondaryPersona: personaResult.secondary,
     scores,
     roasts,
     strengths,

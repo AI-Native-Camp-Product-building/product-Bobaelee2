@@ -67,6 +67,11 @@ const ALL_PERSONA_KEYS: PersonaKey[] = [
   "legislator",
   "craftsman",
   "deep-diver",
+  "evangelist",
+  "architect",
+  "huggies",
+  "macgyver",
+  "daredevil",
 ];
 
 describe("analyze() — 통합 테스트", () => {
@@ -81,6 +86,7 @@ describe("analyze() — 통합 테스트", () => {
     const result = analyze(POWER_USER_MD);
 
     expect(result.persona).toBeDefined();
+    expect(result).toHaveProperty("secondaryPersona");
     expect(result.scores).toBeDefined();
     expect(result.roasts).toBeDefined();
     expect(result.strengths).toBeDefined();
@@ -94,7 +100,7 @@ describe("analyze() — 통합 테스트", () => {
     expect(result.scores).toHaveProperty("automation");
     expect(result.scores).toHaveProperty("control");
     expect(result.scores).toHaveProperty("toolDiversity");
-    expect(result.scores).toHaveProperty("maturity");
+    expect(result.scores).toHaveProperty("contextAwareness");
     expect(result.scores).toHaveProperty("collaboration");
     expect(result.scores).toHaveProperty("security");
   });

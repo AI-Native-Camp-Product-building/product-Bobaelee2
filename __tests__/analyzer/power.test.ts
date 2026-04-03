@@ -3,7 +3,7 @@ import { calculateMdPower } from "@/lib/analyzer/power";
 import type { DimensionScores, MdStats } from "@/lib/types";
 
 function makeScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
-  return { automation: 0, control: 0, toolDiversity: 0, maturity: 0, collaboration: 0, security: 0, ...overrides };
+  return { automation: 0, control: 0, toolDiversity: 0, contextAwareness: 0, collaboration: 0, security: 0, ...overrides };
 }
 
 function makeStats(overrides: Partial<MdStats> = {}): MdStats {
@@ -26,14 +26,14 @@ describe("calculateMdPower", () => {
   });
 
   it("6개 차원 합계만으로 기본 점수가 계산된다", () => {
-    const scores = makeScores({ automation: 50, control: 50, toolDiversity: 50, maturity: 50, collaboration: 50, security: 50 });
+    const scores = makeScores({ automation: 50, control: 50, toolDiversity: 50, contextAwareness: 50, collaboration: 50, security: 50 });
     const result = calculateMdPower(scores, makeStats());
     expect(result.score).toBe(300);
     expect(result.tier).toBe("sapling");
   });
 
   it("확장 입력 시 에코시스템 보너스가 적용된다", () => {
-    const scores = makeScores({ automation: 50, control: 50, toolDiversity: 50, maturity: 50, collaboration: 50, security: 50 });
+    const scores = makeScores({ automation: 50, control: 50, toolDiversity: 50, contextAwareness: 50, collaboration: 50, security: 50 });
     const stats = makeStats({ isExpandedInput: true, pluginCount: 5, mcpServerCount: 3, commandCount: 4, hookCount: 3 });
     const result = calculateMdPower(scores, stats);
     // 기본 300 + 에코(50+45+20+15) = 300 + 130 = 430
@@ -42,7 +42,7 @@ describe("calculateMdPower", () => {
   });
 
   it("심층 보너스가 적용된다", () => {
-    const scores = makeScores({ automation: 80, control: 60, toolDiversity: 80, maturity: 80, collaboration: 60, security: 80 });
+    const scores = makeScores({ automation: 80, control: 60, toolDiversity: 80, contextAwareness: 80, collaboration: 60, security: 80 });
     const stats = makeStats({
       isExpandedInput: true, pluginCount: 8, mcpServerCount: 4, commandCount: 8, hookCount: 4,
       blocksDangerousOps: true, hookPromptCount: 1, hookCommandCount: 3, projectMdCount: 3,
@@ -54,7 +54,7 @@ describe("calculateMdPower", () => {
   });
 
   it("최대 1000을 초과하지 않는다", () => {
-    const scores = makeScores({ automation: 100, control: 100, toolDiversity: 100, maturity: 100, collaboration: 100, security: 100 });
+    const scores = makeScores({ automation: 100, control: 100, toolDiversity: 100, contextAwareness: 100, collaboration: 100, security: 100 });
     const stats = makeStats({
       isExpandedInput: true, pluginCount: 20, mcpServerCount: 10, commandCount: 20, hookCount: 10,
       blocksDangerousOps: true, hookPromptCount: 5, hookCommandCount: 5, projectMdCount: 10,
@@ -82,7 +82,7 @@ describe("calculateMdPower", () => {
         automation: perDim + (remainder > 0 ? 1 : 0),
         control: perDim + (remainder > 1 ? 1 : 0),
         toolDiversity: perDim + (remainder > 2 ? 1 : 0),
-        maturity: perDim + (remainder > 3 ? 1 : 0),
+        contextAwareness: perDim + (remainder > 3 ? 1 : 0),
         collaboration: perDim + (remainder > 4 ? 1 : 0),
         security: perDim + (remainder > 5 ? 1 : 0),
       });

@@ -15,20 +15,11 @@ const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 function universalChecks(stats: MdStats): PrescriptionItem[] {
   const items: PrescriptionItem[] = [];
 
-  // memory 파일 없음
+  // 컨텍스트 관리 미흡
   if (!stats.hasMemory) {
     items.push({
-      text: "Memory 설정을 추가하세요. `~/.claude/CLAUDE.md`에 사용자 선호도와 컨텍스트를 저장하면 " +
-        "매 대화마다 같은 설명을 반복하지 않아도 됩니다.",
-      priority: "high",
-    });
-  }
-
-  // hook 없음
-  if (!stats.hasHooks) {
-    items.push({
-      text: "Hook을 설정해보세요. PreToolUse/PostToolUse hook으로 반복 작업을 자동화하면 " +
-        "Claude 사용 경험이 크게 향상됩니다.",
+      text: "컨텍스트 관리 방법을 고민해보세요. `~/.claude/CLAUDE.md`에 사용자 선호도와 " +
+        "프로젝트 맥락을 저장하면 매 대화마다 같은 설명을 반복하지 않아도 됩니다.",
       priority: "high",
     });
   }
@@ -51,12 +42,30 @@ function universalChecks(stats: MdStats): PrescriptionItem[] {
     });
   }
 
+  // 규칙이 너무 많음
+  if (stats.ruleCount > 20) {
+    items.push({
+      text: "규칙이 20개 이상이면 Claude가 일부를 무시할 수 있습니다. " +
+        "핵심 규칙만 남기고 나머지는 `.claude/rules/`로 분리하세요.",
+      priority: "high",
+    });
+  }
+
   // 너무 짧음
   if (stats.totalLines < 10) {
     items.push({
       text: "CLAUDE.md를 좀 더 채워주세요. 현재 너무 짧아 Claude가 맥락을 이해하기 어렵습니다. " +
         "최소한 역할, 언어, 주요 도구, 금지 사항 정도는 명시하는 것을 권장합니다.",
       priority: "high",
+    });
+  }
+
+  // 너무 길음
+  if (stats.totalLines > 150) {
+    items.push({
+      text: "CLAUDE.md가 150줄을 넘었습니다. Claude가 모든 지시를 따르기 어려울 수 있으니 " +
+        "`@import`나 `.claude/rules/` 분리를 검토하세요.",
+      priority: "medium",
     });
   }
 
@@ -67,36 +76,6 @@ function universalChecks(stats: MdStats): PrescriptionItem[] {
         "섹션으로 나누면 Claude가 관련 정보를 더 쉽게 찾아 적용합니다.",
       priority: "medium",
     });
-  }
-
-  // 확장 수집 기반 추가 체크
-  if (stats.isExpandedInput) {
-    // MCP 서버 없음
-    if (stats.mcpServerCount === 0) {
-      items.push({
-        text: "MCP 서버를 연동해보세요. Slack, Notion, GitHub 등 자주 쓰는 도구를 " +
-          "MCP로 연결하면 Claude가 직접 도구를 사용할 수 있어 생산성이 크게 높아집니다.",
-        priority: "high",
-      });
-    }
-
-    // 커스텀 명령어 없음
-    if (stats.commandCount === 0) {
-      items.push({
-        text: "커스텀 슬래시 명령어를 만들어보세요. `~/.claude/commands/` 폴더에 " +
-          "자주 하는 작업을 명령어로 저장하면 `/명령어`로 즉시 실행할 수 있습니다.",
-        priority: "medium",
-      });
-    }
-
-    // 플러그인 없음
-    if (stats.pluginCount === 0) {
-      items.push({
-        text: "Claude Code 플러그인을 설치해보세요. superpowers, session-wrap, hookify 등 " +
-          "커뮤니티 플러그인이 워크플로우를 크게 향상시킵니다.",
-        priority: "medium",
-      });
-    }
   }
 
   return items;

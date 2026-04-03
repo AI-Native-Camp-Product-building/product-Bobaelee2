@@ -20,7 +20,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
       automation: 5,
       control: 6,
       toolDiversity: 4,
-      maturity: 7,
+      contextAwareness: 7,
       collaboration: 3,
       security: 5,
     },
@@ -201,18 +201,11 @@ describe("generatePrescriptions — 처방전 생성", () => {
     }
   });
 
-  it("hasMemory가 false이면 memory 관련 처방이 포함되어야 한다", () => {
+  it("hasMemory가 false이면 컨텍스트 관리 관련 처방이 포함되어야 한다", () => {
     const stats = makeMdStats({ hasMemory: false });
     const prescriptions = generatePrescriptions("craftsman", stats);
     const allText = prescriptions.map((p) => p.text).join(" ");
-    expect(allText.toLowerCase()).toContain("memory");
-  });
-
-  it("hasHooks가 false이면 hook 관련 처방이 포함되어야 한다", () => {
-    const stats = makeMdStats({ hasHooks: false });
-    const prescriptions = generatePrescriptions("minimalist", stats);
-    const allText = prescriptions.map((p) => p.text).join(" ");
-    expect(allText.toLowerCase()).toMatch(/hook/i);
+    expect(allText).toMatch(/컨텍스트/i);
   });
 
   it("totalLines < 10이면 high priority 처방이 포함되어야 한다", () => {

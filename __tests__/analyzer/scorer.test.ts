@@ -125,9 +125,27 @@ describe("calculateScores", () => {
     expect(scores).toHaveProperty("automation");
     expect(scores).toHaveProperty("control");
     expect(scores).toHaveProperty("toolDiversity");
-    expect(scores).toHaveProperty("maturity");
+    expect(scores).toHaveProperty("contextAwareness");
     expect(scores).toHaveProperty("collaboration");
     expect(scores).toHaveProperty("security");
+  });
+});
+
+describe("calculateScores — 고유 신호 카운팅", () => {
+  it("같은 키워드 반복은 점수를 올리지 않아야 한다", () => {
+    const repeated = "hook hook hook hook hook hook hook hook hook hook";
+    const diverse = "hook, cron, 자동 배포, bot, webhook";
+    const repeatedScore = calculateScores(repeated);
+    const diverseScore = calculateScores(diverse);
+    expect(diverseScore.automation).toBeGreaterThan(repeatedScore.automation);
+  });
+
+  it("서로 다른 신호가 많을수록 점수가 높아야 한다", () => {
+    const few = ".env 보호";
+    const many = ".env 보호, API 키 금지, 민감 정보, 비밀번호, 커밋 금지, 권한 관리, 암호화, 보안";
+    const fewScore = calculateScores(few);
+    const manyScore = calculateScores(many);
+    expect(manyScore.security).toBeGreaterThan(fewScore.security);
   });
 });
 

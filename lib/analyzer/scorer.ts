@@ -5,6 +5,7 @@ import type { DimensionScores, MdStats } from "@/lib/types";
 import {
   DIMENSION_PATTERNS,
   countPatternMatches,
+  countUniqueSignals,
   extractToolNames,
   isExpandedInput,
   extractEnabledPlugins,
@@ -15,17 +16,13 @@ import {
 } from "./patterns";
 
 /**
- * 각 차원의 정규화 기준값 (이 횟수면 100점 만점)
- * 실제 CLAUDE.md 샘플 기반으로 설정한 임계값
+ * 각 차원의 정규화 기준값 — 패턴 수의 70%를 만점 기준으로 자동 계산
+ * 고유 신호 카운팅이므로 만점 = 패턴 종류 수, 70%는 일부 패턴이 해당 없는 경우 허용
  */
-const THRESHOLDS: Record<keyof DimensionScores, number> = {
-  automation: 10,
-  control: 12,
-  toolDiversity: 8,
-  maturity: 15,
-  collaboration: 6,
-  security: 8,
-};
+const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
+for (const dim of Object.keys(DIMENSION_PATTERNS) as (keyof DimensionScores)[]) {
+  THRESHOLDS[dim] = Math.ceil(DIMENSION_PATTERNS[dim].length * 0.7);
+}
 
 /**
  * 원시 매칭 횟수를 0~100 점수로 정규화한다
@@ -48,7 +45,7 @@ export function calculateScores(md: string): DimensionScores {
       automation: 0,
       control: 0,
       toolDiversity: 0,
-      maturity: 0,
+      contextAwareness: 0,
       collaboration: 0,
       security: 0,
     };
@@ -59,7 +56,7 @@ export function calculateScores(md: string): DimensionScores {
 
   for (const dim of dimensions) {
     const patterns = DIMENSION_PATTERNS[dim];
-    const count = countPatternMatches(md, patterns);
+    const count = countUniqueSignals(md, patterns);
     result[dim] = normalize(count, THRESHOLDS[dim]);
   }
 
@@ -68,33 +65,27 @@ export function calculateScores(md: string): DimensionScores {
     const sig = extractExpandedSignals(md);
 
     // 보안: deny 규칙, 위험 명령어 차단, PreToolUse hook
-    // 기준: best-practice 레포 — deny에 .env, secrets/**, rm * 차단
     if (sig.blocksDangerousOps) result.security = Math.min(100, result.security + 12);
     if (sig.hasDenyRules) result.security = Math.min(100, result.security + Math.min(sig.denyCount * 3, 9));
     if (sig.hasPreToolUseHook) result.security = Math.min(100, result.security + 6);
 
     // 자동화: PostToolUse hook, Session hook, hook 유형 다양성
-    // 기준: everything-claude-code — hooks + scripts + cross-platform
     if (sig.hasPostToolUseHook) result.automation = Math.min(100, result.automation + 8);
     if (sig.hasSessionHooks) result.automation = Math.min(100, result.automation + 5);
     if (sig.hookTypeCommandCount >= 2) result.automation = Math.min(100, result.automation + 6);
-    // prompt 타입 hook = AI 판단 활용 → 성숙도
-    if (sig.hookTypePromptCount >= 1) result.maturity = Math.min(100, result.maturity + 5);
+    // prompt 타입 hook = AI 판단 활용 → 컨텍스트 관리
+    if (sig.hookTypePromptCount >= 1) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
 
-    // 성숙도: statusLine, 마켓플레이스, 플러그인 선별 비율, 프로젝트별 CLAUDE.md
-    // 기준: best-practice — CLAUDE.md < 200줄, /compact 50%에서 실행
-    if (sig.hasStatusLine) result.maturity = Math.min(100, result.maturity + 5);
-    if (sig.hasMultipleMarketplaces) result.maturity = Math.min(100, result.maturity + 3);
+    // 컨텍스트 관리: statusLine, 마켓플레이스, 플러그인 선별 비율, 프로젝트별 CLAUDE.md
+    if (sig.hasStatusLine) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
+    if (sig.hasMultipleMarketplaces) result.contextAwareness = Math.min(100, result.contextAwareness + 3);
     if (sig.pluginEnabledRatio > 0 && sig.pluginEnabledRatio < 0.5) {
-      result.maturity = Math.min(100, result.maturity + 6);
+      result.contextAwareness = Math.min(100, result.contextAwareness + 6);
     }
-    if (sig.projectMdCount >= 2) result.maturity = Math.min(100, result.maturity + 6);
+    if (sig.projectMdCount >= 2) result.contextAwareness = Math.min(100, result.contextAwareness + 6);
 
     // 제어: defaultMode가 auto가 아님 = 수동 승인 선호
     if (!sig.defaultModeIsAuto) result.control = Math.min(100, result.control + 6);
-
-    // 협업: Slack/GitHub 플러그인만으로는 보너스 안 줌 (사실상 기본 설정)
-    // 협업 키워드(PR, 리뷰, 팀, 컨벤션)가 실제로 많아야 진짜 협업 지향
 
     // 도구 다양성: MCP 서버 수 반영
     const mcpServers = extractMcpServerNames(md);

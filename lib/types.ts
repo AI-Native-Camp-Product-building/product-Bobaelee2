@@ -1,11 +1,11 @@
 /** 분석 차원 6개 — 각 0~100 점수 */
 export interface DimensionScores {
-  automation: number;      // 자동화 성향
-  control: number;         // 제어 성향
-  toolDiversity: number;   // 도구 다양성
-  maturity: number;        // MD 성숙도
-  collaboration: number;   // 협업 지향
-  security: number;        // 보안 의식
+  automation: number;           // 자동화 성향
+  control: number;              // 제어 성향
+  toolDiversity: number;        // 도구 다양성
+  contextAwareness: number;     // 컨텍스트 관리 (구 maturity)
+  collaboration: number;        // 협업 지향
+  security: number;             // 보안 의식
 }
 
 /** 13가지 페르소나 키 */
@@ -99,9 +99,16 @@ export interface MdPower {
   tierTagline: string;
 }
 
+/** 페르소나 분류 결과: 주 + 부 성향 */
+export interface PersonaResult {
+  primary: PersonaKey;
+  secondary: PersonaKey | null;  // 적합도 차이가 크면 null
+}
+
 /** 분석 결과 전체 */
 export interface AnalysisResult {
-  persona: PersonaKey;
+  persona: PersonaKey;                    // 주 페르소나 (하위호환)
+  secondaryPersona: PersonaKey | null;    // 부 페르소나
   scores: DimensionScores;
   roasts: RoastItem[];
   strengths: StrengthItem[];

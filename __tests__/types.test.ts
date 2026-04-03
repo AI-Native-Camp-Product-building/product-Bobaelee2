@@ -52,7 +52,7 @@ describe("DimensionScores", () => {
       automation: 80,
       control: 60,
       toolDiversity: 70,
-      maturity: 90,
+      contextAwareness: 90,
       collaboration: 50,
       security: 75,
     };
@@ -61,7 +61,7 @@ describe("DimensionScores", () => {
     expect(scores.automation).toBeDefined();
     expect(scores.control).toBeDefined();
     expect(scores.toolDiversity).toBeDefined();
-    expect(scores.maturity).toBeDefined();
+    expect(scores.contextAwareness).toBeDefined();
     expect(scores.collaboration).toBeDefined();
     expect(scores.security).toBeDefined();
   });
@@ -71,7 +71,7 @@ describe("DimensionScores", () => {
       automation: 0,
       control: 100,
       toolDiversity: 50,
-      maturity: 25,
+      contextAwareness: 25,
       collaboration: 75,
       security: 10,
     };
@@ -140,11 +140,12 @@ describe("AnalysisResult", () => {
   it("모든 필수 필드를 가져야 한다", () => {
     const result: AnalysisResult = {
       persona: "puppet-master",
+      secondaryPersona: null,
       scores: {
         automation: 90,
         control: 60,
         toolDiversity: 80,
-        maturity: 85,
+        contextAwareness: 85,
         collaboration: 70,
         security: 65,
       },
@@ -193,11 +194,12 @@ describe("SavedResult", () => {
       id: "abc-123",
       createdAt: "2026-04-02T00:00:00Z",
       persona: "minimalist",
+      secondaryPersona: null,
       scores: {
         automation: 10,
         control: 10,
         toolDiversity: 10,
-        maturity: 10,
+        contextAwareness: 10,
         collaboration: 10,
         security: 10,
       },

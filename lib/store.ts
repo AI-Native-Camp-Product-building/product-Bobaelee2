@@ -41,6 +41,7 @@ export async function saveResult(
   await supabase.from("results").insert({
     id,
     persona: result.persona,
+    secondary_persona: result.secondaryPersona,
     scores: result.scores,
     roasts: result.roasts,
     strengths: result.strengths,
@@ -76,12 +77,21 @@ export async function getResult(id: string): Promise<SavedResult | null> {
 
   if (error || !data) return null;
 
-  const scores = data.scores;
+  // DB 호환: 기존 결과의 maturity를 contextAwareness로 매핑
+  const rawScores = data.scores;
+  const scores = {
+    ...rawScores,
+    contextAwareness: rawScores.contextAwareness ?? rawScores.maturity ?? 0,
+  };
+  // maturity 키가 남아있으면 제거 (타입 정합성)
+  if ("maturity" in scores) delete (scores as Record<string, unknown>).maturity;
+
   const mdStats = data.md_stats;
 
   return {
     id: data.id,
     persona: data.persona as PersonaKey,
+    secondaryPersona: (data as Record<string, unknown>).secondary_persona as PersonaKey | null ?? null,
     scores,
     roasts: data.roasts,
     strengths: data.strengths,

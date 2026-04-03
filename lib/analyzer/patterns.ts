@@ -31,7 +31,7 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /주의|경고|WARNING/gi,
   ],
 
-  // 도구 다양성 — 사용하는 외부 서비스/툴 종류
+  // 도구 다양성 — 사용하는 외부 서비스/SaaS 종류 (프로그래밍 언어/프레임워크 제외)
   toolDiversity: [
     /slack/gi,
     /notion/gi,
@@ -45,23 +45,22 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /confluence/gi,
     /docker/gi,
     /aws|gcp|azure/gi,
-    /postgres|mysql|redis/gi,
-    /graphql|rest\s*api/gi,
-    /next\.?js|react|vue|svelte/gi,
-    /python|node|go|rust/gi,
-    /terraform|kubernetes|k8s/gi,
+    /sentry|datadog|grafana/gi,
+    /stripe|paddle/gi,
   ],
 
-  // MD 성숙도 — 구조화 수준, 메모리·컨텍스트 관리 여부
-  maturity: [
-    /^#{1,3}\s+/gm,
+  // 컨텍스트 관리 — 메모리, 세션, 피드백 등 컨텍스트 관리 성향
+  contextAwareness: [
     /memory|메모리/gi,
     /프로젝트.*CLAUDE|project.*claude/gi,
-    /피드백|feedback/gi,
     /컨텍스트|context/gi,
     /세션|session/gi,
-    /```/g,
-    /\|.*\|.*\|/g,
+    /피드백|feedback/gi,
+    /\.claude\/rules/gi,
+    /@[\.\~\/][^\s]+\.md/g,
+    /CLAUDE\.local\.md/gi,
+    /compact|컴팩트/gi,
+    /subagent|서브에이전트|task\(/gi,
   ],
 
   // 협업 지향 — 팀워크, 코드 리뷰, 컨벤션 관련
@@ -90,7 +89,7 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
 };
 
 /**
- * 텍스트에서 패턴 목록의 총 매칭 횟수를 센다
+ * 텍스트에서 패턴 목록의 총 매칭 횟수를 센다 (통계 표시용)
  * @param text 분석할 텍스트
  * @param patterns 정규식 패턴 배열
  * @returns 총 매칭 횟수
@@ -106,6 +105,24 @@ export function countPatternMatches(text: string, patterns: RegExp[]): number {
     if (matches) {
       total += matches.length;
     }
+  }
+  return total;
+}
+
+/**
+ * 텍스트에서 매칭되는 고유 패턴 수를 센다 (점수 산출용)
+ * 각 패턴은 매칭 여부(0 또는 1)만 카운트 — 반복 횟수 무시
+ * @param text 분석할 텍스트
+ * @param patterns 정규식 패턴 배열
+ * @returns 매칭된 고유 패턴 수
+ */
+export function countUniqueSignals(text: string, patterns: RegExp[]): number {
+  if (!text) return 0;
+
+  let total = 0;
+  for (const pattern of patterns) {
+    const cloned = new RegExp(pattern.source, pattern.flags);
+    if (cloned.test(text)) total += 1;
   }
   return total;
 }

@@ -73,6 +73,7 @@ export default async function ResultPage({ params }: Props) {
   }
 
   const personaDef = PERSONAS[result.persona];
+  const secondaryDef = result.secondaryPersona ? PERSONAS[result.secondaryPersona] : null;
   const compat = getCompatibility(result.persona);
 
   return (
@@ -80,6 +81,15 @@ export default async function ResultPage({ params }: Props) {
       <div className="max-w-lg mx-auto flex flex-col gap-8">
         {/* 페르소나 히어로 */}
         <ResultHero persona={personaDef} />
+
+        {/* 부 페르소나 (있을 경우) */}
+        {secondaryDef && (
+          <div className="text-center -mt-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-bg-card text-sm text-claude-light/70">
+              + {secondaryDef.emoji} {secondaryDef.nameKo} 기질
+            </span>
+          </div>
+        )}
 
         {/* .md력 측정 결과 */}
         <MdPowerSection
