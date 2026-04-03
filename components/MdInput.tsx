@@ -12,7 +12,7 @@ interface MdInputProps {
   disabled?: boolean;
 }
 
-type OS = "mac" | "windows" | "linux";
+type OS = "mac" | "windows";
 
 /** Mac: pbcopy */
 const MAC_CMD = `pbcopy < <(
@@ -69,22 +69,17 @@ $out -replace '[\\w.+-]+@[\\w.-]+\\.[a-zA-Z]{2,}','***EMAIL***' \`
   -replace 'AKfycb[\\w-]+','***DEPLOY_ID***' \`
   -replace 'ntn_[\\w-]+','***NOTION***' | Set-Clipboard`;
 
-/** Linux: xclip */
-const LINUX_CMD = MAC_CMD.replace("pbcopy", "xclip -selection clipboard");
-
-const COMMANDS: Record<OS, string> = { mac: MAC_CMD, windows: WIN_CMD, linux: LINUX_CMD };
-const OS_LABELS: Record<OS, string> = { mac: "Mac", windows: "Windows", linux: "Linux" };
+const COMMANDS: Record<OS, string> = { mac: MAC_CMD, windows: WIN_CMD };
+const OS_LABELS: Record<OS, string> = { mac: "Mac", windows: "Windows" };
 const PASTE_HINT: Record<OS, string> = {
   mac: "⌘V",
   windows: "Ctrl+V",
-  linux: "Ctrl+Shift+V",
 };
 
 function detectOS(): OS {
   if (typeof navigator === "undefined") return "mac";
   const ua = navigator.userAgent.toLowerCase();
   if (ua.includes("win")) return "windows";
-  if (ua.includes("linux")) return "linux";
   return "mac";
 }
 
@@ -117,7 +112,7 @@ export default function MdInput({ value, onChange, disabled }: MdInputProps) {
           </span>
           {/* OS 토글 */}
           <div className="flex rounded-md overflow-hidden border border-claude-light/20">
-            {(["mac", "windows", "linux"] as OS[]).map((o) => (
+            {(["mac", "windows"] as OS[]).map((o) => (
               <button
                 key={o}
                 type="button"
