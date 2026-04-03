@@ -53,7 +53,9 @@ export default function LeaderboardPage() {
       <div className="max-w-lg mx-auto flex flex-col gap-6">
         {/* 헤더 */}
         <div className="text-center">
-          <h1 className="text-3xl font-black text-compat-gold">🏆 .md력 리더보드</h1>
+          <h1 className="text-3xl font-black tagline-sparkle inline-block">
+            <span className="tagline-gradient">🏆 .md력 리더보드</span>
+          </h1>
           <p className="text-sm text-claude-light/50 mt-1">
             {data ? `${data.totalCount}명 참여 중` : "불러오는 중..."}
           </p>
