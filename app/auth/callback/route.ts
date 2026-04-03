@@ -1,6 +1,6 @@
 /**
  * GitHub OAuth 콜백 핸들러
- * Supabase Auth가 리다이렉트한 code를 세션으로 교환
+ * Supabase Auth PKCE flow — code를 세션으로 교환
  */
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
@@ -8,7 +8,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "/profile";
 
   if (code) {
     const supabase = await createSupabaseServer();
@@ -17,8 +17,10 @@ export async function GET(request: Request) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+
+    console.error("Auth exchange error:", error.message);
   }
 
-  // 에러 시 메인으로 리다이렉트
-  return NextResponse.redirect(`${origin}/?error=auth`);
+  // code 없거나 교환 실패 시
+  return NextResponse.redirect(`${origin}/profile?error=auth`);
 }

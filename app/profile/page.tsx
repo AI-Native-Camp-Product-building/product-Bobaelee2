@@ -32,8 +32,19 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // 세션 확인
+  // 세션 확인 (onAuthStateChange로 OAuth 리다이렉트 후 세션도 감지)
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user && !user) {
+        const u = session.user;
+        setUser({
+          id: u.id,
+          name: u.user_metadata?.name ?? u.email ?? "",
+          avatarUrl: u.user_metadata?.avatar_url ?? "",
+        });
+      }
+    });
+
     supabase.auth.getUser().then(({ data: { user: u } }) => {
       if (u) {
         setUser({
@@ -68,6 +79,8 @@ export default function ProfilePage() {
         setLoading(false);
       }
     });
+
+    return () => { subscription.unsubscribe(); };
   }, []);
 
   // GitHub 로그인
