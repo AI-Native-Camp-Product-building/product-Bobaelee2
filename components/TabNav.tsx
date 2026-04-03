@@ -11,6 +11,7 @@ const TABS = [
   { href: "/", label: "🔬 .mdTI" },
   { href: "/leaderboard", label: "🏆 .md력" },
   { href: "/profile", label: "👤 내 정보" },
+  { href: "/contact", label: "✉️ Contact" },
 ];
 
 export default function TabNav() {

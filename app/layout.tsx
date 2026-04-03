@@ -22,14 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} bg-bg-primary text-claude-cream antialiased`}>
         <TabNav />
         {children}
-        <footer className="w-full text-center py-6">
-          <a
-            href="/contact"
-            className="text-xs text-claude-light/30 hover:text-claude-orange transition-colors"
-          >
-            Contact
-          </a>
-        </footer>
       </body>
     </html>
   );
