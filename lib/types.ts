@@ -43,7 +43,8 @@ export interface MdStats {
   hasHooks: boolean;
   hasProjectMd: boolean;
   ruleCount: number;
-  keywordHits: Record<string, number>;
+  keywordHits: Record<string, number>;          // 반복 카운트 (통계 표시용 — "총 23회 출현")
+  keywordUniqueHits: Record<string, number>;    // 고유 신호 수 (점수 산출 기준 — "7종류 감지")
   /** 확장 수집 시 추가 신호 */
   pluginCount: number;         // 활성화된 플러그인 수
   mcpServerCount: number;      // 연동된 MCP 서버 수

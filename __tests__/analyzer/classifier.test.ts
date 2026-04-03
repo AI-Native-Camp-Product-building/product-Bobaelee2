@@ -13,6 +13,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hasProjectMd: false,
     ruleCount: 3,
     keywordHits: {},
+    keywordUniqueHits: {},
     pluginCount: 0,
     mcpServerCount: 0,
     commandCount: 0,

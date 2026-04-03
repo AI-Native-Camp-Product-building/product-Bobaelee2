@@ -18,10 +18,17 @@ import {
 /**
  * 각 차원의 정규화 기준값 — 패턴 수의 70%를 만점 기준으로 자동 계산
  * 고유 신호 카운팅이므로 만점 = 패턴 종류 수, 70%는 일부 패턴이 해당 없는 경우 허용
+ * contextAwareness만 50%: 고급 기능 패턴(.claude/rules, @import, subagent 등)이 많아
+ * 일반 사용자가 7개를 모두 쓸 가능성이 낮음
  */
+const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
+  contextAwareness: 0.5,
+};
+const DEFAULT_RATIO = 0.7;
 const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
 for (const dim of Object.keys(DIMENSION_PATTERNS) as (keyof DimensionScores)[]) {
-  THRESHOLDS[dim] = Math.ceil(DIMENSION_PATTERNS[dim].length * 0.7);
+  const ratio = THRESHOLD_RATIO[dim] ?? DEFAULT_RATIO;
+  THRESHOLDS[dim] = Math.ceil(DIMENSION_PATTERNS[dim].length * ratio);
 }
 
 /**
@@ -112,6 +119,7 @@ export function extractMdStats(md: string): MdStats {
       hasProjectMd: false,
       ruleCount: 0,
       keywordHits: {},
+      keywordUniqueHits: {},
       pluginCount: 0,
       mcpServerCount: 0,
       commandCount: 0,
@@ -155,9 +163,15 @@ export function extractMdStats(md: string): MdStats {
   const ruleCount = ruleLines.length;
 
   // 각 차원별 히트 수 기록
+  // keywordHits: 반복 카운트 — 통계 UI 표시용 ("총 23회 출현")
+  // keywordUniqueHits: 고유 신호 수 — 점수 산출 기준과 일치 ("7종류 감지")
+  // 두 카운팅을 분리하는 이유: 점수는 다양성(고유 신호)으로 매기되,
+  // B2B 분석에서는 반복 빈도(강조도)도 의미 있는 데이터이므로 둘 다 저장
   const keywordHits: Record<string, number> = {};
+  const keywordUniqueHits: Record<string, number> = {};
   for (const dim of Object.keys(DIMENSION_PATTERNS)) {
     keywordHits[dim] = countPatternMatches(md, DIMENSION_PATTERNS[dim]);
+    keywordUniqueHits[dim] = countUniqueSignals(md, DIMENSION_PATTERNS[dim]);
   }
 
   // 확장 수집 신호 파싱
@@ -179,6 +193,7 @@ export function extractMdStats(md: string): MdStats {
     hasProjectMd,
     ruleCount,
     keywordHits,
+    keywordUniqueHits,
     pluginCount: pluginNames.length,
     mcpServerCount: mcpServerNames.length,
     commandCount: commandNames.length,

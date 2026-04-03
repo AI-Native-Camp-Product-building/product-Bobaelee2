@@ -9,7 +9,7 @@ function makeScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
 function makeStats(overrides: Partial<MdStats> = {}): MdStats {
   return {
     totalLines: 0, sectionCount: 0, toolNames: [], hasMemory: false, hasHooks: false,
-    hasProjectMd: false, ruleCount: 0, keywordHits: {},
+    hasProjectMd: false, ruleCount: 0, keywordHits: {}, keywordUniqueHits: {},
     pluginCount: 0, mcpServerCount: 0, commandCount: 0, hookCount: 0,
     pluginNames: [], mcpServerNames: [], commandNames: [], isExpandedInput: false,
     denyCount: 0, blocksDangerousOps: false, hookPromptCount: 0, hookCommandCount: 0,

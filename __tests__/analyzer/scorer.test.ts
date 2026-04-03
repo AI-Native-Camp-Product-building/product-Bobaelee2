@@ -201,4 +201,23 @@ describe("extractMdStats", () => {
     expect(stats.keywordHits).toHaveProperty("security");
     expect(stats.keywordHits).toHaveProperty("control");
   });
+
+  it("keywordUniqueHits에 6개 차원 고유 신호 수가 포함되어야 한다", () => {
+    const stats = extractMdStats(POWER_USER_MD);
+    expect(stats.keywordUniqueHits).toHaveProperty("automation");
+    expect(stats.keywordUniqueHits).toHaveProperty("security");
+    expect(stats.keywordUniqueHits).toHaveProperty("contextAwareness");
+  });
+
+  it("keywordUniqueHits는 keywordHits 이하여야 한다 (고유 ≤ 반복)", () => {
+    const stats = extractMdStats(POWER_USER_MD);
+    for (const dim of Object.keys(stats.keywordUniqueHits)) {
+      expect(stats.keywordUniqueHits[dim]).toBeLessThanOrEqual(stats.keywordHits[dim]);
+    }
+  });
+
+  it("빈 텍스트에서 keywordUniqueHits는 빈 객체여야 한다", () => {
+    const stats = extractMdStats("");
+    expect(stats.keywordUniqueHits).toEqual({});
+  });
 });
