@@ -86,21 +86,30 @@ export async function POST(request: Request) {
     return Response.json({ error: "분석 결과를 찾을 수 없습니다" }, { status: 404 });
   }
 
-  // 프로필 upsert
-  const { error: profileError } = await supabase
+  // 기존 프로필 확인 — 있으면 건드리지 않음 (점수만 갱신)
+  const { data: existingProfile } = await supabase
     .from("leaderboard_profiles")
-    .upsert({
-      user_id: user.id,
-      nickname: finalNickname,
-      avatar_url: user.user_metadata?.avatar_url ?? null,
-      title: title ?? null,
-      organization: organization ?? null,
-      role: role ?? "non-dev",
-      linkedin_url: linkedinUrl ?? null,
-    });
+    .select("user_id")
+    .eq("user_id", user.id)
+    .single();
 
-  if (profileError) {
-    return Response.json({ error: "프로필 저장 실패" }, { status: 500 });
+  if (!existingProfile) {
+    // 첫 등록: 프로필 생성
+    const { error: profileError } = await supabase
+      .from("leaderboard_profiles")
+      .insert({
+        user_id: user.id,
+        nickname: finalNickname,
+        avatar_url: user.user_metadata?.avatar_url ?? null,
+        title: title ?? null,
+        organization: organization ?? null,
+        role: role ?? "non-dev",
+        linkedin_url: linkedinUrl ?? null,
+      });
+
+    if (profileError) {
+      return Response.json({ error: "프로필 저장 실패" }, { status: 500 });
+    }
   }
 
   // 기존 점수 조회 (prev_power용)
