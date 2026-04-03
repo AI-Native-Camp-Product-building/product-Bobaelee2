@@ -85,7 +85,7 @@ export default function LeaderboardPage() {
             <p className="text-4xl mb-3">🏜️</p>
             <p className="text-claude-cream font-bold">아직 아무도 등록하지 않았어요</p>
             <p className="text-sm text-claude-light/50 mt-1">
-              MD 분석 후 리더보드에 등록해보세요!
+              .md 분석 후 리더보드에 등록하세요!
             </p>
           </div>
         ) : (
