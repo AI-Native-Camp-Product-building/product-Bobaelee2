@@ -72,9 +72,12 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { resultId, nickname, title, organization, role, linkedinUrl } = body;
 
-  if (!resultId || !nickname) {
-    return Response.json({ error: "resultId와 nickname은 필수입니다" }, { status: 400 });
+  if (!resultId) {
+    return Response.json({ error: "resultId는 필수입니다" }, { status: 400 });
   }
+
+  // nickname 없으면 GitHub 메타데이터에서 가져오기
+  const finalNickname = nickname || user.user_metadata?.preferred_username || user.user_metadata?.name || user.email || "익명";
 
   // 분석 결과 조회
   const result = await getResult(resultId);
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
     .from("leaderboard_profiles")
     .upsert({
       user_id: user.id,
-      nickname,
+      nickname: finalNickname,
       avatar_url: user.user_metadata?.avatar_url ?? null,
       title: title ?? null,
       organization: organization ?? null,
