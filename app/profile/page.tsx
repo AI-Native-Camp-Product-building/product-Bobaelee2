@@ -85,10 +85,21 @@ export default function ProfilePage() {
 
   // GitHub 로그인
   const handleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/profile` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/profile`,
+      },
     });
+
+    // signInWithOAuth는 자동 리다이렉트하지만, 실패 시 수동 리다이렉트
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+    if (error) {
+      console.error("OAuth error:", error.message);
+      alert("로그인에 실패했습니다: " + error.message);
+    }
   };
 
   // 로그아웃
