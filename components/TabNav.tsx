@@ -16,8 +16,7 @@ const TABS = [
 export default function TabNav() {
   const pathname = usePathname();
 
-  // 결과 페이지(/r/...)에서는 탭 숨김
-  if (pathname.startsWith("/r/")) return null;
+  // 결과 페이지에서도 탭 표시
 
   return (
     <nav className="w-full max-w-lg mx-auto px-4 pt-4">
