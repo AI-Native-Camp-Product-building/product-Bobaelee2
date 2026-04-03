@@ -79,36 +79,43 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     }
   }
 
-  // 차원 기반 후보
+  // 차원 기반 후보 — fit은 0~100 정규화 (조건 초과분 기반)
   if (scores.automation >= 70 && scores.toolDiversity >= 70) {
-    candidates.push({ persona: "puppet-master", fit: scores.automation });
+    const fit = (scores.automation - 70) / 30 * 50 + (scores.toolDiversity - 70) / 30 * 50;
+    candidates.push({ persona: "puppet-master", fit });
   }
   if (scores.automation >= 50 && scores.security < 20) {
-    candidates.push({ persona: "daredevil", fit: scores.automation - scores.security });
+    const gap = scores.automation - scores.security;
+    const fit = Math.max(0, (gap - 30) / 70 * 100);
+    candidates.push({ persona: "daredevil", fit });
   }
-  if (scores.automation >= 65 && scores.toolDiversity < 30) {
-    candidates.push({ persona: "macgyver", fit: scores.automation });
-  }
+  // macgyver 제거 — 조건(automation>=65, toolDiversity<30)이 비현실적
   if (scores.security >= 70) {
-    candidates.push({ persona: "fortress", fit: scores.security });
+    const fit = (scores.security - 70) / 30 * 100;
+    candidates.push({ persona: "fortress", fit });
   }
   if (scores.control >= 75) {
-    candidates.push({ persona: "legislator", fit: scores.control });
+    const fit = (scores.control - 75) / 25 * 100;
+    candidates.push({ persona: "legislator", fit });
   }
   if (scores.collaboration >= 55) {
-    candidates.push({ persona: "evangelist", fit: scores.collaboration });
+    const fit = (scores.collaboration - 55) / 45 * 100;
+    candidates.push({ persona: "evangelist", fit });
   }
   if (scores.toolDiversity >= 70 && scores.automation < 40) {
-    candidates.push({ persona: "collector", fit: scores.toolDiversity });
+    const fit = (scores.toolDiversity - 70) / 30 * 50 + (40 - scores.automation) / 40 * 50;
+    candidates.push({ persona: "collector", fit });
   }
   if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30) {
-    candidates.push({ persona: "speedrunner", fit: 60 });
+    candidates.push({ persona: "speedrunner", fit: 50 });
   }
   if (sd < 20 && avg >= 30) {
-    candidates.push({ persona: "craftsman", fit: avg });
+    const fit = Math.max(0, (avg - 30) / 70 * 100);
+    candidates.push({ persona: "craftsman", fit });
   }
   if (max >= 80 && sd >= 30) {
-    candidates.push({ persona: "deep-diver", fit: max });
+    const fit = (max - 80) / 20 * 50 + Math.min(50, (sd - 30) / 30 * 50);
+    candidates.push({ persona: "deep-diver", fit });
   }
 
   // Step 3: 적합도 순 정렬 → 주/부 추출

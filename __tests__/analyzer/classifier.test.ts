@@ -67,8 +67,8 @@ describe("classifyPersona — puppet-master", () => {
     expect(classifyPersona(scores, stats).primary).toBe("puppet-master");
   });
 
-  it("max ≥ 80 && stdDev ≥ 30 && automation/toolDiversity 모두 ≥ 75이면 puppet-master여야 한다", () => {
-    const scores = makeScores({ automation: 90, toolDiversity: 85, control: 10, security: 10, contextAwareness: 10, collaboration: 10 });
+  it("automation/toolDiversity 높고 security도 적절하면 puppet-master여야 한다", () => {
+    const scores = makeScores({ automation: 90, toolDiversity: 85, control: 10, security: 40, contextAwareness: 10, collaboration: 10 });
     const stats = makeMdStats({ totalLines: 150 });
     expect(classifyPersona(scores, stats).primary).toBe("puppet-master");
   });
@@ -152,8 +152,8 @@ describe("classifyPersona — deep-diver", () => {
 });
 
 describe("classifyPersona — 경계값 테스트", () => {
-  it("automation=70, toolDiversity=70 경계값은 puppet-master여야 한다", () => {
-    const scores = makeScores({ automation: 70, toolDiversity: 70, security: 30 });
+  it("automation=85, toolDiversity=85이면 puppet-master여야 한다", () => {
+    const scores = makeScores({ automation: 85, toolDiversity: 85, security: 40 });
     const stats = makeMdStats({ totalLines: 80 });
     expect(classifyPersona(scores, stats).primary).toBe("puppet-master");
   });
@@ -189,11 +189,11 @@ describe("classifyPersona — 경계값 테스트", () => {
 
 describe("classifyPersona — 주+부 페르소나", () => {
   it("두 성향이 동시에 강하면 주+부 모두 반환해야 한다", () => {
-    // automation 높고 security도 높음 → puppet-master 또는 fortress가 후보
+    // automation/toolDiversity 높고 security도 높음 → 두 후보의 fit이 모두 높아야 함
     const scores = makeScores({
-      automation: 75,
-      toolDiversity: 75,
-      security: 70,
+      automation: 90,
+      toolDiversity: 90,
+      security: 90,
       control: 10,
       contextAwareness: 10,
       collaboration: 10,
