@@ -129,17 +129,6 @@ export const PERSONAS: Record<PersonaKey, PersonaDefinition> = {
       "뭔가 돌아가긴 하는데 왜 돌아가는지는 잘 모르는 당신. " +
       "로데오 마스터를 꿈꾸지만 아직 말 위에서 중심을 못 잡고 있는 귀여운 단계.",
   },
-  macgyver: {
-    key: "macgyver",
-    nameKo: "맥가이버",
-    nameEn: "The MacGyver",
-    emoji: "🔩",
-    tagline: "도구 3개로 모든 걸 해결하는 사람",
-    description:
-      "도구는 적게 쓰면서 자동화는 극한까지 밀어붙인 당신. " +
-      "다른 사람이 10개 플러그인을 깔 때, 셸 스크립트 하나로 같은 걸 해결하는 진정한 실용주의자. " +
-      "근데 그 셸 스크립트를 본인 말고 아무도 이해 못 한다는 걸 알고 계신가요?",
-  },
   daredevil: {
     key: "daredevil",
     nameKo: "위험물 취급자",

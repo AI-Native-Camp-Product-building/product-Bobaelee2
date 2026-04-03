@@ -70,7 +70,6 @@ const ALL_PERSONA_KEYS: PersonaKey[] = [
   "evangelist",
   "architect",
   "huggies",
-  "macgyver",
   "daredevil",
 ];
 

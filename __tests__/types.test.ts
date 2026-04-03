@@ -25,7 +25,6 @@ const PERSONA_KEYS: PersonaKey[] = [
   "evangelist",
   "architect",
   "huggies",
-  "macgyver",
   "daredevil",
 ];
 
@@ -275,7 +274,6 @@ describe("GlobalStats", () => {
         evangelist: 0,
         architect: 0,
         huggies: 0,
-        macgyver: 0,
         daredevil: 0,
       },
       avgLines: 85,

@@ -14,11 +14,10 @@ const COMPATIBILITY_MAP: Record<PersonaKey, { perfect: PersonaKey; chaos: Person
   legislator: { perfect: "fortress", chaos: "speedrunner" },
   craftsman: { perfect: "minimalist", chaos: "collector" },
   "deep-diver": { perfect: "collector", chaos: "craftsman" },
-  evangelist: { perfect: "architect", chaos: "macgyver" },
+  evangelist: { perfect: "architect", chaos: "minimalist" },
   architect: { perfect: "evangelist", chaos: "minimalist" },
   huggies: { perfect: "architect", chaos: "daredevil" },
-  macgyver: { perfect: "daredevil", chaos: "collector" },
-  daredevil: { perfect: "macgyver", chaos: "fortress" },
+  daredevil: { perfect: "daredevil", chaos: "fortress" },
 };
 
 /** 페르소나 이름 (한글, 짧게) */
@@ -33,7 +32,6 @@ const PERSONA_NAME_KO: Record<PersonaKey, string> = {
   "deep-diver": "과몰입러",
   evangelist: "협업 전도사",
   architect: "하네스 아키텍트",
-  macgyver: "맥가이버",
   daredevil: "위험물 취급자",
   huggies: "하기스 아키텍트",
 };
@@ -62,10 +60,8 @@ const PERFECT_DESCRIPTIONS: Record<PersonaKey, string> = {
     "로데오 마스터 + 협업 전도사 = 기술과 문화의 시너지. 카우보이의 생태계를 전도사가 팀 전체에 전파하는 최강의 확산 루프.",
   huggies:
     "하기스 아키텍트 + 로데오 마스터 = 사제 관계의 꿈. 기저귀 단계의 하기스가 카우보이의 목장을 견학하면 성장 속도 10배. 가장 이상적인 멘토링 궁합.",
-  macgyver:
-    "맥가이버 + 위험물 취급자 = 속도와 실용의 극한 콤비. 도구 없이 해결하는 맥가이버와 보안 따위 신경 안 쓰는 데어데블이 만나면 MVP가 하루 만에 나온다.",
   daredevil:
-    "위험물 취급자 + 맥가이버 = 스피드의 끝판왕. 보안도 도구도 최소한으로 줄이고 오직 결과물에만 집중하는 조합. 단, 사고 나면 둘 다 도망갈 곳이 없다.",
+    "위험물 취급자 + 위험물 취급자 = 스피드의 끝판왕. 보안도 도구도 최소한으로 줄이고 오직 결과물에만 집중하는 조합. 단, 사고 나면 둘 다 도망갈 곳이 없다.",
 };
 
 /** 최악 궁합 설명 템플릿 */
@@ -87,13 +83,11 @@ const CHAOS_DESCRIPTIONS: Record<PersonaKey, string> = {
   "deep-diver":
     "과몰입러 vs 조용한 장인 = 극단 vs 균형의 충돌. 과몰입러가 한 곳에 500줄을 쓰면 장인은 '이게 다 필요해요?'라며 당황.",
   evangelist:
-    "협업 전도사 vs 맥가이버 = 팀 프로세스 vs 개인기의 충돌. 전도사가 PR 리뷰 규칙을 만들면 맥가이버가 '혼자 merge하면 안 돼요?'라며 우회하는 평행선.",
+    "협업 전도사 vs 3줄러 = 팀 프로세스 vs 무관심의 충돌. 전도사가 PR 리뷰 규칙을 만들면 3줄러가 'Claude야 알아서 해'라며 무시하는 평행선.",
   architect:
     "로데오 마스터 vs 3줄러 = 초복잡 vs 초간결의 극과 극. 카우보이가 플러그인 10개 설치를 권하면 3줄러는 'Claude Code 기본으로도 충분한데요'라며 대화 거부.",
   huggies:
     "하기스 아키텍트 vs 위험물 취급자 = 기저귀 vs 무보호의 충돌. 하기스가 '이 Hook 왜 안 돼요?'라고 물으면 데어데블이 'Hook이 뭐예요?'라고 답하는 평행우주.",
-  macgyver:
-    "맥가이버 vs 수집가 = 미니멀 vs 맥시멀의 철학 전쟁. 맥가이버가 도구 3개로 해결하면 수집가는 '이 플러그인도 써보세요'라며 끝없는 추천 폭격.",
   daredevil:
     "위험물 취급자 vs 보안 편집증 = 속도 vs 안전의 정면충돌. 데어데블이 'ship fast'를 외치면 요새가 보안 감사 보고서를 내미는 영원한 평행선.",
 };
@@ -122,8 +116,6 @@ const MIRROR_DESCRIPTIONS: Record<PersonaKey, string> = {
     "로데오 마스터 둘이 만나면? 서로의 플러그인을 추천하고 Hook을 교환하다 결국 양쪽 설정이 합쳐져 해독 불가능한 메가 목장 탄생.",
   huggies:
     "하기스 아키텍트 둘이 만나면? 서로의 설정을 참고하다 둘 다 더 복잡해지는 엉망진창 콜라보. '이거 왜 안 돼?' '나도 몰라' 대화가 끝없이 반복.",
-  macgyver:
-    "맥가이버 둘이 만나면? 서로의 셸 스크립트를 읽다 경악하는 순간의 연속. '이게 왜 되는 거야?'가 대화의 80%를 차지한다.",
   daredevil:
     "위험물 취급자 둘이 만나면? 보안 체크 0, 테스트 0, 문서 0. 배포 속도는 빛의 속도인데 장애도 빛의 속도. 같이 일하면 스릴 만점.",
 };

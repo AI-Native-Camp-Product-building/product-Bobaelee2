@@ -283,24 +283,6 @@ const PERSONA_PRESCRIPTIONS: Record<PersonaKey, PrescriptionItem[]> = {
     },
   ],
 
-  macgyver: [
-    {
-      text: "MCP 서버 1~2개만 연동해보세요. Slack이나 Notion을 MCP로 연결하면 " +
-        "curl로 짜던 스크립트가 한 줄로 줄어듭니다. 도구를 쓰는 것도 실력입니다.",
-      priority: "high",
-    },
-    {
-      text: "자동화 스크립트에 주석을 추가하세요. " +
-        "본인만 이해하는 셸 스크립트는 6개월 후 본인에게도 암호문이 됩니다.",
-      priority: "medium",
-    },
-    {
-      text: "플러그인을 하나만 써보세요. superpowers나 hookify 같은 플러그인은 " +
-        "직접 스크립트 짜는 것보다 안정적이고 커뮤니티가 유지보수해줍니다.",
-      priority: "medium",
-    },
-  ],
-
   daredevil: [
     {
       text: "지금 당장 .env 보호 규칙을 CLAUDE.md에 추가하세요. " +
