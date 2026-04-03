@@ -12,10 +12,10 @@ import type { PersonaKey } from "@/lib/types";
 interface RankingEntry {
   rank: number;
   nickname: string;
-  avatarUrl: string | null;
   title: string | null;
   organization: string | null;
   linkedinUrl: string | null;
+  statusMessage: string | null;
   role: string | null;
   persona: PersonaKey;
   mdPower: number;
@@ -107,20 +107,7 @@ export default function LeaderboardPage() {
                     {entry.rank}
                   </span>
 
-                  {/* 아바타 */}
-                  {entry.avatarUrl ? (
-                    <img
-                      src={entry.avatarUrl}
-                      alt=""
-                      className="w-8 h-8 rounded-full shrink-0"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-bg-elevated shrink-0 flex items-center justify-center text-sm">
-                      {personaDef?.emoji ?? "👤"}
-                    </div>
-                  )}
-
-                  {/* 이름 + 직함 */}
+                  {/* 이름 + 직무 + 상태 메시지 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm font-bold text-claude-cream truncate">
@@ -141,12 +128,17 @@ export default function LeaderboardPage() {
                         </a>
                       )}
                       {entry.title && (
-                        <span className="text-xs text-claude-light/40 truncate">{entry.title}</span>
+                        <span className="text-xs bg-bg-elevated rounded px-1.5 py-0.5 text-claude-light/50 shrink-0">{entry.title}</span>
                       )}
                     </div>
-                    {entry.organization && (
-                      <p className="text-xs text-claude-light/30 truncate">{entry.organization}</p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {entry.organization && (
+                        <span className="text-xs text-claude-light/30 truncate">{entry.organization}</span>
+                      )}
+                      {entry.statusMessage && (
+                        <span className="text-xs text-claude-light/40 italic truncate">&ldquo;{entry.statusMessage}&rdquo;</span>
+                      )}
+                    </div>
                   </div>
 
                   {/* 티어 */}

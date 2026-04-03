@@ -37,6 +37,7 @@ export async function GET() {
     title: row.leaderboard_profiles?.title,
     organization: row.leaderboard_profiles?.organization,
     linkedinUrl: row.leaderboard_profiles?.linkedin_url,
+    statusMessage: row.leaderboard_profiles?.status_message,
     role: row.leaderboard_profiles?.role,
     persona: row.persona,
     mdPower: row.md_power,
