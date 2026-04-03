@@ -84,7 +84,7 @@ export default function MdInput({ value, onChange, disabled }: MdInputProps) {
         {/* 사용법 안내 */}
         <div className="text-xs text-claude-light/40 leading-relaxed flex flex-col gap-1">
           <p><span className="text-claude-orange/70 font-medium">1.</span> 위 버튼으로 스크립트 복사</p>
-          <p><span className="text-claude-orange/70 font-medium">2.</span> 터미널에 붙여넣기 후 Enter (화면에 아무것도 안 뜨는 게 정상!)</p>
+          <p><span className="text-claude-orange/70 font-medium">2.</span> 터미널에 붙여넣기 후 Enter <span className="text-claude-orange font-bold">(터미널 화면에 아무것도 안 뜨는 게 정상!)</span></p>
           <p><span className="text-claude-orange/70 font-medium">3.</span> 아래 입력창에 <span className="text-claude-cream/60">⌘V</span> 붙여넣기</p>
           <p className="text-claude-light/30 mt-0.5">API 키·토큰·이메일은 자동 마스킹됩니다</p>
         </div>
