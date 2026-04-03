@@ -6,6 +6,7 @@
  */
 import { useEffect, useState } from "react";
 import { PERSONAS } from "@/lib/content/personas";
+import ClaudeScouter from "@/components/ClaudeScouter";
 import { getAllTiers } from "@/lib/analyzer/power";
 import type { PersonaKey } from "@/lib/types";
 
@@ -52,9 +53,10 @@ export default function LeaderboardPage() {
     <main className="min-h-screen bg-bg-primary px-4 py-8">
       <div className="max-w-lg mx-auto flex flex-col gap-6">
         {/* 헤더 */}
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center gap-2">
+          <ClaudeScouter size={64} />
           <h1 className="text-3xl font-black tagline-sparkle inline-block">
-            <span className="tagline-gradient">🏆 .md력 리더보드</span>
+            <span className="tagline-gradient">.md력 리더보드</span>
           </h1>
           <p className="text-sm text-claude-light/50 mt-1">
             {data ? `${data.totalCount}명 참여 중` : "불러오는 중..."}
