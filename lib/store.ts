@@ -3,6 +3,7 @@
  * 로컬 개발 시 환경변수 없이도 전체 플로우 동작
  */
 import type { AnalysisResult, SavedResult, PersonaKey } from "@/lib/types";
+import { calculateMdPower } from "@/lib/analyzer/power";
 
 const isSupabaseConfigured =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -75,14 +76,18 @@ export async function getResult(id: string): Promise<SavedResult | null> {
 
   if (error || !data) return null;
 
+  const scores = data.scores;
+  const mdStats = data.md_stats;
+
   return {
     id: data.id,
     persona: data.persona as PersonaKey,
-    scores: data.scores,
+    scores,
     roasts: data.roasts,
     strengths: data.strengths,
     prescriptions: data.prescriptions,
-    mdStats: data.md_stats,
+    mdStats,
+    mdPower: calculateMdPower(scores, mdStats),
     createdAt: data.created_at,
   };
 }

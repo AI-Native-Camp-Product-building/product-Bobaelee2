@@ -8,6 +8,7 @@ import { classifyPersona } from "./classifier";
 import { generateRoasts } from "@/lib/content/roasts";
 import { generateStrengths } from "@/lib/content/strengths";
 import { generatePrescriptions } from "@/lib/content/prescriptions";
+import { calculateMdPower } from "./power";
 
 /**
  * CLAUDE.md 텍스트를 받아 완전한 분석 결과를 반환한다
@@ -38,6 +39,9 @@ export function analyze(md: string): AnalysisResult {
   const strengths = generateStrengths(persona, mdStats);
   const prescriptions = generatePrescriptions(persona, mdStats);
 
+  // 5. .md력 점수 산출
+  const mdPower = calculateMdPower(scores, mdStats);
+
   return {
     persona,
     scores,
@@ -45,5 +49,6 @@ export function analyze(md: string): AnalysisResult {
     strengths,
     prescriptions,
     mdStats,
+    mdPower,
   };
 }

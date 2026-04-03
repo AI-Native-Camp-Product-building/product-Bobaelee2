@@ -87,6 +87,18 @@ export interface CompatInfo {
   description: string;
 }
 
+/** .md력 티어 키 */
+export type TierKey = "egg" | "sprout" | "sapling" | "tree" | "oak" | "sequoia";
+
+/** .md력 점수 + 티어 */
+export interface MdPower {
+  score: number;      // 0~1000
+  tier: TierKey;
+  tierEmoji: string;
+  tierName: string;
+  tierTagline: string;
+}
+
 /** 분석 결과 전체 */
 export interface AnalysisResult {
   persona: PersonaKey;
@@ -95,6 +107,7 @@ export interface AnalysisResult {
   strengths: StrengthItem[];
   prescriptions: PrescriptionItem[];
   mdStats: MdStats;
+  mdPower: MdPower;
 }
 
 /** DB에 저장된 결과 (ID + 생성일 포함) */

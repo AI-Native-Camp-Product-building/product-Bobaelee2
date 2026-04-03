@@ -19,6 +19,7 @@ import StatsSection from "@/components/StatsSection";
 import ShareButton from "@/components/ShareButton";
 import CaptureCard from "@/components/CaptureCard";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
+import MdPowerSection from "@/components/MdPowerSection";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -90,6 +91,12 @@ export default async function ResultPage({ params }: Props) {
 
         {/* 궁합 섹션 */}
         <CompatSection myPersona={result.persona} compat={compat} />
+
+        {/* .md력 측정 결과 */}
+        <MdPowerSection
+          mdPower={result.mdPower}
+          totalUsers={globalStats.totalUsers}
+        />
 
         {/* 처방전 섹션 */}
         <PrescriptionSection prescriptions={result.prescriptions} />

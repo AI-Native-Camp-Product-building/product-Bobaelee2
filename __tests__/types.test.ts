@@ -151,6 +151,7 @@ describe("AnalysisResult", () => {
       roasts: [],
       strengths: [],
       prescriptions: [],
+      mdPower: { score: 450, tier: "tree", tierEmoji: "🌳", tierName: "Tree", tierTagline: "주변에서 물어보는 수준" },
       mdStats: {
         totalLines: 200,
         sectionCount: 10,
@@ -203,6 +204,7 @@ describe("SavedResult", () => {
       roasts: [],
       strengths: [],
       prescriptions: [],
+      mdPower: { score: 60, tier: "egg", tierEmoji: "🥚", tierName: "Egg", tierTagline: ".md가 뭐예요?" },
       mdStats: {
         totalLines: 3,
         sectionCount: 0,
