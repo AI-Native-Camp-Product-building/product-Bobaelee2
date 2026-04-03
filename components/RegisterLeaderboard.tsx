@@ -5,14 +5,9 @@
  * 비로그인 → GitHub 로그인 유도
  * 로그인 → 등록 또는 점수 갱신
  */
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState, useMemo } from "react";
+import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import type { MdPower } from "@/lib/types";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
-);
 
 interface Props {
   resultId: string;
@@ -20,6 +15,7 @@ interface Props {
 }
 
 export default function RegisterLeaderboard({ resultId, mdPower }: Props) {
+  const supabase = useMemo(() => createSupabaseBrowser(), []);
   const [user, setUser] = useState<{ id: string; name: string } | null>(null);
   const [registered, setRegistered] = useState(false);
   const [loading, setLoading] = useState(false);

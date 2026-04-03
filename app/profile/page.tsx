@@ -4,14 +4,9 @@
  * 내 정보 페이지
  * GitHub 로그인 + 프로필 수정 + 탈퇴
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
-);
+import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 interface ProfileData {
   nickname: string;
@@ -24,6 +19,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const supabase = useMemo(() => createSupabaseBrowser(), []);
   const [user, setUser] = useState<{ id: string; name: string; avatarUrl: string } | null>(null);
   const [registered, setRegistered] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
