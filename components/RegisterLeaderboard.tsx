@@ -42,7 +42,7 @@ export default function RegisterLeaderboard({ resultId, mdPower }: Props) {
   const handleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/r/${resultId}` },
+      options: { redirectTo: `${window.location.origin}/r/${resultId}` },
     });
   };
 
