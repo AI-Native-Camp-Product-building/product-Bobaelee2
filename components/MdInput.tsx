@@ -64,9 +64,9 @@ Get-ChildItem "$home" -Recurse -Depth 2 -Include "CLAUDE.md","AGENTS.md" -ErrorA
   Where-Object { $_.FullName -notmatch '\\.claude\\\\|node_modules|\\.git' } | ForEach-Object {
   $out += "=== $($_.FullName) ===\`n$(Get-Content $_.FullName -Raw)\`n"
 }
-$out -replace '[\\w.+-]+@[\\w.-]+\\.[a-zA-Z]{2,}','***EMAIL***' \\
-  -replace '(xoxb-|xoxp-|sk-|ghp_|gho_|Bearer )[\\w-]+','$1***' \\
-  -replace 'AKfycb[\\w-]+','***DEPLOY_ID***' \\
+$out -replace '[\\w.+-]+@[\\w.-]+\\.[a-zA-Z]{2,}','***EMAIL***' \`
+  -replace '(xoxb-|xoxp-|sk-|ghp_|gho_|Bearer )[\\w-]+','$1***' \`
+  -replace 'AKfycb[\\w-]+','***DEPLOY_ID***' \`
   -replace 'ntn_[\\w-]+','***NOTION***' | Set-Clipboard`;
 
 /** Linux: xclip */
