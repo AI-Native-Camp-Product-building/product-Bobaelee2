@@ -81,11 +81,13 @@ describe("classifyPersona — fortress", () => {
     expect(classifyPersona(scores, stats).primary).toBe("fortress");
   });
 
-  it("security가 최고이나 dominanceRatio >= 2.0이면 deep-diver가 primary여야 한다", () => {
-    // security:90, others:10 → dominanceRatio=9 ≥ 2.0 → deep-diver fit이 fortress fit보다 높음
+  it("security가 극단적으로 높으면 fortress가 primary여야 한다 (deep-diver가 전용 페르소나를 밀어내지 않음)", () => {
+    // security:90, others:10 → fortress가 전용 페르소나이므로 deep-diver fit이 낮아짐
     const scores = makeScores({ security: 90, automation: 10, control: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10 });
     const stats = makeMdStats({ totalLines: 80 });
-    expect(classifyPersona(scores, stats).primary).toBe("deep-diver");
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("fortress");
+    expect(result.secondary).toBeNull();
   });
 });
 
@@ -98,11 +100,13 @@ describe("classifyPersona — legislator", () => {
     expect(classifyPersona(scores, stats).primary).toBe("legislator");
   });
 
-  it("control이 최고이나 dominanceRatio >= 2.0이면 deep-diver가 primary여야 한다", () => {
-    // control:85, others:10 → dominanceRatio=8.5 ≥ 2.0 → deep-diver fit이 legislator보다 높음
+  it("control이 극단적으로 높으면 legislator가 primary여야 한다 (deep-diver가 전용 페르소나를 밀어내지 않음)", () => {
+    // control:85, others:10 → legislator가 전용 페르소나이므로 deep-diver fit이 낮아짐
     const scores = makeScores({ control: 85, automation: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10, security: 10 });
     const stats = makeMdStats({ totalLines: 80 });
-    expect(classifyPersona(scores, stats).primary).toBe("deep-diver");
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("legislator");
+    expect(result.secondary).toBeNull();
   });
 });
 
@@ -209,8 +213,7 @@ describe("classifyPersona — 주+부 페르소나", () => {
   });
 
   it("하나만 압도적이면 secondary는 null이어야 한다", () => {
-    // security:80, others:10 → dominanceRatio=8 ≥ 2.0 → deep-diver가 primary (fit=100)
-    // fortress fit = (80-70)/30*100 = 33.3 < deep-diver fit(100) * 0.6 → secondary null
+    // security:80, others:10 → fortress가 전용 페르소나 → fortress primary, secondary null
     const scores = makeScores({
       security: 80,
       automation: 10,
@@ -221,7 +224,7 @@ describe("classifyPersona — 주+부 페르소나", () => {
     });
     const stats = makeMdStats({ totalLines: 80 });
     const result = classifyPersona(scores, stats);
-    expect(result.primary).toBe("deep-diver");
+    expect(result.primary).toBe("fortress");
     expect(result.secondary).toBeNull();
   });
 

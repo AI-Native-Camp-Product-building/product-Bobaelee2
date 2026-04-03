@@ -3,6 +3,16 @@
  */
 import type { DimensionScores, MdStats, PersonaKey, PersonaResult } from "@/lib/types";
 
+/** 차원별 전용 페르소나 매핑 — deep-diver 억제 및 부 페르소나 선택에 사용 */
+const DIMENSION_SPECIFIC_PERSONAS: Partial<Record<keyof DimensionScores, PersonaKey[]>> = {
+  security: ["fortress"],
+  control: ["legislator"],
+  automation: ["puppet-master", "daredevil"],
+  toolDiversity: ["collector", "puppet-master"],
+  teamImpact: ["evangelist"],
+  contextAwareness: [],
+};
+
 /** 가장 높은 점수의 차원을 페르소나로 매핑 (fallback용) */
 const DIMENSION_TO_PERSONA: Record<keyof DimensionScores, PersonaKey> = {
   automation: "puppet-master",
@@ -121,7 +131,15 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   const dominanceRatio = second > 0 ? first / second : Infinity;
 
   if (first >= 70 && dominanceRatio >= 2.0) {
-    const fit = Math.min(100, (dominanceRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
+    // deep-diver는 지배 차원에 전용 페르소나가 이미 후보에 있으면 fit을 낮춤
+    const dominant = dominantDimension(scores);
+    const specificPersonas = DIMENSION_SPECIFIC_PERSONAS[dominant] ?? [];
+    const hasSpecificCandidate = candidates.some(c => specificPersonas.includes(c.persona));
+
+    let fit = Math.min(100, (dominanceRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
+    if (hasSpecificCandidate) {
+      fit *= 0.3; // 전용 페르소나가 있으면 deep-diver fit을 대폭 낮춤
+    }
     candidates.push({ persona: "deep-diver", fit });
   }
 
@@ -145,16 +163,6 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     collector: "toolDiversity",
     "deep-diver": "contextAwareness",
     daredevil: "automation",
-  };
-
-  // deep-diver 부 페르소나 억제용
-  const DIMENSION_SPECIFIC_PERSONAS: Partial<Record<keyof DimensionScores, PersonaKey[]>> = {
-    security: ["fortress"],
-    control: ["legislator"],
-    automation: ["puppet-master", "daredevil"],
-    toolDiversity: ["collector", "puppet-master"],
-    teamImpact: ["evangelist"],
-    contextAwareness: [],
   };
 
   let secondary: PersonaKey | null = null;
