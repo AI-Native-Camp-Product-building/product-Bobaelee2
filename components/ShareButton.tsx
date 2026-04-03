@@ -25,9 +25,9 @@ export default function ShareButton({ id, persona }: ShareButtonProps) {
 
   // 공유 텍스트 (한국어)
   const shareText =
-    `내 CLAUDE.md를 분석해봤더니 '${personaDef.nameKo}'가 나왔다 ㅋㅋ\n` +
-    `AI 도구를 어떻게 쓰는지가 곧 일하는 방식이라는데, 불편한 진실이 꽤 찔린다.\n\n` +
-    `나도 해보기 →`;
+    `내 .md 털었더니 '${personaDef.nameKo}' 나왔다 ㅋㅋ\n` +
+    `${personaDef.tagline}\n\n` +
+    `나도 털어보기 →`;
 
   /** LinkedIn 공유 */
   const handleLinkedIn = () => {

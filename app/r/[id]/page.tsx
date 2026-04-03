@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const persona = PERSONAS[result.persona];
   const title = `${persona.emoji} 나는 ${persona.nameKo} — MDTI`;
-  const description = `"${persona.tagline}" 나도 CLAUDE.md 털어보기 →`;
+  const description = `"${persona.tagline}" 나도 .md 털어보기 →`;
   const ogImageUrl = `/api/og/${id}`;
 
   return {

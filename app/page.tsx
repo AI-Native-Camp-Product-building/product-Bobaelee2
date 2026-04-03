@@ -63,9 +63,9 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="text-xl text-claude-cream font-medium leading-snug">
-            당신의 CLAUDE.md가
+            .md가 당신에게
             <br />
-            당신에게 하고 싶었던 말
+            하고 싶었던 말
           </p>
           <PrivacyBadge />
         </div>

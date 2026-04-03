@@ -6,11 +6,11 @@ const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: ".mdTI — 당신의 CLAUDE.md가 당신에게 하고 싶었던 말",
-  description: "CLAUDE.md를 분석해서 당신의 개발 성향을 알려드립니다. 발칙하게.",
+  title: ".mdTI — .md가 당신에게 하고 싶었던 말",
+  description: ".md를 분석해서 당신의 개발 성향을 팩폭합니다.",
   openGraph: {
-    title: ".mdTI — 당신의 CLAUDE.md가 당신에게 하고 싶었던 말",
-    description: "CLAUDE.md를 분석해서 당신의 개발 성향을 알려드립니다. 발칙하게. 나도 해보기 →",
+    title: ".mdTI — .md가 당신에게 하고 싶었던 말",
+    description: ".md를 분석해서 당신의 개발 성향을 팩폭합니다. 나도 털어보기 →",
     type: "website",
   },
 };
