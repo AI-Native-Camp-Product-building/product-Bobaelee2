@@ -5,6 +5,7 @@
  * GitHub 로그인 + 프로필 수정 + 탈퇴
  */
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -22,6 +23,7 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [user, setUser] = useState<{ id: string; name: string; avatarUrl: string } | null>(null);
   const [registered, setRegistered] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
@@ -120,7 +122,7 @@ export default function ProfilePage() {
       });
       if (res.ok) {
         setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        setTimeout(() => router.push("/leaderboard"), 1000);
       }
     } catch { /* ignore */ }
     setSaving(false);
@@ -271,8 +273,7 @@ export default function ProfilePage() {
         </button>
 
         {/* 탈퇴 */}
-        {registered && (
-          <div className="border-t border-claude-light/10 pt-4 mt-4">
+        <div className="border-t border-claude-light/10 pt-4 mt-4">
             <p className="text-sm font-bold text-roast-red mb-1">탈퇴</p>
             <p className="text-xs text-claude-light/40 mb-3">
               계정을 삭제하면 모든 사용량 데이터와 배지가 함께 삭제되며, 복구할 수 없습니다.
@@ -284,7 +285,6 @@ export default function ProfilePage() {
               계정 삭제
             </button>
           </div>
-        )}
       </div>
 
       <style jsx>{`
