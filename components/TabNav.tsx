@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/", label: "🔬 MD 분석" },
+  { href: "/", label: "🔬 .mdTI" },
   { href: "/leaderboard", label: "🏆 .md력" },
   { href: "/profile", label: "👤 내 정보" },
 ];
