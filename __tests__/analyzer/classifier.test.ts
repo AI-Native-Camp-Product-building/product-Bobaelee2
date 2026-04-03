@@ -81,24 +81,28 @@ describe("classifyPersona — fortress", () => {
     expect(classifyPersona(scores, stats).primary).toBe("fortress");
   });
 
-  it("max ≥ 80 && stdDev ≥ 30 && security가 최고이면 fortress여야 한다", () => {
+  it("security가 최고이나 dominanceRatio >= 2.0이면 deep-diver가 primary여야 한다", () => {
+    // security:90, others:10 → dominanceRatio=9 ≥ 2.0 → deep-diver fit이 fortress fit보다 높음
     const scores = makeScores({ security: 90, automation: 10, control: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10 });
     const stats = makeMdStats({ totalLines: 80 });
-    expect(classifyPersona(scores, stats).primary).toBe("fortress");
+    expect(classifyPersona(scores, stats).primary).toBe("deep-diver");
   });
 });
 
 describe("classifyPersona — legislator", () => {
-  it("control ≥ 75이면 legislator여야 한다", () => {
-    const scores = makeScores({ control: 80, security: 30, automation: 20 });
+  it("control ≥ 75이고 dominanceRatio < 2.0이면 legislator여야 한다", () => {
+    // control:80, security:30 → ratio=80/30=2.67 ≥ 2.0 → deep-diver fit > legislator fit
+    // control:80, security:50 → ratio=80/50=1.6 < 2.0 → deep-diver 조건 불충족 → legislator
+    const scores = makeScores({ control: 80, security: 50, automation: 50 });
     const stats = makeMdStats({ totalLines: 60 });
     expect(classifyPersona(scores, stats).primary).toBe("legislator");
   });
 
-  it("max ≥ 80 && stdDev ≥ 30 && control이 최고이면 legislator여야 한다", () => {
+  it("control이 최고이나 dominanceRatio >= 2.0이면 deep-diver가 primary여야 한다", () => {
+    // control:85, others:10 → dominanceRatio=8.5 ≥ 2.0 → deep-diver fit이 legislator보다 높음
     const scores = makeScores({ control: 85, automation: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10, security: 10 });
     const stats = makeMdStats({ totalLines: 80 });
-    expect(classifyPersona(scores, stats).primary).toBe("legislator");
+    expect(classifyPersona(scores, stats).primary).toBe("deep-diver");
   });
 });
 
@@ -168,7 +172,7 @@ describe("classifyPersona — 경계값 테스트", () => {
     const validKeys = [
       "puppet-master", "speedrunner", "fortress", "minimalist",
       "collector", "legislator", "craftsman", "deep-diver",
-      "evangelist", "architect", "huggies", "macgyver", "daredevil",
+      "evangelist", "architect", "huggies", "daredevil",
     ];
     // 다양한 점수 조합 테스트
     const testCases = [
@@ -205,8 +209,10 @@ describe("classifyPersona — 주+부 페르소나", () => {
   });
 
   it("하나만 압도적이면 secondary는 null이어야 한다", () => {
+    // security:80, others:10 → dominanceRatio=8 ≥ 2.0 → deep-diver가 primary (fit=100)
+    // fortress fit = (80-70)/30*100 = 33.3 < deep-diver fit(100) * 0.6 → secondary null
     const scores = makeScores({
-      security: 90,
+      security: 80,
       automation: 10,
       control: 10,
       toolDiversity: 10,
@@ -215,8 +221,8 @@ describe("classifyPersona — 주+부 페르소나", () => {
     });
     const stats = makeMdStats({ totalLines: 80 });
     const result = classifyPersona(scores, stats);
-    expect(result.primary).toBe("fortress");
-    // 다른 후보의 fit이 fortress의 60% 미만이면 null
+    expect(result.primary).toBe("deep-diver");
+    expect(result.secondary).toBeNull();
   });
 
   it("minimalist는 항상 secondary가 null이어야 한다", () => {

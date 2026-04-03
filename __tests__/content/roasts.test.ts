@@ -93,8 +93,8 @@ const ALL_PERSONAS: PersonaKey[] = [
 ];
 
 describe("PERSONAS — 8개 페르소나 정의", () => {
-  it("13개 페르소나가 모두 정의되어야 한다", () => {
-    expect(Object.keys(PERSONAS)).toHaveLength(13);
+  it("12개 페르소나가 모두 정의되어야 한다", () => {
+    expect(Object.keys(PERSONAS)).toHaveLength(12);
   });
 
   it("각 페르소나에 필수 필드가 있어야 한다", () => {
