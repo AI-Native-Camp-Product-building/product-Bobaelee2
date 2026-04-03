@@ -187,7 +187,7 @@ export default function ProfilePage() {
           </Field>
 
           {/* 직급 */}
-          <Field label="직급" required>
+          <Field label="직무" required>
             <input
               value={profile.title}
               onChange={(e) => setProfile({ ...profile, title: e.target.value })}
