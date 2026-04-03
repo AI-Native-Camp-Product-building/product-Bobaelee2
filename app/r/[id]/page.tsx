@@ -92,13 +92,27 @@ export default async function ResultPage({ params }: Props) {
         )}
 
         {/* .md력 측정 결과 */}
-        <MdPowerSection
-          mdPower={result.mdPower}
-          totalUsers={globalStats.totalUsers}
-        />
-
-        {/* 리더보드 등록 */}
-        <RegisterLeaderboard resultId={id} mdPower={result.mdPower} />
+        {result.isLegacyResult ? (
+          <div className="bg-bg-card rounded-2xl p-6 text-center flex flex-col gap-3">
+            <p className="text-sm text-claude-light/70">
+              md력 점수 산정 기준이 개선되었습니다.
+            </p>
+            <a
+              href="/"
+              className="inline-block px-5 py-2.5 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            >
+              다시 분석해서 새 점수 확인하기 →
+            </a>
+          </div>
+        ) : (
+          <>
+            <MdPowerSection
+              mdPower={result.mdPower}
+              totalUsers={globalStats.totalUsers}
+            />
+            <RegisterLeaderboard resultId={id} mdPower={result.mdPower} />
+          </>
+        )}
 
         {/* 로스팅 섹션 */}
         <RoastSection roasts={result.roasts} />

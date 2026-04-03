@@ -2,7 +2,7 @@
  * 페르소나별 처방전 생성기
  * 보편적 체크 + 페르소나 특화 조언을 우선순위와 함께 생성한다
  */
-import type { PersonaKey, MdStats, PrescriptionItem } from "@/lib/types";
+import type { PersonaKey, MdStats, PrescriptionItem, QualityScores } from "@/lib/types";
 
 /**
  * 우선순위 정렬 기준
@@ -321,17 +321,80 @@ const PERSONA_PRESCRIPTIONS: Record<PersonaKey, PrescriptionItem[]> = {
 };
 
 /**
+ * 품질 기반 처방전 — md력 점수의 약한 차원에 대한 개선 조언
+ */
+function qualityChecks(quality: QualityScores, stats: MdStats): PrescriptionItem[] {
+  const items: PrescriptionItem[] = [];
+
+  if (quality.actionability < 30) {
+    items.push({
+      text: "빌드/테스트/린트 실행 명령어를 백틱으로 감싸서 추가하세요. " +
+        "`npm run test`, `bun build` 같은 구체적 명령어가 있어야 Claude가 바로 실행할 수 있습니다.",
+      priority: "high",
+    });
+  }
+
+  if (quality.conciseness < 30 && stats.totalLines > 150) {
+    items.push({
+      text: "CLAUDE.md가 " + stats.totalLines + "줄입니다. 모델이 안정적으로 따르는 지시는 ~150개가 한계입니다. " +
+        "핵심만 남기고 나머지는 @import나 .claude/rules/로 분리하세요.",
+      priority: "high",
+    });
+  }
+
+  if (quality.conciseness < 40 && stats.totalLines <= 150) {
+    items.push({
+      text: "'clean code 작성' 같은 뻔한 지시나 린터가 처리할 스타일 규칙이 있다면 삭제하세요. " +
+        "Claude는 이미 알고 있거나, 린터가 더 잘합니다.",
+      priority: "medium",
+    });
+  }
+
+  if (quality.structure < 30) {
+    items.push({
+      text: "## Commands, ## Architecture, ## Rules 같은 섹션 헤딩으로 구조화하세요. " +
+        "Claude가 관련 정보를 빠르게 찾아 적용합니다.",
+      priority: "medium",
+    });
+  }
+
+  if (quality.uniqueness < 30) {
+    items.push({
+      text: "코드만 봐서는 모르는 프로젝트 고유 정보를 추가하세요. " +
+        "예: '이 모듈은 레거시라 수정 금지', 'Redis는 캐싱용만', 'PR은 반드시 1명 이상 리뷰'",
+      priority: "medium",
+    });
+  }
+
+  if (quality.safety < 20) {
+    items.push({
+      text: "가드레일을 추가하세요. '.env 커밋 절대 금지', '변경 후 반드시 typecheck 실행' 같은 " +
+        "규칙이 Claude의 위험한 실수를 방지합니다.",
+      priority: "high",
+    });
+  }
+
+  return items;
+}
+
+/**
  * 페르소나와 통계를 기반으로 처방전을 생성한다
- * 보편적 체크 + 페르소나 특화 조언을 우선순위 순으로 정렬해 반환한다
+ * 보편적 체크 + 품질 체크 + 페르소나 특화 조언을 우선순위 순으로 정렬해 반환한다
  * @param persona 페르소나 키
  * @param mdStats CLAUDE.md 통계
+ * @param qualityScores 품질 점수 (optional — 하위호환)
  * @returns 우선순위 순 PrescriptionItem 배열
  */
-export function generatePrescriptions(persona: PersonaKey, mdStats: MdStats): PrescriptionItem[] {
+export function generatePrescriptions(
+  persona: PersonaKey,
+  mdStats: MdStats,
+  qualityScores?: QualityScores,
+): PrescriptionItem[] {
   const universal = universalChecks(mdStats);
+  const quality = qualityScores ? qualityChecks(qualityScores, mdStats) : [];
   const specific = PERSONA_PRESCRIPTIONS[persona];
 
-  const all = [...universal, ...specific];
+  const all = [...universal, ...quality, ...specific];
 
   // 우선순위 순으로 정렬: high → medium → low
   all.sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);

@@ -5,6 +5,7 @@
 import type { AnalysisResult } from "@/lib/types";
 import { calculateScores, extractMdStats } from "./scorer";
 import { classifyPersona } from "./classifier";
+import { calculateQualityScores } from "./quality";
 import { generateRoasts } from "@/lib/content/roasts";
 import { generateStrengths } from "@/lib/content/strengths";
 import { generatePrescriptions } from "@/lib/content/prescriptions";
@@ -34,18 +35,22 @@ export function analyze(md: string): AnalysisResult {
   // 3. 페르소나 분류 (주 + 부 페르소나)
   const personaResult = classifyPersona(scores, mdStats);
 
-  // 4. 로스팅, 강점, 처방전 생성 (primary 기반)
+  // 4. 품질 점수 (md력용)
+  const qualityScores = calculateQualityScores(md, mdStats);
+
+  // 5. 콘텐츠 생성 (primary 기반)
   const roasts = generateRoasts(personaResult.primary, mdStats);
   const strengths = generateStrengths(personaResult.primary, mdStats);
-  const prescriptions = generatePrescriptions(personaResult.primary, mdStats);
+  const prescriptions = generatePrescriptions(personaResult.primary, mdStats, qualityScores);
 
-  // 5. .md력 점수 산출
-  const mdPower = calculateMdPower(scores, mdStats);
+  // 6. .md력 점수 — 품질 기반
+  const mdPower = calculateMdPower(qualityScores, mdStats);
 
   return {
     persona: personaResult.primary,
     secondaryPersona: personaResult.secondary,
     scores,
+    qualityScores,
     roasts,
     strengths,
     prescriptions,

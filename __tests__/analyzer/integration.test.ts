@@ -87,6 +87,7 @@ describe("analyze() — 통합 테스트", () => {
 
     expect(result.persona).toBeDefined();
     expect(result).toHaveProperty("secondaryPersona");
+    expect(result.qualityScores).toBeDefined();
     expect(result.scores).toBeDefined();
     expect(result.roasts).toBeDefined();
     expect(result.strengths).toBeDefined();

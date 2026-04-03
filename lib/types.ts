@@ -106,11 +106,21 @@ export interface PersonaResult {
   secondary: PersonaKey | null;  // 적합도 차이가 크면 null
 }
 
+/** md력 품질 5개 차원 — 각 0~100 */
+export interface QualityScores {
+  actionability: number;      // 실행 가능성
+  conciseness: number;        // 간결성
+  structure: number;          // 구조화
+  uniqueness: number;         // 맥락 독점성
+  safety: number;             // 방어력
+}
+
 /** 분석 결과 전체 */
 export interface AnalysisResult {
   persona: PersonaKey;                    // 주 페르소나 (하위호환)
   secondaryPersona: PersonaKey | null;    // 부 페르소나
   scores: DimensionScores;
+  qualityScores: QualityScores;           // md력 품질 점수
   roasts: RoastItem[];
   strengths: StrengthItem[];
   prescriptions: PrescriptionItem[];
@@ -122,6 +132,7 @@ export interface AnalysisResult {
 export interface SavedResult extends AnalysisResult {
   id: string;
   createdAt: string;
+  isLegacyResult: boolean;    // DB에 quality_scores가 null이면 true
 }
 
 /** 전체 사용자 통계 */

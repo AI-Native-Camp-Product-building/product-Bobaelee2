@@ -2,7 +2,7 @@
  * 결과 저장소 — Supabase 없으면 메모리, 있으면 Supabase 사용
  * 로컬 개발 시 환경변수 없이도 전체 플로우 동작
  */
-import type { AnalysisResult, SavedResult, PersonaKey } from "@/lib/types";
+import type { AnalysisResult, SavedResult, PersonaKey, QualityScores } from "@/lib/types";
 import { calculateMdPower } from "@/lib/analyzer/power";
 
 const isSupabaseConfigured =
@@ -28,6 +28,7 @@ export async function saveResult(
     ...result,
     id,
     createdAt: new Date().toISOString(),
+    isLegacyResult: false,
   };
 
   if (!isSupabaseConfigured) {
@@ -43,6 +44,7 @@ export async function saveResult(
     persona: result.persona,
     secondary_persona: result.secondaryPersona,
     scores: result.scores,
+    quality_scores: result.qualityScores,
     roasts: result.roasts,
     strengths: result.strengths,
     prescriptions: result.prescriptions,
@@ -88,17 +90,26 @@ export async function getResult(id: string): Promise<SavedResult | null> {
 
   const mdStats = data.md_stats;
 
+  // quality_scores가 null이면 기존(레거시) 결과
+  const rawQuality = (data as Record<string, unknown>).quality_scores;
+  const isLegacyResult = rawQuality === null || rawQuality === undefined;
+  const qualityScores: QualityScores = (rawQuality as QualityScores) ?? {
+    actionability: 0, conciseness: 0, structure: 0, uniqueness: 0, safety: 0,
+  };
+
   return {
     id: data.id,
     persona: data.persona as PersonaKey,
     secondaryPersona: (data as Record<string, unknown>).secondary_persona as PersonaKey | null ?? null,
     scores,
+    qualityScores,
     roasts: data.roasts,
     strengths: data.strengths,
     prescriptions: data.prescriptions,
     mdStats,
-    mdPower: calculateMdPower(scores, mdStats),
+    mdPower: calculateMdPower(qualityScores, mdStats),
     createdAt: data.created_at,
+    isLegacyResult,
   };
 }
 

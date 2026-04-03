@@ -150,6 +150,13 @@ describe("AnalysisResult", () => {
         collaboration: 70,
         security: 65,
       },
+      qualityScores: {
+        actionability: 70,
+        conciseness: 60,
+        structure: 80,
+        uniqueness: 50,
+        safety: 75,
+      },
       roasts: [],
       strengths: [],
       prescriptions: [],
@@ -195,6 +202,7 @@ describe("SavedResult", () => {
     const saved: SavedResult = {
       id: "abc-123",
       createdAt: "2026-04-02T00:00:00Z",
+      isLegacyResult: false,
       persona: "minimalist",
       secondaryPersona: null,
       scores: {
@@ -205,10 +213,17 @@ describe("SavedResult", () => {
         collaboration: 10,
         security: 10,
       },
+      qualityScores: {
+        actionability: 0,
+        conciseness: 0,
+        structure: 0,
+        uniqueness: 0,
+        safety: 0,
+      },
       roasts: [],
       strengths: [],
       prescriptions: [],
-      mdPower: { score: 60, tier: "egg", tierEmoji: "🥚", tierName: "Egg", tierTagline: ".md가 뭐예요?" },
+      mdPower: { score: 0, tier: "egg", tierEmoji: "🥚", tierName: "Egg", tierTagline: ".md가 뭐예요?" },
       mdStats: {
         totalLines: 3,
         sectionCount: 0,
