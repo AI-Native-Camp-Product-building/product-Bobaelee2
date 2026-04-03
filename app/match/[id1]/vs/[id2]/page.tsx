@@ -19,7 +19,7 @@ const DIMENSION_LABELS: Record<keyof DimensionScores, string> = {
   control: "제어 성향",
   toolDiversity: "도구 다양성",
   contextAwareness: "컨텍스트 관리",
-  collaboration: "협업 지향",
+  teamImpact: "협업 지향",
   security: "보안 의식",
 };
 

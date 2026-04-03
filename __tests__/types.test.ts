@@ -52,7 +52,7 @@ describe("DimensionScores", () => {
       control: 60,
       toolDiversity: 70,
       contextAwareness: 90,
-      collaboration: 50,
+      teamImpact: 50,
       security: 75,
     };
 
@@ -61,7 +61,7 @@ describe("DimensionScores", () => {
     expect(scores.control).toBeDefined();
     expect(scores.toolDiversity).toBeDefined();
     expect(scores.contextAwareness).toBeDefined();
-    expect(scores.collaboration).toBeDefined();
+    expect(scores.teamImpact).toBeDefined();
     expect(scores.security).toBeDefined();
   });
 
@@ -71,7 +71,7 @@ describe("DimensionScores", () => {
       control: 100,
       toolDiversity: 50,
       contextAwareness: 25,
-      collaboration: 75,
+      teamImpact: 75,
       security: 10,
     };
 
@@ -147,7 +147,7 @@ describe("AnalysisResult", () => {
         control: 60,
         toolDiversity: 80,
         contextAwareness: 85,
-        collaboration: 70,
+        teamImpact: 70,
         security: 65,
       },
       qualityScores: {
@@ -211,7 +211,7 @@ describe("SavedResult", () => {
         control: 10,
         toolDiversity: 10,
         contextAwareness: 10,
-        collaboration: 10,
+        teamImpact: 10,
         security: 10,
       },
       qualityScores: {

@@ -101,7 +101,7 @@ describe("analyze() — 통합 테스트", () => {
     expect(result.scores).toHaveProperty("control");
     expect(result.scores).toHaveProperty("toolDiversity");
     expect(result.scores).toHaveProperty("contextAwareness");
-    expect(result.scores).toHaveProperty("collaboration");
+    expect(result.scores).toHaveProperty("teamImpact");
     expect(result.scores).toHaveProperty("security");
   });
 

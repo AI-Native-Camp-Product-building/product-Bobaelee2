@@ -40,7 +40,7 @@ function makeScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
     control: 30,
     toolDiversity: 30,
     contextAwareness: 30,
-    collaboration: 30,
+    teamImpact: 30,
     security: 30,
     ...overrides,
   };
@@ -48,13 +48,13 @@ function makeScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
 
 describe("classifyPersona — minimalist", () => {
   it("줄 수가 매우 적고 평균 점수가 낮으면 minimalist여야 한다", () => {
-    const scores = makeScores({ automation: 5, control: 5, toolDiversity: 5, contextAwareness: 5, collaboration: 5, security: 5 });
+    const scores = makeScores({ automation: 5, control: 5, toolDiversity: 5, contextAwareness: 5, teamImpact: 5, security: 5 });
     const stats = makeMdStats({ totalLines: 3 });
     expect(classifyPersona(scores, stats).primary).toBe("minimalist");
   });
 
   it("모든 점수가 25 미만이면 minimalist여야 한다", () => {
-    const scores = makeScores({ automation: 10, control: 15, toolDiversity: 20, contextAwareness: 10, collaboration: 5, security: 12 });
+    const scores = makeScores({ automation: 10, control: 15, toolDiversity: 20, contextAwareness: 10, teamImpact: 5, security: 12 });
     const stats = makeMdStats({ totalLines: 20 });
     expect(classifyPersona(scores, stats).primary).toBe("minimalist");
   });
@@ -68,7 +68,7 @@ describe("classifyPersona — puppet-master", () => {
   });
 
   it("automation/toolDiversity 높고 security도 적절하면 puppet-master여야 한다", () => {
-    const scores = makeScores({ automation: 90, toolDiversity: 85, control: 10, security: 40, contextAwareness: 10, collaboration: 10 });
+    const scores = makeScores({ automation: 90, toolDiversity: 85, control: 10, security: 40, contextAwareness: 10, teamImpact: 10 });
     const stats = makeMdStats({ totalLines: 150 });
     expect(classifyPersona(scores, stats).primary).toBe("puppet-master");
   });
@@ -82,7 +82,7 @@ describe("classifyPersona — fortress", () => {
   });
 
   it("max ≥ 80 && stdDev ≥ 30 && security가 최고이면 fortress여야 한다", () => {
-    const scores = makeScores({ security: 90, automation: 10, control: 10, toolDiversity: 10, contextAwareness: 10, collaboration: 10 });
+    const scores = makeScores({ security: 90, automation: 10, control: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10 });
     const stats = makeMdStats({ totalLines: 80 });
     expect(classifyPersona(scores, stats).primary).toBe("fortress");
   });
@@ -96,7 +96,7 @@ describe("classifyPersona — legislator", () => {
   });
 
   it("max ≥ 80 && stdDev ≥ 30 && control이 최고이면 legislator여야 한다", () => {
-    const scores = makeScores({ control: 85, automation: 10, toolDiversity: 10, contextAwareness: 10, collaboration: 10, security: 10 });
+    const scores = makeScores({ control: 85, automation: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10, security: 10 });
     const stats = makeMdStats({ totalLines: 80 });
     expect(classifyPersona(scores, stats).primary).toBe("legislator");
   });
@@ -112,7 +112,7 @@ describe("classifyPersona — collector", () => {
 
 describe("classifyPersona — speedrunner", () => {
   it("짧고 통제/성숙도 낮으면 speedrunner여야 한다", () => {
-    const scores = makeScores({ control: 15, contextAwareness: 20, automation: 40, toolDiversity: 35, collaboration: 25, security: 30 });
+    const scores = makeScores({ control: 15, contextAwareness: 20, automation: 40, toolDiversity: 35, teamImpact: 25, security: 30 });
     const stats = makeMdStats({ totalLines: 15 });
     expect(classifyPersona(scores, stats).primary).toBe("speedrunner");
   });
@@ -126,7 +126,7 @@ describe("classifyPersona — craftsman", () => {
       control: 48,
       toolDiversity: 42,
       contextAwareness: 47,
-      collaboration: 44,
+      teamImpact: 44,
       security: 46,
     });
     const stats = makeMdStats({ totalLines: 60 });
@@ -143,7 +143,7 @@ describe("classifyPersona — deep-diver", () => {
       automation: 20,
       control: 20,
       toolDiversity: 20,
-      collaboration: 20,
+      teamImpact: 20,
       security: 20,
     });
     const stats = makeMdStats({ totalLines: 200 });
@@ -196,7 +196,7 @@ describe("classifyPersona — 주+부 페르소나", () => {
       security: 90,
       control: 10,
       contextAwareness: 10,
-      collaboration: 10,
+      teamImpact: 10,
     });
     const stats = makeMdStats({ totalLines: 100 });
     const result = classifyPersona(scores, stats);
@@ -211,7 +211,7 @@ describe("classifyPersona — 주+부 페르소나", () => {
       control: 10,
       toolDiversity: 10,
       contextAwareness: 10,
-      collaboration: 10,
+      teamImpact: 10,
     });
     const stats = makeMdStats({ totalLines: 80 });
     const result = classifyPersona(scores, stats);
@@ -220,7 +220,7 @@ describe("classifyPersona — 주+부 페르소나", () => {
   });
 
   it("minimalist는 항상 secondary가 null이어야 한다", () => {
-    const scores = makeScores({ automation: 5, control: 5, toolDiversity: 5, contextAwareness: 5, collaboration: 5, security: 5 });
+    const scores = makeScores({ automation: 5, control: 5, toolDiversity: 5, contextAwareness: 5, teamImpact: 5, security: 5 });
     const stats = makeMdStats({ totalLines: 3 });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("minimalist");

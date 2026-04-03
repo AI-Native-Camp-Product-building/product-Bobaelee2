@@ -126,7 +126,7 @@ describe("calculateScores", () => {
     expect(scores).toHaveProperty("control");
     expect(scores).toHaveProperty("toolDiversity");
     expect(scores).toHaveProperty("contextAwareness");
-    expect(scores).toHaveProperty("collaboration");
+    expect(scores).toHaveProperty("teamImpact");
     expect(scores).toHaveProperty("security");
   });
 });
