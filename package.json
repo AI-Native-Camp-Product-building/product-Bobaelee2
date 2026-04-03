@@ -11,6 +11,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "html2canvas": "^1.4.1",
     "nanoid": "^5.1.7",

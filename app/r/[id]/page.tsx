@@ -20,6 +20,7 @@ import ShareButton from "@/components/ShareButton";
 import CaptureCard from "@/components/CaptureCard";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 import MdPowerSection from "@/components/MdPowerSection";
+import RegisterLeaderboard from "@/components/RegisterLeaderboard";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -80,8 +81,14 @@ export default async function ResultPage({ params }: Props) {
         {/* 페르소나 히어로 */}
         <ResultHero persona={personaDef} />
 
-        {/* 확장 분석 결과 (전체 수집 시에만 표시) */}
-        <ExpandedAnalysis mdStats={result.mdStats} />
+        {/* .md력 측정 결과 */}
+        <MdPowerSection
+          mdPower={result.mdPower}
+          totalUsers={globalStats.totalUsers}
+        />
+
+        {/* 리더보드 등록 */}
+        <RegisterLeaderboard resultId={id} mdPower={result.mdPower} />
 
         {/* 로스팅 섹션 */}
         <RoastSection roasts={result.roasts} />
@@ -92,11 +99,8 @@ export default async function ResultPage({ params }: Props) {
         {/* 궁합 섹션 */}
         <CompatSection myPersona={result.persona} compat={compat} />
 
-        {/* .md력 측정 결과 */}
-        <MdPowerSection
-          mdPower={result.mdPower}
-          totalUsers={globalStats.totalUsers}
-        />
+        {/* 확장 분석 결과 (전체 수집 시에만 표시) */}
+        <ExpandedAnalysis mdStats={result.mdStats} />
 
         {/* 처방전 섹션 */}
         <PrescriptionSection prescriptions={result.prescriptions} />
