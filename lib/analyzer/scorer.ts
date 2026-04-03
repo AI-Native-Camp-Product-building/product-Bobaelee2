@@ -23,6 +23,7 @@ import {
  */
 const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
   contextAwareness: 0.5,
+  teamImpact: 0.6,
 };
 const DEFAULT_RATIO = 0.7;
 const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
@@ -53,7 +54,7 @@ export function calculateScores(md: string): DimensionScores {
       control: 0,
       toolDiversity: 0,
       contextAwareness: 0,
-      collaboration: 0,
+      teamImpact: 0,
       security: 0,
     };
   }
