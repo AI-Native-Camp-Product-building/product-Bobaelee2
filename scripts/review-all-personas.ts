@@ -313,7 +313,7 @@ for (const [expectedPersona, md] of Object.entries(SAMPLES)) {
   console.log(`${"=".repeat(70)}`);
 
   console.log(`\n### 성향 점수`);
-  console.log(`auto=${scores.automation} ctrl=${scores.control} tool=${scores.toolDiversity} ctx=${scores.contextAwareness} collab=${scores.collaboration} sec=${scores.security}`);
+  console.log(`auto=${scores.automation} ctrl=${scores.control} tool=${scores.toolDiversity} ctx=${scores.contextAwareness} collab=${scores.teamImpact} sec=${scores.security}`);
 
   console.log(`\n### 품질 점수 (md력: ${result.mdPower.score}점 ${result.mdPower.tierEmoji} ${result.mdPower.tierName})`);
   console.log(`action=${quality.actionability} concise=${quality.conciseness} struct=${quality.structure} unique=${quality.uniqueness} safety=${quality.safety}`);

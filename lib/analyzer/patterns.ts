@@ -63,8 +63,8 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /subagent|서브에이전트|task\(/gi,
   ],
 
-  // 협업 지향 — 팀워크, 코드 리뷰, 컨벤션 관련
-  collaboration: [
+  // 팀 임팩트 — 팀 기여, 코드 리뷰, 컨벤션, 온보딩, 지식 공유
+  teamImpact: [
     /팀|team/gi,
     /코드\s*리뷰|code\s*review/gi,
     /PR|pull\s*request/gi,
@@ -73,6 +73,8 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /브랜치|branch/gi,
     /merge|머지/gi,
     /동료|peer/gi,
+    /온보딩|onboard|신규\s*입사/gi,
+    /공유|share|전파/gi,
   ],
 
   // 보안 의식 — 민감 정보 보호, 환경 변수, 인증 관련

@@ -84,9 +84,13 @@ export async function getResult(id: string): Promise<SavedResult | null> {
   const scores = {
     ...rawScores,
     contextAwareness: rawScores.contextAwareness ?? rawScores.maturity ?? 0,
+    // collaboration → teamImpact fallback for legacy data
+    teamImpact: rawScores.teamImpact ?? rawScores.collaboration ?? 0,
   };
   // maturity 키가 남아있으면 제거 (타입 정합성)
   if ("maturity" in scores) delete (scores as Record<string, unknown>).maturity;
+  // collaboration 키가 남아있으면 제거 (타입 정합성)
+  if ("collaboration" in scores) delete (scores as Record<string, unknown>).collaboration;
 
   const mdStats = data.md_stats;
 

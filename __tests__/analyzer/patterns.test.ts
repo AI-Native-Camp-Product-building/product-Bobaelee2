@@ -14,7 +14,7 @@ describe("DIMENSION_PATTERNS", () => {
       "control",
       "toolDiversity",
       "contextAwareness",
-      "collaboration",
+      "teamImpact",
       "security",
     ];
     expectedDimensions.forEach((dim) => {

@@ -166,18 +166,6 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
     ];
   },
 
-  macgyver: (stats) => [
-    {
-      text: `도구 ${stats.toolNames.length}개만으로 자동화를 구현하는 건 진짜 실력의 증거예요. 도구에 의존하는 게 아니라 문제 해결 능력으로 승부하는 사람.`,
-    },
-    {
-      text: "의존성이 적다는 건 장애 포인트도 적다는 뜻이에요. 플러그인 10개 깔아놓은 사람보다 당신 시스템이 더 안정적일 수 있어요.",
-    },
-    {
-      text: `${stats.claudeMdLines}줄에 군더더기 없이 실행에 집중. 단순함이 곧 안정성이라는 걸 본능적으로 아는 사람.`,
-    },
-  ],
-
   daredevil: (stats) => [
     {
       text: "실행 속도가 압도적이에요. 아이디어에서 구현까지의 리드타임이 가장 짧은 유형. MVP 만들 때 최강.",

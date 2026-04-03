@@ -41,7 +41,7 @@ export function analyze(md: string): AnalysisResult {
   // 5. 콘텐츠 생성 (primary 기반)
   const roasts = generateRoasts(personaResult.primary, mdStats);
   const strengths = generateStrengths(personaResult.primary, mdStats);
-  const prescriptions = generatePrescriptions(personaResult.primary, mdStats, qualityScores);
+  const prescriptions = generatePrescriptions(personaResult.primary, mdStats, qualityScores, scores);
 
   // 6. .md력 점수 — 품질 기반
   const mdPower = calculateMdPower(qualityScores, mdStats);

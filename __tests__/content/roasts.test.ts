@@ -4,7 +4,7 @@ import { generateRoasts } from "@/lib/content/roasts";
 import { generateStrengths } from "@/lib/content/strengths";
 import { generatePrescriptions } from "@/lib/content/prescriptions";
 import { getCompatibility } from "@/lib/content/compatibility";
-import type { MdStats, PersonaKey } from "@/lib/types";
+import type { MdStats, PersonaKey, QualityScores, DimensionScores } from "@/lib/types";
 
 /** 테스트용 기본 MdStats */
 function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
@@ -23,7 +23,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
       control: 6,
       toolDiversity: 4,
       contextAwareness: 7,
-      collaboration: 3,
+      teamImpact: 3,
       security: 5,
     },
     keywordUniqueHits: {
@@ -31,7 +31,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
       control: 4,
       toolDiversity: 3,
       contextAwareness: 4,
-      collaboration: 2,
+      teamImpact: 2,
       security: 3,
     },
     pluginCount: 0,
@@ -52,6 +52,31 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
   };
 }
 
+/** 테스트용 기본 QualityScores */
+function makeQuality(overrides: Partial<QualityScores> = {}): QualityScores {
+  return {
+    actionability: 50,
+    conciseness: 50,
+    structure: 50,
+    uniqueness: 50,
+    safety: 50,
+    ...overrides,
+  };
+}
+
+/** 테스트용 기본 DimensionScores */
+function makeDimScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
+  return {
+    automation: 50,
+    control: 50,
+    toolDiversity: 50,
+    contextAwareness: 50,
+    teamImpact: 50,
+    security: 50,
+    ...overrides,
+  };
+}
+
 const ALL_PERSONAS: PersonaKey[] = [
   "puppet-master",
   "speedrunner",
@@ -64,13 +89,12 @@ const ALL_PERSONAS: PersonaKey[] = [
   "evangelist",
   "architect",
   "huggies",
-  "macgyver",
   "daredevil",
 ];
 
 describe("PERSONAS — 8개 페르소나 정의", () => {
-  it("13개 페르소나가 모두 정의되어야 한다", () => {
-    expect(Object.keys(PERSONAS)).toHaveLength(13);
+  it("12개 페르소나가 모두 정의되어야 한다", () => {
+    expect(Object.keys(PERSONAS)).toHaveLength(12);
   });
 
   it("각 페르소나에 필수 필드가 있어야 한다", () => {
@@ -186,22 +210,22 @@ describe("generatePrescriptions — 처방전 생성", () => {
   it("모든 페르소나에서 처방전을 반환해야 한다", () => {
     const stats = makeMdStats();
     ALL_PERSONAS.forEach((persona) => {
-      const prescriptions = generatePrescriptions(persona, stats);
+      const prescriptions = generatePrescriptions(persona, stats, makeQuality(), makeDimScores());
       expect(prescriptions.length).toBeGreaterThan(0);
     });
   });
 
   it("각 처방전 아이템에 text와 priority가 있어야 한다", () => {
     const stats = makeMdStats();
-    generatePrescriptions("minimalist", stats).forEach((p) => {
+    generatePrescriptions("minimalist", stats, makeQuality(), makeDimScores()).forEach((p) => {
       expect(p.text).toBeTruthy();
       expect(["high", "medium", "low"]).toContain(p.priority);
     });
   });
 
   it("우선순위 순으로 정렬되어야 한다 (high → medium → low)", () => {
-    const stats = makeMdStats({ hasMemory: false, hasHooks: false, totalLines: 5 });
-    const prescriptions = generatePrescriptions("minimalist", stats);
+    const stats = makeMdStats({ hasMemory: false, hasHooks: false, totalLines: 5, claudeMdLines: 5 });
+    const prescriptions = generatePrescriptions("minimalist", stats, makeQuality(), makeDimScores());
     const priorities = prescriptions.map((p) => p.priority);
     // high가 low보다 앞에 와야 함
     const firstLowIndex = priorities.indexOf("low");
@@ -212,15 +236,16 @@ describe("generatePrescriptions — 처방전 생성", () => {
   });
 
   it("hasMemory가 false이면 컨텍스트 관리 관련 처방이 포함되어야 한다", () => {
-    const stats = makeMdStats({ hasMemory: false });
-    const prescriptions = generatePrescriptions("craftsman", stats);
+    const stats = makeMdStats({ hasMemory: false, hasProjectMd: false });
+    const prescriptions = generatePrescriptions("craftsman", stats, makeQuality(), makeDimScores());
     const allText = prescriptions.map((p) => p.text).join(" ");
-    expect(allText).toMatch(/컨텍스트/i);
+    // 새 처방전에서는 "맥락"이라는 단어로 컨텍스트 관리를 안내함
+    expect(allText).toMatch(/맥락|컨텍스트|CLAUDE\.md/i);
   });
 
   it("totalLines < 10이면 high priority 처방이 포함되어야 한다", () => {
-    const stats = makeMdStats({ totalLines: 3, ruleCount: 0, hasMemory: false });
-    const prescriptions = generatePrescriptions("minimalist", stats);
+    const stats = makeMdStats({ totalLines: 3, claudeMdLines: 3, ruleCount: 0, hasMemory: false, hasProjectMd: false });
+    const prescriptions = generatePrescriptions("minimalist", stats, makeQuality(), makeDimScores());
     const highPriority = prescriptions.filter((p) => p.priority === "high");
     expect(highPriority.length).toBeGreaterThan(0);
   });

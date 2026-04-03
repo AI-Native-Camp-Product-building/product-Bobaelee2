@@ -237,24 +237,6 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     ];
   },
 
-  macgyver: (stats) => [
-    {
-      text: "새 도구 깔기 싫어서 삽질하는 사람",
-      detail: `도구 ${stats.toolNames.length}개로 ${stats.claudeMdLines}줄 분량의 자동화를 구축. MCP 하나 연결하면 5분이면 끝날 일을 curl + jq + sed로 30분 걸려 해결하고 있어요.`,
-      color: "red",
-    },
-    {
-      text: "그 셸 스크립트, 본인 말고 읽을 수 있는 사람 있어요?",
-      detail: "효율적인 건 맞는데, 6개월 후 본인도 '이게 왜 돌아가지?'라고 할 거예요. 주석 하나 없는 원라이너가 자랑은 아닙니다.",
-      color: "orange",
-    },
-    {
-      text: "미니멀리즘이 아니라 도구 울렁증",
-      detail: `연동 도구 ${stats.toolNames.length}개. 새 도구 배우는 게 귀찮아서 '이걸로도 되는데?'라고 자기 합리화 중이죠. 한번만 마음을 열어보세요.`,
-      color: "blue",
-    },
-  ],
-
   daredevil: (stats) => [
     {
       text: "사고 터지기 전까지는 팀에서 가장 빠른 사람",

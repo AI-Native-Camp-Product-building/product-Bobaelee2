@@ -12,7 +12,7 @@ import type {
   GlobalStats,
 } from "@/lib/types";
 
-// PersonaKey 타입 검증용 — 8개 값 모두 할당 가능해야 함
+// PersonaKey 타입 검증용 — 12개 값 모두 할당 가능해야 함 (macgyver 제거됨)
 const PERSONA_KEYS: PersonaKey[] = [
   "puppet-master",
   "speedrunner",
@@ -25,13 +25,12 @@ const PERSONA_KEYS: PersonaKey[] = [
   "evangelist",
   "architect",
   "huggies",
-  "macgyver",
   "daredevil",
 ];
 
 describe("PersonaKey", () => {
-  it("13개 페르소나 키가 존재해야 한다", () => {
-    expect(PERSONA_KEYS).toHaveLength(13);
+  it("12개 페르소나 키가 존재해야 한다", () => {
+    expect(PERSONA_KEYS).toHaveLength(12);
   });
 
   it("모든 키가 문자열이어야 한다", () => {
@@ -42,7 +41,7 @@ describe("PersonaKey", () => {
 
   it("중복 없이 고유한 키여야 한다", () => {
     const unique = new Set(PERSONA_KEYS);
-    expect(unique.size).toBe(13);
+    expect(unique.size).toBe(12);
   });
 });
 
@@ -53,7 +52,7 @@ describe("DimensionScores", () => {
       control: 60,
       toolDiversity: 70,
       contextAwareness: 90,
-      collaboration: 50,
+      teamImpact: 50,
       security: 75,
     };
 
@@ -62,7 +61,7 @@ describe("DimensionScores", () => {
     expect(scores.control).toBeDefined();
     expect(scores.toolDiversity).toBeDefined();
     expect(scores.contextAwareness).toBeDefined();
-    expect(scores.collaboration).toBeDefined();
+    expect(scores.teamImpact).toBeDefined();
     expect(scores.security).toBeDefined();
   });
 
@@ -72,7 +71,7 @@ describe("DimensionScores", () => {
       control: 100,
       toolDiversity: 50,
       contextAwareness: 25,
-      collaboration: 75,
+      teamImpact: 75,
       security: 10,
     };
 
@@ -148,7 +147,7 @@ describe("AnalysisResult", () => {
         control: 60,
         toolDiversity: 80,
         contextAwareness: 85,
-        collaboration: 70,
+        teamImpact: 70,
         security: 65,
       },
       qualityScores: {
@@ -212,7 +211,7 @@ describe("SavedResult", () => {
         control: 10,
         toolDiversity: 10,
         contextAwareness: 10,
-        collaboration: 10,
+        teamImpact: 10,
         security: 10,
       },
       qualityScores: {
@@ -275,7 +274,6 @@ describe("GlobalStats", () => {
         evangelist: 0,
         architect: 0,
         huggies: 0,
-        macgyver: 0,
         daredevil: 0,
       },
       avgLines: 85,
