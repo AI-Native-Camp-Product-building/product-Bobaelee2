@@ -65,3 +65,48 @@ body {
 .claude-icon-bounce {
   animation: claude-chaos 6s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
 }
+
+/* 히어로 태그라인 — Claude 오렌지 그라데이션 + 반짝 효과 */
+.tagline-gradient {
+  background: linear-gradient(
+    135deg,
+    #C96A4A 0%,
+    #D97757 25%,
+    #F5C6A3 50%,
+    #D97757 75%,
+    #C96A4A 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: tagline-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes tagline-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 반짝 스파클 오버레이 */
+.tagline-sparkle {
+  position: relative;
+}
+.tagline-sparkle::after {
+  content: "✦";
+  position: absolute;
+  top: -4px;
+  right: -18px;
+  font-size: 14px;
+  background: linear-gradient(135deg, #ffd700, #D97757);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sparkle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1.2) rotate(20deg); }
+}

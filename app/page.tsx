@@ -62,10 +62,8 @@ export default function HomePage() {
               <span className="text-claude-orange">TI</span>
             </span>
           </h1>
-          <p className="text-xl text-claude-cream font-medium leading-snug">
-            .md가 당신에게
-            <br />
-            하고 싶었던 말
+          <p className="text-xl font-bold leading-snug tagline-sparkle">
+            <span className="tagline-gradient">.md가 당신에게 하고 싶었던 말</span>
           </p>
           <PrivacyBadge />
         </div>
