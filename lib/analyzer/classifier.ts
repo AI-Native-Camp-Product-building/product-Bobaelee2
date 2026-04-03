@@ -9,7 +9,7 @@ const DIMENSION_TO_PERSONA: Record<keyof DimensionScores, PersonaKey> = {
   control: "legislator",
   toolDiversity: "collector",
   contextAwareness: "deep-diver",
-  collaboration: "evangelist",
+  teamImpact: "evangelist",
   security: "fortress",
 };
 
@@ -98,23 +98,30 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     const fit = (scores.control - 75) / 25 * 100;
     candidates.push({ persona: "legislator", fit });
   }
-  if (scores.collaboration >= 55) {
-    const fit = (scores.collaboration - 55) / 45 * 100;
+  if (scores.teamImpact >= 55) {
+    const fit = (scores.teamImpact - 55) / 45 * 100;
     candidates.push({ persona: "evangelist", fit });
   }
   if (scores.toolDiversity >= 70 && scores.automation < 40) {
     const fit = (scores.toolDiversity - 70) / 30 * 50 + (40 - scores.automation) / 40 * 50;
     candidates.push({ persona: "collector", fit });
   }
-  if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30) {
+  if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30 && max < 70) {
     candidates.push({ persona: "speedrunner", fit: 50 });
   }
   if (sd < 20 && avg >= 30) {
-    const fit = Math.max(0, (avg - 30) / 70 * 100);
+    let fit = Math.max(0, (avg - 30) / 70 * 100);
+    if (candidates.length > 0) fit *= 0.5;
     candidates.push({ persona: "craftsman", fit });
   }
-  if (max >= 80 && sd >= 30) {
-    const fit = (max - 80) / 20 * 50 + Math.min(50, (sd - 30) / 30 * 50);
+  // deep-diver: 1위 차원이 2위 차원의 2배 이상 = 극단적 과몰입
+  const sortedValues = Object.values(scores).sort((a, b) => b - a);
+  const first = sortedValues[0];
+  const second = sortedValues[1];
+  const dominanceRatio = second > 0 ? first / second : Infinity;
+
+  if (first >= 70 && dominanceRatio >= 2.0) {
+    const fit = Math.min(100, (dominanceRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
     candidates.push({ persona: "deep-diver", fit });
   }
 
@@ -129,15 +136,43 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
 
   const primary = candidates[0].persona;
 
-  // 부 페르소나: 주 페르소나 적합도의 60% 이상일 때만 표시
-  let secondary: PersonaKey | null = null;
-  if (candidates.length >= 2 && candidates[1].fit >= candidates[0].fit * 0.6) {
-    secondary = candidates[1].persona;
-  }
+  // 부 페르소나 차원 매핑
+  const PERSONA_PRIMARY_DIMENSION: Partial<Record<PersonaKey, keyof DimensionScores>> = {
+    "puppet-master": "automation",
+    fortress: "security",
+    legislator: "control",
+    evangelist: "teamImpact",
+    collector: "toolDiversity",
+    "deep-diver": "contextAwareness",
+    daredevil: "automation",
+  };
 
-  // 주/부가 같은 경우 방지
-  if (secondary === primary) {
-    secondary = candidates.length >= 3 ? candidates[2].persona : null;
+  // deep-diver 부 페르소나 억제용
+  const DIMENSION_SPECIFIC_PERSONAS: Partial<Record<keyof DimensionScores, PersonaKey[]>> = {
+    security: ["fortress"],
+    control: ["legislator"],
+    automation: ["puppet-master", "daredevil"],
+    toolDiversity: ["collector", "puppet-master"],
+    teamImpact: ["evangelist"],
+    contextAwareness: [],
+  };
+
+  let secondary: PersonaKey | null = null;
+  for (let i = 1; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    if (candidate.fit < 25) break;
+    if (candidate.fit < candidates[0].fit * 0.6) break;
+    if (candidate.persona === primary) continue;
+    const primaryDim = PERSONA_PRIMARY_DIMENSION[primary];
+    const candidateDim = PERSONA_PRIMARY_DIMENSION[candidate.persona];
+    if (primaryDim && candidateDim && primaryDim === candidateDim) continue;
+    if (candidate.persona === "deep-diver") {
+      const dominant = dominantDimension(scores);
+      const specificPersonas = DIMENSION_SPECIFIC_PERSONAS[dominant] ?? [];
+      if (specificPersonas.includes(primary)) continue;
+    }
+    secondary = candidate.persona;
+    break;
   }
 
   return { primary, secondary };
