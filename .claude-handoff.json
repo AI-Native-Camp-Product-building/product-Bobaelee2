@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-05T18:30:00+09:00",
+  "repo": "mdti",
+  "branch": "main",
+  "git_state": {
+    "uncommitted_files": [
+      "M docs/superpowers/specs/2026-04-03-mdti-next-features-design.md"
+    ],
+    "last_commit_hash": "254bb77beaf3dc8c55cb35a2a8cf89338f68b065",
+    "last_commit_message": "README 업데이트: 팀 임팩트 차원 + 처방전 5개 고정 반영"
+  },
+  "summary": {
+    "what_we_were_doing": "mdTI 수집 스크립트(Mac/Windows)가 최근 분석 기준 변경(teamImpact, macgyver 제거, quality 5차원 등)에 맞춰 업데이트가 필요한지 갭 분석",
+    "key_decisions": [
+      "수집 스크립트 변경 불필요 — 분석 엔진은 텍스트 기반 패턴 매칭이라 수집 대상은 그대로, 변경은 항상 lib/analyzer/ 쪽",
+      ".claude/rules/ 디렉토리가 유일한 미수집 항목이지만, CLAUDE.md 내 언급만으로도 contextAwareness 신호 감지 가능하여 실질적 영향 미미",
+      "수집 스크립트의 관심사 분리(SoC) 설계가 잘 되어 있어서 분석 기준이 바뀌어도 수집 로직은 안정적"
+    ],
+    "current_blockers": [],
+    "next_steps": [
+      "잔여 작업(P2): 비개발자 톤 변환 — 로스팅/처방전 텍스트의 개발 용어를 일반인 친화적으로",
+      "잔여 작업(P2): 로스팅 세계관 매트릭스 적용",
+      "잔여 작업(P3): 역할 감지 뱃지 시스템",
+      "선택적 개선: .claude/rules/ 디렉토리 수집 추가 (우선순위 낮음)"
+    ],
+    "files_touched": [
+      "components/MdInput.tsx",
+      "lib/analyzer/patterns.ts",
+      "lib/analyzer/scorer.ts",
+      "lib/analyzer/classifier.ts",
+      "lib/analyzer/quality.ts"
+    ],
+    "important_context": "mdTI는 CLAUDE.md 성향 분석 바이럴 서비스. 수집 스크립트(MdInput.tsx의 MAC_CMD/WIN_CMD)가 사용자 클립보드로 데이터를 모아주고, 분석 엔진(lib/analyzer/)이 클라이언트 사이드에서 정규식 패턴 매칭으로 6차원 점수 + 5차원 품질 + 12개 페르소나를 산출. 최근 대규모 재설계(collaboration→teamImpact, macgyver 제거, ConditionalPrescription 5개 고정, deep-diver dominanceRatio 등) 완료 상태."
+  }
+}
