@@ -1,4 +1,4 @@
-/** 분석 차원 6개 — 각 0~100 점수 */
+/** 분석 차원 7개 — 각 0~100 점수 */
 export interface DimensionScores {
   automation: number;           // 자동화 성향
   control: number;              // 제어 성향
@@ -6,6 +6,7 @@ export interface DimensionScores {
   contextAwareness: number;     // 컨텍스트 관리 (구 maturity)
   teamImpact: number;           // 팀 임팩트
   security: number;             // 보안 의식
+  agentOrchestration: number;   // 자율 에이전트 오케스트레이션
 }
 
 /** 13가지 페르소나 키 */

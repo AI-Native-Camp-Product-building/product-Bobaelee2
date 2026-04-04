@@ -24,6 +24,7 @@ import {
 const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
   contextAwareness: 0.5,
   teamImpact: 0.6,
+  agentOrchestration: 0.5,  // 고급 패턴 비중 높아 50% 적용
 };
 const DEFAULT_RATIO = 0.7;
 const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
@@ -56,6 +57,7 @@ export function calculateScores(md: string): DimensionScores {
       contextAwareness: 0,
       teamImpact: 0,
       security: 0,
+      agentOrchestration: 0,
     };
   }
 
