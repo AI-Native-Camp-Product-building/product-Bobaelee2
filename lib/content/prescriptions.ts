@@ -149,14 +149,46 @@ const DIMENSIONAL_PRESCRIPTIONS: ConditionalPrescription[] = [
     condition: (_persona, stats, quality) =>
       quality.conciseness < 30 && stats.totalLines > 150,
   },
-  // conciseness — 노이즈
+  // conciseness — 노이즈 (자율 에이전트 맥락이면 가드레일이므로 제외)
   {
     id: "dim-concise-noise",
     text: "'clean code 작성', 'DRY 원칙' 같은 뻔한 지시를 삭제하세요. Claude는 이미 알고 있거나, 린터가 더 잘합니다.",
     priority: "medium",
     tag: "dim:conciseness-noise",
     tier: "dimensional",
-    condition: (_persona, _stats, quality) => quality.conciseness < 40,
+    condition: (_persona, _stats, quality, scores) =>
+      quality.conciseness < 40 && scores.agentOrchestration < 30,
+  },
+  // conciseness — 자율 에이전트 맥락에서는 가드레일 강화 권장
+  {
+    id: "dim-agent-guardrail",
+    text: "자율 에이전트 설정이 감지됩니다. '뻔한 지시'처럼 보여도 에이전트 가드레일로 기능합니다. 삭제하지 말고, stop condition과 rollback 규칙을 더 추가하세요.",
+    priority: "medium",
+    tag: "dim:conciseness-noise",
+    tier: "dimensional",
+    condition: (_persona, _stats, quality, scores) =>
+      quality.conciseness < 40 && scores.agentOrchestration >= 30,
+  },
+
+  // agentOrchestration — 높은 성숙도
+  {
+    id: "dim-agent-high",
+    text: "에이전트 오케스트레이션 역량이 높습니다. 이터레이션 간 학습 구조(progress.txt, 패턴 축적)를 정기적으로 정리하면 효율이 더 올라갑니다.",
+    priority: "low",
+    tag: "dim:agentOrchestration",
+    tier: "dimensional",
+    condition: (_persona, _stats, _quality, scores) =>
+      scores.agentOrchestration >= 60,
+  },
+  // agentOrchestration — 중간 (도입기)
+  {
+    id: "dim-agent-mid",
+    text: "자율 에이전트 설정 흔적이 있습니다. stop condition, 에러 복구 프로토콜, 스코프 제한('한 번에 하나씩')을 명시하면 안정성이 크게 올라갑니다.",
+    priority: "medium",
+    tag: "dim:agentOrchestration",
+    tier: "dimensional",
+    condition: (_persona, _stats, _quality, scores) =>
+      scores.agentOrchestration >= 20 && scores.agentOrchestration < 60,
   },
 
   // structure — 페르소나 특화 (legislator)

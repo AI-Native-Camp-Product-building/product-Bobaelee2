@@ -26,7 +26,7 @@ import { calculateMdPower } from "./power";
  * @returns AnalysisResult 완전한 분석 결과
  */
 export function analyze(md: string): AnalysisResult {
-  // 1. 6개 차원 점수 계산
+  // 1. 7개 차원 점수 계산
   const scores = calculateScores(md);
 
   // 2. 파일 통계 추출
@@ -43,8 +43,8 @@ export function analyze(md: string): AnalysisResult {
   const strengths = generateStrengths(personaResult.primary, mdStats);
   const prescriptions = generatePrescriptions(personaResult.primary, mdStats, qualityScores, scores);
 
-  // 6. .md력 점수 — 품질 기반
-  const mdPower = calculateMdPower(qualityScores, mdStats);
+  // 6. .md력 점수 — 품질 기반 + 에이전트 오케스트레이션 보너스
+  const mdPower = calculateMdPower(qualityScores, mdStats, scores);
 
   return {
     persona: personaResult.primary,

@@ -3,7 +3,7 @@
  * 5개 품질 차원 합산 × 2 = 0~1000
  * 에코시스템 보너스 폐지 — 도구 개수 ≠ md 품질
  */
-import type { QualityScores, MdStats, MdPower, TierKey } from "@/lib/types";
+import type { QualityScores, MdStats, MdPower, TierKey, DimensionScores } from "@/lib/types";
 
 /** 티어 정의 */
 const TIERS: { key: TierKey; emoji: string; name: string; tagline: string; min: number }[] = [
@@ -17,11 +17,15 @@ const TIERS: { key: TierKey; emoji: string; name: string; tagline: string; min: 
 
 /**
  * .md력 점수를 계산한다 (0~1000)
- * 5개 품질 차원 합산(0~500) × 2 = 0~1000
+ * 5개 품질 차원 합산(0~500) × 2 + 에이전트 오케스트레이션 보너스 = 0~1000
  */
-export function calculateMdPower(quality: QualityScores, stats: MdStats): MdPower {
+export function calculateMdPower(quality: QualityScores, stats: MdStats, dimensionScores?: DimensionScores): MdPower {
   const baseScore = Object.values(quality).reduce((a, b) => a + b, 0);
-  const score = Math.min(1000, Math.max(0, baseScore * 2));
+  // 자율 에이전트 오케스트레이션 보너스: 50점 이상이면 최대 +50 가산
+  const agentBonus = dimensionScores?.agentOrchestration
+    ? Math.min(50, Math.max(0, dimensionScores.agentOrchestration - 50) * 1)
+    : 0;
+  const score = Math.min(1000, Math.max(0, baseScore * 2 + agentBonus));
 
   const tierDef = TIERS.find((t) => score >= t.min) ?? TIERS[TIERS.length - 1];
 
