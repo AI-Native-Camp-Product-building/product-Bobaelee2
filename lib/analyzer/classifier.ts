@@ -121,7 +121,10 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   }
   if (sd < 20 && avg >= 30) {
     let fit = Math.max(0, (avg - 30) / 70 * 100);
-    if (candidates.length > 0) fit *= 0.5;
+    // 유의미한 경쟁자(fit ≥ 15)가 있을 때만 페널티 적용
+    // fit < 15인 약한 후보(예: fortress fit=6)로는 craftsman을 억제하지 않음
+    const hasStrongCompetitor = candidates.some(c => c.fit >= 15);
+    if (hasStrongCompetitor) fit *= 0.5;
     candidates.push({ persona: "craftsman", fit });
   }
   // deep-diver: 1위 차원이 2위 차원의 2배 이상 = 극단적 과몰입
@@ -131,14 +134,17 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   const dominanceRatio = second > 0 ? first / second : Infinity;
 
   if (first >= 70 && dominanceRatio >= 2.0) {
-    // deep-diver는 지배 차원에 전용 페르소나가 이미 후보에 있으면 fit을 낮춤
     const dominant = dominantDimension(scores);
     const specificPersonas = DIMENSION_SPECIFIC_PERSONAS[dominant] ?? [];
-    const hasSpecificCandidate = candidates.some(c => specificPersonas.includes(c.persona));
+    // 지배 차원에 전용 페르소나 정의가 있으면 억제 (후보 등록 여부 불문)
+    const hasDimensionSpecificPersona = specificPersonas.length > 0;
 
-    let fit = Math.min(100, (dominanceRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
-    if (hasSpecificCandidate) {
-      fit *= 0.3; // 전용 페르소나가 있으면 deep-diver fit을 대폭 낮춤
+    // second=0(Infinity)이면 빈약한 파일이지 극단 몰입이 아님 → fit 상한 60
+    const cappedRatio = second > 0 ? dominanceRatio : 4.0;
+    let fit = Math.min(100, (cappedRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
+    if (second === 0) fit = Math.min(60, fit);
+    if (hasDimensionSpecificPersona) {
+      fit *= 0.3; // 전용 페르소나가 정의된 차원이면 deep-diver fit을 대폭 낮춤
     }
     candidates.push({ persona: "deep-diver", fit });
   }

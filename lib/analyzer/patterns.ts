@@ -220,10 +220,20 @@ export function extractEnabledPlugins(text: string): string[] {
  */
 export function extractMcpServerNames(text: string): string[] {
   const servers: string[] = [];
-  // mcpServers 블록 내 키 이름 매칭
-  const mcpSection = text.match(/"mcpServers"\s*:\s*\{([\s\S]*?)^\s*\}/m);
-  if (mcpSection) {
-    const keyMatches = mcpSection[1].matchAll(/"([^"]+)"\s*:\s*\{/g);
+  // mcpServers 블록 내 키 이름 매칭 — 중첩 깊이 추적으로 블록 전체를 캡처
+  const mcpStart = text.match(/"mcpServers"\s*:\s*\{/);
+  if (mcpStart && mcpStart.index !== undefined) {
+    let depth = 1;
+    const startIdx = mcpStart.index + mcpStart[0].length;
+    let endIdx = startIdx;
+    for (let i = startIdx; i < text.length && depth > 0; i++) {
+      if (text[i] === "{") depth++;
+      else if (text[i] === "}") depth--;
+      endIdx = i;
+    }
+    const mcpContent = text.slice(startIdx, endIdx);
+    // 최상위 키만 추출 (깊이 0에서 "키": { 패턴)
+    const keyMatches = mcpContent.matchAll(/"([^"]+)"\s*:\s*\{/g);
     for (const m of keyMatches) {
       servers.push(m[1]);
     }

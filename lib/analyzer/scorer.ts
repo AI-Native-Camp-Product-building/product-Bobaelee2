@@ -94,6 +94,9 @@ export function calculateScores(md: string): DimensionScores {
 
     // 제어: defaultMode가 auto가 아님 = 수동 승인 선호
     if (!sig.defaultModeIsAuto) result.control = Math.min(100, result.control + 6);
+    // 제어: deny 규칙 = 명시적 행동 제한 → control 신호
+    if (sig.hasDenyRules) result.control = Math.min(100, result.control + Math.min(sig.denyCount * 3, 12));
+    if (sig.blocksDangerousOps) result.control = Math.min(100, result.control + 6);
 
     // 도구 다양성: MCP 서버 수 반영
     const mcpServers = extractMcpServerNames(md);
