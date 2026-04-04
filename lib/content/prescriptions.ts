@@ -279,7 +279,7 @@ const COMMON_PRESCRIPTIONS: ConditionalPrescription[] = [
     priority: "high",
     tag: "common:role",
     tier: "common",
-    condition: (_persona, stats) => stats.claudeMdLines < 10,
+    condition: (_persona, stats) => stats.claudeMdLines < 10 && stats.totalLines < 30,
   },
   {
     id: "common-tools",
