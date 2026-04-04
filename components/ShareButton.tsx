@@ -33,7 +33,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
     `${personaDef.tagline}\n\n` +
     `나도 털어보기 →`;
 
-  /** 이미지 캡처 → 클립보드 복사 (공통 로직) */
+  /** 이미지 캡처 → 클립보드에 텍스트+이미지 복사 (공통 로직) */
   const captureToClipboard = useCallback(async (): Promise<boolean> => {
     setShowCard(true);
     await new Promise((r) => setTimeout(r, 100));
@@ -50,16 +50,29 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
         logging: false,
       });
 
+      const clipText = `${shareText}\n${shareUrl}`;
+
       return await new Promise<boolean>((resolve) => {
         canvas.toBlob(async (blob) => {
           if (!blob) { resolve(false); return; }
           try {
             await navigator.clipboard.write([
-              new ClipboardItem({ "image/png": blob }),
+              new ClipboardItem({
+                "text/plain": new Blob([clipText], { type: "text/plain" }),
+                "image/png": blob,
+              }),
             ]);
             resolve(true);
           } catch {
-            resolve(false);
+            // text+image 동시 복사 실패 시 이미지만 시도
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob }),
+              ]);
+              resolve(true);
+            } catch {
+              resolve(false);
+            }
           }
         }, "image/png");
       });
@@ -68,7 +81,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
     } finally {
       setShowCard(false);
     }
-  }, []);
+  }, [shareText, shareUrl]);
 
   /** LinkedIn: 캡처 → 클립보드 → OG 카드 미리보기로 공유 */
   const handleLinkedIn = useCallback(async () => {
