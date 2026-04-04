@@ -70,19 +70,20 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
     }
   }, []);
 
-  /** LinkedIn: 캡처 → 클립보드 → 글쓰기 에디터 열기 */
+  /** LinkedIn: 캡처 → 클립보드 → OG 카드 미리보기로 공유 */
   const handleLinkedIn = useCallback(async () => {
     setCapturing("linkedin");
     await captureToClipboard();
+    const encodedUrl = encodeURIComponent(shareUrl);
     window.open(
-      "https://www.linkedin.com/feed/?shareActive=true",
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       "_blank",
       "noopener,noreferrer"
     );
     setCapturing(null);
-  }, [captureToClipboard]);
+  }, [captureToClipboard, shareUrl]);
 
-  /** X(Twitter): 캡처 → 클립보드 → 글쓰기 에디터 열기 */
+  /** X(Twitter): 캡처 → 클립보드 → 텍스트 프리셋 + 글쓰기 */
   const handleX = useCallback(async () => {
     setCapturing("x");
     await captureToClipboard();
@@ -154,7 +155,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
       <div className="flex flex-col gap-3">
         {/* SNS 공유 버튼 — 캡처 + 공유 동시 */}
         <p className="text-xs text-claude-light/50 text-center">
-          클릭하면 결과 이미지가 클립보드에 복사됩니다. SNS 글쓰기에서 Ctrl+V로 붙여넣기하세요!
+          결과 이미지가 클립보드에 복사됩니다. SNS에서 Ctrl+V로 이미지를 붙여넣을 수 있어요!
         </p>
 
         <div className="flex gap-3">
