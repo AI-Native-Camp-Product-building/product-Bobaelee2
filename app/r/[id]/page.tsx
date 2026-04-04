@@ -17,7 +17,6 @@ import CompatSection from "@/components/CompatSection";
 import PrescriptionSection from "@/components/PrescriptionSection";
 import StatsSection from "@/components/StatsSection";
 import ShareButton from "@/components/ShareButton";
-import CaptureCard from "@/components/CaptureCard";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 import MdPowerSection from "@/components/MdPowerSection";
 import RegisterLeaderboard from "@/components/RegisterLeaderboard";
@@ -136,20 +135,18 @@ export default async function ResultPage({ params }: Props) {
           persona={result.persona}
         />
 
-        {/* 캡쳐 카드 */}
-        <CaptureCard
-          persona={personaDef}
-          roasts={result.roasts}
-          mdStats={result.mdStats}
-          id={id}
-        />
-
-        {/* 공유 버튼 */}
+        {/* 공유 버튼 (캡처 + SNS 공유 통합) */}
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-bold text-claude-cream text-center">
             결과 공유하기
           </h2>
-          <ShareButton id={id} persona={result.persona} />
+          <ShareButton
+            id={id}
+            persona={result.persona}
+            personaDef={personaDef}
+            roasts={result.roasts}
+            mdStats={result.mdStats}
+          />
         </section>
 
         {/* 하단 CTA */}
