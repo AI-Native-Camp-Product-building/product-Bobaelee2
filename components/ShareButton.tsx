@@ -155,7 +155,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
       <div className="flex flex-col gap-3">
         {/* SNS 공유 버튼 — 캡처 + 공유 동시 */}
         <p className="text-xs text-claude-light/50 text-center">
-          결과 이미지가 클립보드에 복사됩니다. SNS에서 Ctrl+V로 이미지를 붙여넣을 수 있어요!
+          결과 이미지가 클립보드에 복사됩니다. SNS에서 ⌘V (또는 Ctrl+V)로 붙여넣으세요!
         </p>
 
         <div className="flex gap-3">
