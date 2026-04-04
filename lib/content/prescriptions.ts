@@ -275,7 +275,7 @@ const COMMON_PRESCRIPTIONS: ConditionalPrescription[] = [
   },
   {
     id: "common-role",
-    text: "역할 정의를 추가하세요. '나는 HR Lead다' 한 문장이 Claude의 답변 방향을 완전히 바꿉니다.",
+    text: "역할 정의를 추가하세요. '나는 백엔드 개발자다', '나는 PM이다' 한 문장이 Claude의 답변 방향을 완전히 바꿉니다.",
     priority: "high",
     tag: "common:role",
     tier: "common",
