@@ -21,6 +21,7 @@ const DIMENSION_LABELS: Record<keyof DimensionScores, string> = {
   contextAwareness: "컨텍스트 관리",
   teamImpact: "협업 지향",
   security: "보안 의식",
+  agentOrchestration: "에이전트 오케스트레이션",
 };
 
 const DIMENSION_KEYS = Object.keys(DIMENSION_LABELS) as (keyof DimensionScores)[];

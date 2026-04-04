@@ -42,6 +42,7 @@ function makeScores(overrides: Partial<DimensionScores> = {}): DimensionScores {
     contextAwareness: 30,
     teamImpact: 30,
     security: 30,
+    agentOrchestration: 0,
     ...overrides,
   };
 }
