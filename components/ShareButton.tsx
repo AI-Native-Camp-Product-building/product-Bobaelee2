@@ -70,26 +70,25 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
     }
   }, []);
 
-  /** LinkedIn: 캡처 → 클립보드 → 공유 창 */
+  /** LinkedIn: 캡처 → 클립보드 → 글쓰기 에디터 열기 */
   const handleLinkedIn = useCallback(async () => {
     setCapturing("linkedin");
     await captureToClipboard();
-    const encodedUrl = encodeURIComponent(shareUrl);
     window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      "https://www.linkedin.com/feed/?shareActive=true",
       "_blank",
       "noopener,noreferrer"
     );
     setCapturing(null);
-  }, [captureToClipboard, shareUrl]);
+  }, [captureToClipboard]);
 
-  /** X(Twitter): 캡처 → 클립보드 → 공유 창 */
+  /** X(Twitter): 캡처 → 클립보드 → 글쓰기 에디터 열기 */
   const handleX = useCallback(async () => {
     setCapturing("x");
     await captureToClipboard();
     const encodedText = encodeURIComponent(`${shareText}\n${shareUrl}`);
     window.open(
-      `https://twitter.com/intent/tweet?text=${encodedText}`,
+      `https://twitter.com/compose/tweet?text=${encodedText}`,
       "_blank",
       "noopener,noreferrer"
     );
