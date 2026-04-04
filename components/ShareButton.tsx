@@ -83,10 +83,13 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
     }
   }, [shareText, shareUrl]);
 
-  /** LinkedIn: 캡처 → 클립보드 → OG 카드 미리보기로 공유 */
+  /** LinkedIn: 공유 멘트 클립보드 복사 → OG 카드 포함 공유창 열기 */
   const handleLinkedIn = useCallback(async () => {
     setCapturing("linkedin");
-    await captureToClipboard();
+    // 공유 멘트를 클립보드에 복사 (붙여넣기용)
+    try {
+      await navigator.clipboard.writeText(shareText);
+    } catch { /* ignore */ }
     const encodedUrl = encodeURIComponent(shareUrl);
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
@@ -94,7 +97,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
       "noopener,noreferrer"
     );
     setCapturing(null);
-  }, [captureToClipboard, shareUrl]);
+  }, [shareText, shareUrl]);
 
   /** X(Twitter): 캡처 → 클립보드 → 텍스트 프리셋 + 글쓰기 */
   const handleX = useCallback(async () => {
@@ -168,7 +171,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats }
       <div className="flex flex-col gap-3">
         {/* SNS 공유 버튼 — 캡처 + 공유 동시 */}
         <p className="text-xs text-claude-light/50 text-center">
-          결과 이미지가 클립보드에 복사됩니다. SNS에서 ⌘V (또는 Ctrl+V)로 붙여넣으세요!
+          공유 멘트가 클립보드에 복사됩니다. ⌘V로 붙여넣으세요!
         </p>
 
         <div className="flex gap-3">
