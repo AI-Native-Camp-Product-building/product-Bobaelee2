@@ -27,7 +27,7 @@ for s in d.get('mcpServers',{}).values():
   if 'env' in s: s['env']={k:'***REDACTED***' for k in s['env']}
 print(json.dumps(d,indent=2,ensure_ascii=False))
 " ~/.claude/mcp_settings.json && echo ""
-  echo "=== commands ===" && ls ~/.claude/commands/*.md 2>/dev/null | xargs -I{} basename {} .md; echo ""
+  echo "=== commands ===" && find ~/.claude/commands -name "*.md" 2>/dev/null | xargs -I{} basename {} .md; echo ""
   find ~/.claude/projects -name "MEMORY.md" 2>/dev/null | while read f; do
     echo "=== PROJECT MEMORY ===" && cat "$f" && echo ""
   done
@@ -55,12 +55,12 @@ if (Test-Path "$home\\.claude\\mcp_settings.json") {
   }
   $out += "=== mcp_settings.json ===\`n$($j | ConvertTo-Json -Depth 5)\`n"
 }
-$cmds = Get-ChildItem "$home\\.claude\\commands\\*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
+$cmds = Get-ChildItem "$home\\.claude\\commands" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
 if ($cmds) { $out += "=== commands ===\`n$($cmds -join "\`n")\`n" }
 Get-ChildItem "$home\\.claude\\projects" -Recurse -Filter "MEMORY.md" -ErrorAction SilentlyContinue | ForEach-Object {
   $out += "=== PROJECT MEMORY ===\`n$(Get-Content $_.FullName -Raw)\`n"
 }
-Get-ChildItem "$home" -Recurse -Depth 2 -Include "CLAUDE.md","AGENTS.md" -ErrorAction SilentlyContinue |
+Get-ChildItem "$home" -Recurse -Depth 3 -Include "CLAUDE.md","AGENTS.md" -ErrorAction SilentlyContinue |
   Where-Object { $_.FullName -notmatch '\\.claude\\\\|node_modules|\\.git' } | ForEach-Object {
   $out += "=== $($_.FullName) ===\`n$(Get-Content $_.FullName -Raw)\`n"
 }
