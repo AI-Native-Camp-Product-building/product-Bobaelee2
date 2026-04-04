@@ -279,7 +279,8 @@ const COMMON_PRESCRIPTIONS: ConditionalPrescription[] = [
     priority: "high",
     tag: "common:role",
     tier: "common",
-    condition: (_persona, stats) => stats.claudeMdLines < 10 && stats.totalLines < 30,
+    // 줄 수가 아닌 역할 키워드 존재 여부로 판단 (글로벌 md는 짧고 프로젝트 md에 역할을 넣는 전략도 유효)
+    condition: (_persona, stats) => !stats.hasRoleDefinition,
   },
   {
     id: "common-tools",

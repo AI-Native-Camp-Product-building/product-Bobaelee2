@@ -54,6 +54,7 @@ export interface MdStats {
   pluginNames: string[];       // 활성화된 플러그인 이름 목록
   mcpServerNames: string[];    // MCP 서버 이름 목록
   commandNames: string[];      // 커스텀 명령어 이름 목록
+  hasRoleDefinition: boolean;  // 역할 정의 키워드 존재 여부 ("나는 ~다", "역할", "I am" 등)
   isExpandedInput: boolean;    // 전체 수집 데이터 여부
   /** 심층 분석 신호 (확장 수집 시) */
   denyCount: number;           // deny 규칙 수

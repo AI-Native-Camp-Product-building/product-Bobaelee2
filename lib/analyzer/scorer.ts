@@ -123,6 +123,7 @@ export function extractMdStats(md: string): MdStats {
       hasMemory: false,
       hasHooks: false,
       hasProjectMd: false,
+      hasRoleDefinition: false,
       ruleCount: 0,
       claudeMdLines: 0,
       keywordHits: {},
@@ -181,6 +182,9 @@ export function extractMdStats(md: string): MdStats {
     keywordUniqueHits[dim] = countUniqueSignals(md, DIMENSION_PATTERNS[dim]);
   }
 
+  // 역할 정의 존재 여부 — 전체 텍스트에서 검색 (글로벌 md가 짧아도 프로젝트 md에 있을 수 있음)
+  const hasRoleDefinition = /나는\s*누구|I\s*am\s*a|역할|role:|직함|직무|주요\s*업무|개발자|엔지니어|디자이너|PM\b|마케터|HR\b|운영자|대상:/i.test(md);
+
   // CLAUDE.md 섹션 줄 수 (확장 입력 시 섹션만, 아니면 전체)
   const expanded = isExpandedInput(md);
   let claudeMdLines = totalLines;
@@ -205,6 +209,7 @@ export function extractMdStats(md: string): MdStats {
     hasMemory,
     hasHooks: hasHooks || hookCount > 0,
     hasProjectMd,
+    hasRoleDefinition,
     ruleCount,
     claudeMdLines,
     keywordHits,
