@@ -1,5 +1,5 @@
 /**
- * 6개 차원 점수와 통계를 바탕으로 13가지 페르소나를 후보 적합도 기반으로 분류한다
+ * 7개 차원 점수와 통계를 바탕으로 12가지 페르소나를 후보 적합도 기반으로 분류한다
  */
 import type { DimensionScores, MdStats, PersonaKey, PersonaResult } from "@/lib/types";
 
@@ -11,6 +11,7 @@ const DIMENSION_SPECIFIC_PERSONAS: Partial<Record<keyof DimensionScores, Persona
   toolDiversity: ["collector", "puppet-master"],
   teamImpact: ["evangelist"],
   contextAwareness: [],
+  agentOrchestration: ["architect", "puppet-master"],
 };
 
 /** 가장 높은 점수의 차원을 페르소나로 매핑 (fallback용) */
@@ -21,6 +22,7 @@ const DIMENSION_TO_PERSONA: Record<keyof DimensionScores, PersonaKey> = {
   contextAwareness: "deep-diver",
   teamImpact: "evangelist",
   security: "fortress",
+  agentOrchestration: "architect",
 };
 
 /** DimensionScores의 평균값을 계산한다 */
