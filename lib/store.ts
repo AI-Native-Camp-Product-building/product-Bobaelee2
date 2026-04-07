@@ -164,3 +164,66 @@ export async function getGlobalStats() {
     userPercentile: { lines: 50, tools: 50, complexity: 50 },
   };
 }
+
+/**
+ * 상위 N%를 계산한다
+ * @returns 상위 퍼센트 (1~100) -- 값이 작을수록 상위
+ */
+export function calculatePercentile(_myScore: number, belowCount: number, totalCount: number): number {
+  if (totalCount === 0) return 50;
+  const percentile = Math.round((1 - belowCount / totalCount) * 100);
+  return Math.max(1, Math.min(100, percentile));
+}
+
+export interface PercentileData {
+  mdPowerPercentile: number;
+  topDimension: string;
+  topDimensionPercentile: number;
+}
+
+/** 결과 ID 기반으로 percentile 데이터를 조회한다 */
+export async function getPercentiles(resultId: string): Promise<PercentileData> {
+  const fallback: PercentileData = {
+    mdPowerPercentile: 50,
+    topDimension: "automation",
+    topDimensionPercentile: 50,
+  };
+
+  const result = await getResult(resultId);
+  if (!result) return fallback;
+  if (!isSupabaseConfigured) return fallback;
+
+  const supabase = await getSupabase();
+
+  const { count: totalResults } = await supabase
+    .from("results")
+    .select("id", { count: "exact", head: true })
+    .not("quality_scores", "is", null);
+
+  const total = totalResults ?? 0;
+  if (total === 0) return fallback;
+
+  // md력 percentile
+  const mdPowerScore = result.mdPower.score;
+  const { count: belowMdPower } = await supabase
+    .from("results")
+    .select("id", { count: "exact", head: true })
+    .not("quality_scores", "is", null);
+
+  const mdPowerPercentile = calculatePercentile(mdPowerScore, belowMdPower ?? 0, total);
+
+  // 최강 차원
+  const scores = result.scores;
+  const dims = Object.entries(scores) as [string, number][];
+  dims.sort((a, b) => b[1] - a[1]);
+  const topDim = dims[0];
+
+  const { count: belowDim } = await supabase
+    .from("results")
+    .select("id", { count: "exact", head: true })
+    .lt(`scores->>${topDim[0]}`, topDim[1]);
+
+  const topDimensionPercentile = calculatePercentile(topDim[1], belowDim ?? 0, total);
+
+  return { mdPowerPercentile, topDimension: topDim[0], topDimensionPercentile };
+}
