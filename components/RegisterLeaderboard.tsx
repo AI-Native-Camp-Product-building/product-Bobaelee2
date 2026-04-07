@@ -6,7 +6,6 @@
  * 로그인 → 등록 또는 점수 갱신
  */
 import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import type { MdPower } from "@/lib/types";
 
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export default function RegisterLeaderboard({ resultId, mdPower }: Props) {
-  const router = useRouter();
   const supabase = useMemo(() => createSupabaseBrowser(), []);
   const [user, setUser] = useState<{ id: string; name: string } | null>(null);
   const [registered, setRegistered] = useState(false);
@@ -66,7 +64,7 @@ export default function RegisterLeaderboard({ resultId, mdPower }: Props) {
         setDone(true);
         setDelta(data.delta);
         setRegistered(true);
-        setTimeout(() => router.push("/leaderboard"), 1500);
+        setTimeout(() => window.open("/leaderboard", "_blank"), 1500);
       }
     } catch { /* ignore */ }
     setLoading(false);
