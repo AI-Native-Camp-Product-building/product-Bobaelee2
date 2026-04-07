@@ -18,7 +18,6 @@ import PrescriptionSection from "@/components/PrescriptionSection";
 import StatsSection from "@/components/StatsSection";
 import ShareButton from "@/components/ShareButton";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
-import MdPowerSection from "@/components/MdPowerSection";
 import RegisterLeaderboard from "@/components/RegisterLeaderboard";
 import BattlePower from "@/components/BattlePower";
 
@@ -93,17 +92,7 @@ export default async function ResultPage({ params }: Props) {
           </div>
         )}
 
-        {/* 전투력 측정기 */}
-        <BattlePower
-          persona={personaDef}
-          scores={result.scores}
-          percentile={percentile}
-          detectedPatterns={
-            Object.values(result.mdStats.keywordUniqueHits ?? {}).reduce((sum, v) => sum + v, 0)
-          }
-        />
-
-        {/* .md력 측정 결과 */}
+        {/* .md력 측정 결과 (레이더 차트 + 점수/티어 + 배지 통합) */}
         {result.isLegacyResult ? (
           <div className="bg-bg-card rounded-2xl p-6 text-center flex flex-col gap-3">
             <p className="text-sm text-claude-light/70">
@@ -118,7 +107,13 @@ export default async function ResultPage({ params }: Props) {
           </div>
         ) : (
           <>
-            <MdPowerSection
+            <BattlePower
+              persona={personaDef}
+              scores={result.scores}
+              percentile={percentile}
+              detectedPatterns={
+                Object.values(result.mdStats.keywordUniqueHits ?? {}).reduce((sum, v) => sum + v, 0)
+              }
               mdPower={result.mdPower}
               totalUsers={globalStats.totalUsers}
             />

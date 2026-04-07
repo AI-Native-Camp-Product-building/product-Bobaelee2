@@ -32,7 +32,7 @@ export default function PrescriptionSection({ prescriptions }: PrescriptionSecti
     <section className="flex flex-col gap-4">
       {/* 섹션 헤더 */}
       <h2 className="text-xl font-bold text-rx-green">
-        🛠️ MD 업그레이드 처방전
+        🛠️ .md 업그레이드 처방전
       </h2>
 
       {/* 처방전 목록 */}
