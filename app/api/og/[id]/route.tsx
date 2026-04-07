@@ -4,7 +4,7 @@
  * Next.js 15+: params는 Promise — 반드시 await 사용
  */
 import { ImageResponse } from "next/og";
-import { getResult } from "@/lib/store";
+import { getResult, getPercentiles } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import type { MdStats } from "@/lib/types";
 
@@ -16,6 +16,7 @@ export async function GET(request: Request, { params }: Props) {
   const { id } = await params;
 
   const result = await getResult(id);
+  const percentile = result ? await getPercentiles(id) : null;
 
   const persona = result
     ? PERSONAS[result.persona]
@@ -170,6 +171,21 @@ export async function GET(request: Request, { params }: Props) {
             </div>
           ))}
         </div>
+
+        {/* 상위 N% 배지 */}
+        {percentile && (
+          <div
+            style={{
+              display: "flex",
+              gap: "16px",
+              fontSize: "18px",
+              fontWeight: 700,
+              color: "#D97757",
+            }}
+          >
+            <span>🏆 md력 상위 {percentile.mdPowerPercentile}%</span>
+          </div>
+        )}
 
         {/* 하단 푸터 */}
         <div
