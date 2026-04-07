@@ -159,6 +159,8 @@ export default async function ResultPage({ params }: Props) {
             personaDef={personaDef}
             roasts={result.roasts}
             mdStats={result.mdStats}
+            scores={result.scores}
+            percentile={percentile}
           />
         </section>
 

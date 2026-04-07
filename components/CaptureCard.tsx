@@ -6,16 +6,20 @@
  * html2canvas로 이미지화하여 다운로드/공유
  */
 import { useRef, useState, useCallback } from "react";
-import type { PersonaDefinition, RoastItem, MdStats } from "@/lib/types";
+import type { PersonaDefinition, RoastItem, MdStats, DimensionScores } from "@/lib/types";
+import { DIMENSION_LABELS } from "@/lib/types";
+import type { PercentileData } from "@/lib/store";
 
 interface CaptureCardProps {
   persona: PersonaDefinition;
   roasts: RoastItem[];
   mdStats: MdStats;
   id: string;
+  scores: DimensionScores;
+  percentile: PercentileData;
 }
 
-export default function CaptureCard({ persona, roasts, mdStats, id }: CaptureCardProps) {
+export default function CaptureCard({ persona, roasts, mdStats, id, scores, percentile }: CaptureCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [capturing, setCapturing] = useState(false);
   const [showCard, setShowCard] = useState(false);
@@ -200,6 +204,49 @@ export default function CaptureCard({ persona, roasts, mdStats, id }: CaptureCar
               lineHeight: "1.6",
             }}>
               &ldquo;{persona.tagline}&rdquo;
+            </div>
+
+            {/* 미니 레이더 */}
+            <div style={{ width: "200px", height: "200px" }}>
+              <svg viewBox="0 0 200 200" width="200" height="200">
+                {[20, 40, 60, 80, 100].map((level) => {
+                  const pts = Array.from({ length: 7 }, (_, i) => {
+                    const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
+                    const r = (level / 100) * 70;
+                    return `${100 + Math.cos(a) * r},${100 + Math.sin(a) * r}`;
+                  }).join(" ");
+                  return <polygon key={level} points={pts} fill="none" stroke="rgba(245,230,211,0.1)" strokeWidth="1" />;
+                })}
+                <polygon
+                  points={(Object.keys(DIMENSION_LABELS) as (keyof DimensionScores)[]).map((dim, i) => {
+                    const v = scores[dim];
+                    const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
+                    const r = (v / 100) * 70;
+                    return `${100 + Math.cos(a) * r},${100 + Math.sin(a) * r}`;
+                  }).join(" ")}
+                  fill="rgba(217,119,87,0.3)" stroke="#D97757" strokeWidth="2"
+                />
+                {(Object.entries(DIMENSION_LABELS) as [keyof DimensionScores, { label: string }][]).map(([, { label }], i) => {
+                  const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
+                  return (
+                    <text key={i} x={100 + Math.cos(a) * 90} y={100 + Math.sin(a) * 90}
+                      textAnchor="middle" fill="rgba(245,230,211,0.6)" fontSize="9" fontWeight="600">
+                      {label}
+                    </text>
+                  );
+                })}
+              </svg>
+            </div>
+
+            {/* 상위 N% 배지 */}
+            <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+              <span style={{
+                padding: "4px 12px", borderRadius: "999px",
+                background: "rgba(217,119,87,0.15)", color: "#D97757",
+                fontSize: "11px", fontWeight: 700,
+              }}>
+                🏆 md력 상위 {percentile.mdPowerPercentile}%
+              </span>
             </div>
 
             {/* 대표 로스팅 */}
