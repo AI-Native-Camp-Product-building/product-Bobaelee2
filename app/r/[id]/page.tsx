@@ -6,7 +6,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getResult, getGlobalStats } from "@/lib/store";
+import { getResult, getGlobalStats, getPercentiles } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import { getCompatibility } from "@/lib/content/compatibility";
 import type { PersonaKey } from "@/lib/types";
@@ -20,6 +20,7 @@ import ShareButton from "@/components/ShareButton";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 import MdPowerSection from "@/components/MdPowerSection";
 import RegisterLeaderboard from "@/components/RegisterLeaderboard";
+import BattlePower from "@/components/BattlePower";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -71,6 +72,8 @@ export default async function ResultPage({ params }: Props) {
     notFound();
   }
 
+  const percentile = await getPercentiles(id);
+
   const personaDef = PERSONAS[result.persona];
   const secondaryDef = result.secondaryPersona ? PERSONAS[result.secondaryPersona] : null;
   const compat = getCompatibility(result.persona);
@@ -89,6 +92,16 @@ export default async function ResultPage({ params }: Props) {
             </span>
           </div>
         )}
+
+        {/* 전투력 측정기 */}
+        <BattlePower
+          persona={personaDef}
+          scores={result.scores}
+          percentile={percentile}
+          detectedPatterns={
+            Object.values(result.mdStats.keywordUniqueHits ?? {}).reduce((sum, v) => sum + v, 0)
+          }
+        />
 
         {/* .md력 측정 결과 */}
         {result.isLegacyResult ? (

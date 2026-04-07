@@ -3,14 +3,8 @@
  */
 import type { DimensionScores, PersonaDefinition } from "@/lib/types";
 import { DIMENSION_LABELS, TOTAL_PATTERN_COUNT } from "@/lib/types";
+import type { PercentileData } from "@/lib/store";
 import RadarChart from "./RadarChart";
-
-// PercentileData — lib/store.ts에서 export되지 않아 로컬 정의
-interface PercentileData {
-  mdPowerPercentile: number;
-  topDimension: string;
-  topDimensionPercentile: number;
-}
 
 interface BattlePowerProps {
   persona: PersonaDefinition;
