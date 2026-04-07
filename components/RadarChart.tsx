@@ -35,14 +35,16 @@ function polygonPoints(values: number[], radius: number, cx: number, cy: number)
 }
 
 export default function RadarChart({ scores, size = 300 }: RadarChartProps) {
-  const cx = size / 2;
-  const cy = size / 2;
-  const radius = size * 0.35;
-  const labelRadius = size * 0.47;
+  const pad = 40; // 라벨 잘림 방지 패딩
+  const full = size + pad * 2;
+  const cx = full / 2;
+  const cy = full / 2;
+  const radius = size * 0.32;
+  const labelRadius = size * 0.44;
   const values = DIMENSIONS.map((d) => scores[d]);
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{ maxWidth: `${size}px` }}
+    <svg viewBox={`0 0 ${full} ${full}`} width="100%" style={{ maxWidth: `${size}px` }}
       role="img" aria-label="7차원 레이더 차트">
       {GRID_LEVELS.map((level) => (
         <polygon key={`grid-${level}`}
