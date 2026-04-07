@@ -163,3 +163,17 @@ export interface GlobalStats {
     complexity: number;
   };
 }
+
+/** 차원별 UI 라벨 (레이더 차트, 배지 등에서 사용) */
+export const DIMENSION_LABELS: Record<keyof DimensionScores, { label: string; description: string }> = {
+  automation: { label: "자동화", description: "Hook, CI/CD, 배포 파이프라인" },
+  control: { label: "통제", description: "금지 규칙, 지시어, 제약 조건" },
+  toolDiversity: { label: "도구", description: "연결한 외부 서비스 SaaS 종류" },
+  contextAwareness: { label: "맥락", description: "세션, 메모리, 핸드오프 설계" },
+  teamImpact: { label: "팀", description: "코드리뷰, PR, 온보딩, 문서화" },
+  security: { label: "보안", description: "민감 정보 보호, deny 규칙" },
+  agentOrchestration: { label: "에이전트", description: "자율 실행 루프, 가드레일, 병렬 처리" },
+};
+
+/** 전체 패턴 수 (7차원 합산) */
+export const TOTAL_PATTERN_COUNT = 94;

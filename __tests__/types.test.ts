@@ -1,4 +1,8 @@
 import { describe, it, expect } from "vitest";
+import {
+  DIMENSION_LABELS,
+  TOTAL_PATTERN_COUNT,
+} from "@/lib/types";
 import type {
   PersonaKey,
   DimensionScores,
@@ -287,5 +291,23 @@ describe("GlobalStats", () => {
     expect(stats.userPercentile.lines).toBeDefined();
     expect(stats.userPercentile.tools).toBeDefined();
     expect(stats.userPercentile.complexity).toBeDefined();
+  });
+});
+
+describe("DIMENSION_LABELS", () => {
+  it("DimensionScores의 모든 키에 라벨이 있어야 한다", () => {
+    const dimensionKeys: (keyof DimensionScores)[] = [
+      "automation", "control", "toolDiversity", "contextAwareness",
+      "teamImpact", "security", "agentOrchestration",
+    ];
+    for (const key of dimensionKeys) {
+      expect(DIMENSION_LABELS[key]).toBeDefined();
+      expect(DIMENSION_LABELS[key].label.length).toBeGreaterThan(0);
+      expect(DIMENSION_LABELS[key].label.length).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it("TOTAL_PATTERN_COUNT는 양수여야 한다", () => {
+    expect(TOTAL_PATTERN_COUNT).toBeGreaterThan(0);
   });
 });
