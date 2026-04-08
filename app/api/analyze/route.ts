@@ -99,14 +99,16 @@ export async function GET() {
     response: {
       persona: "{ primary: string, secondary: string | null } — 12가지 페르소나 중 주/부 분류",
       scores: "7개 차원 점수 (0-100): automation, control, toolDiversity, contextAwareness, teamImpact, security, agentOrchestration",
-      prescriptions: "처방전 5개 — 에이전트가 이를 해석하여 CLAUDE.md에 직접 적용할 수 있음",
+      prescriptions: "처방전 5개 — 에이전트가 해석하여 CLAUDE.md 개선 제안에 활용",
       roasts: "로스팅 3개 — 재미 요소",
       strengths: "강점 3개",
       mdPower: "md력 점수 (0-1000) + 티어",
+      shareUrl: "결과 웹 페이지 URL — 레이더 차트, 궁합 등 풀 비주얼",
+      markdownReport: "터미널에서 바로 출력 가능한 포맷된 리포트 (페르소나, 바 차트, 로스팅, 처방전 포함)",
     },
     example: {
       curl: `curl -X POST https://mdti.vercel.app/api/analyze -H "Content-Type: application/json" -d '{"text": "# My Rules\\n- 항상 한국어로 답변"}'`,
-      agent_prompt: "내 ~/.claude/CLAUDE.md 파일을 읽어서 https://mdti.vercel.app/api/analyze 에 POST로 보내줘. text 필드에 파일 내용을 넣으면 돼. 결과의 처방전을 보고 내 CLAUDE.md를 개선해줘.",
+      agent_prompt: "내 ~/.claude/CLAUDE.md 파일을 읽어서 https://mdti.vercel.app/api/analyze 에 POST 요청을 보내줘. body는 {\"text\": \"파일내용\"} 형식이야. 응답의 markdownReport를 그대로 출력해주고, 처방전 중 바로 적용할 수 있는 게 있으면 뭘 어떻게 수정하면 좋을지 알려줘.",
     },
     personas: [
       "puppet-master", "speedrunner", "fortress", "minimalist",
