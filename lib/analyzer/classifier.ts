@@ -81,41 +81,41 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   // Step 2: 모든 후보 페르소나에 적합도 점수를 매김
   const candidates: { persona: PersonaKey; fit: number }[] = [];
 
-  // 에코시스템 기반 (확장 수집 시)
+  // 에코시스템 기반 (확장 수집 시) — 임계값 완화
   if (mdStats.isExpandedInput) {
     const eco = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.commandCount;
-    if (eco >= 25 && mdStats.hookCount >= 5) {
+    if (eco >= 20 && mdStats.hookCount >= 3) {
       candidates.push({ persona: "architect", fit: 95 });
-    } else if (eco >= 10 && mdStats.hookCount >= 2) {
+    } else if (eco >= 8 && mdStats.hookCount >= 1) {
       candidates.push({ persona: "huggies", fit: 80 });
     }
   }
 
-  // 차원 기반 후보 — fit은 0~100 정규화 (조건 초과분 기반)
-  if (scores.automation >= 70 && scores.toolDiversity >= 70) {
-    const fit = (scores.automation - 70) / 30 * 50 + (scores.toolDiversity - 70) / 30 * 50;
+  // 차원 기반 후보 — 벤치마크 기반 임계값
+  if (scores.automation >= 55 && scores.toolDiversity >= 40) {
+    const fit = (scores.automation - 55) / 45 * 50 + (scores.toolDiversity - 40) / 60 * 50;
     candidates.push({ persona: "puppet-master", fit });
   }
-  if (scores.automation >= 50 && scores.security < 20) {
+  if (scores.automation >= 45 && scores.security < 20) {
     const gap = scores.automation - scores.security;
-    const fit = Math.max(0, (gap - 30) / 70 * 100);
+    const fit = Math.max(0, (gap - 25) / 75 * 100);
     candidates.push({ persona: "daredevil", fit });
   }
   // macgyver 제거 — 조건(automation>=65, toolDiversity<30)이 비현실적
-  if (scores.security >= 70) {
-    const fit = (scores.security - 70) / 30 * 100;
+  if (scores.security >= 55) {
+    const fit = (scores.security - 55) / 45 * 100;
     candidates.push({ persona: "fortress", fit });
   }
-  if (scores.control >= 75) {
-    const fit = (scores.control - 75) / 25 * 100;
+  if (scores.control >= 55) {
+    const fit = (scores.control - 55) / 45 * 100;
     candidates.push({ persona: "legislator", fit });
   }
-  if (scores.teamImpact >= 55) {
-    const fit = (scores.teamImpact - 55) / 45 * 100;
+  if (scores.teamImpact >= 50) {
+    const fit = (scores.teamImpact - 50) / 50 * 100;
     candidates.push({ persona: "evangelist", fit });
   }
-  if (scores.toolDiversity >= 70 && scores.automation < 40) {
-    const fit = (scores.toolDiversity - 70) / 30 * 50 + (40 - scores.automation) / 40 * 50;
+  if (scores.toolDiversity >= 45 && scores.automation < 30) {
+    const fit = (scores.toolDiversity - 45) / 55 * 50 + (30 - scores.automation) / 30 * 50;
     candidates.push({ persona: "collector", fit });
   }
   if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30 && max < 70) {

@@ -29,6 +29,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hookCommandCount: 0,
     pluginEnabledRatio: 0,
     projectMdCount: 0,
+    hasRoleDefinition: false,
     ...overrides,
   };
 }
@@ -235,5 +236,64 @@ describe("classifyPersona — 주+부 페르소나", () => {
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("minimalist");
     expect(result.secondary).toBeNull();
+  });
+});
+
+describe("classifyPersona — 재교정된 임계값", () => {
+  it("security=55면 fortress 후보로 등록되어야 한다", () => {
+    const scores = makeScores({ security: 55, automation: 10, control: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10, agentOrchestration: 0 });
+    const result = classifyPersona(scores, makeMdStats());
+    expect(result.primary).toBe("fortress");
+  });
+
+  it("control=55면 legislator 후보로 등록되어야 한다", () => {
+    const scores = makeScores({ control: 55, automation: 10, security: 10, toolDiversity: 10, contextAwareness: 10, teamImpact: 10, agentOrchestration: 0 });
+    const result = classifyPersona(scores, makeMdStats());
+    expect(result.primary).toBe("legislator");
+  });
+
+  it("automation=55, toolDiversity=40면 puppet-master 후보로 등록되어야 한다", () => {
+    // security=25 이상이어야 daredevil 조건(security<20) 불충족 → puppet-master 우선
+    const scores = makeScores({ automation: 55, toolDiversity: 40, control: 10, security: 25, contextAwareness: 10, teamImpact: 10, agentOrchestration: 0 });
+    const result = classifyPersona(scores, makeMdStats());
+    expect(result.primary).toBe("puppet-master");
+  });
+
+  it("teamImpact=50이면 evangelist 후보로 등록되어야 한다", () => {
+    const scores = makeScores({ teamImpact: 50, automation: 10, control: 10, security: 10, toolDiversity: 10, contextAwareness: 10, agentOrchestration: 0 });
+    const result = classifyPersona(scores, makeMdStats());
+    expect(result.primary).toBe("evangelist");
+  });
+
+  it("모든 차원이 45인 중간 점수에서 fallback이 아닌 후보가 등록되어야 한다", () => {
+    const scores = makeScores({ automation: 45, control: 45, toolDiversity: 45, security: 45, contextAwareness: 45, teamImpact: 45, agentOrchestration: 0 });
+    const result = classifyPersona(scores, makeMdStats());
+    expect(result.primary).not.toBe("minimalist");
+  });
+
+  it("architect: eco=20, hookCount=3이면 architect", () => {
+    const scores = makeScores({ automation: 50, agentOrchestration: 30 });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      pluginCount: 8,
+      mcpServerCount: 5,
+      commandCount: 7,
+      hookCount: 3,
+    });
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("architect");
+  });
+
+  it("huggies: eco=8, hookCount=1이면 huggies", () => {
+    const scores = makeScores({ automation: 30, agentOrchestration: 10 });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      pluginCount: 4,
+      mcpServerCount: 2,
+      commandCount: 2,
+      hookCount: 1,
+    });
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("huggies");
   });
 });
