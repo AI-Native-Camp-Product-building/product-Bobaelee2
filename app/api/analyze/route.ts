@@ -5,9 +5,81 @@
  * 응답: { persona, secondaryPersona, scores, prescriptions, roasts, strengths, mdPower, stats }
  */
 import { analyze } from "@/lib/analyzer";
+import { saveResult } from "@/lib/store";
+import { PERSONAS } from "@/lib/content/personas";
+import { nanoid } from "nanoid";
+import type { DimensionScores, PersonaKey } from "@/lib/types";
+import { DIMENSION_LABELS } from "@/lib/types";
 
 /** 입력 텍스트 최대 길이 (100KB) */
 const MAX_TEXT_LENGTH = 100_000;
+
+/** 차원 점수를 바 차트로 렌더링 */
+function scoreBar(score: number): string {
+  const filled = Math.round(score / 10);
+  return "█".repeat(filled) + "░".repeat(10 - filled);
+}
+
+/** 마크다운 리포트 생성 */
+function generateReport(
+  persona: PersonaKey,
+  secondary: PersonaKey | null,
+  scores: DimensionScores,
+  roasts: { text: string; detail: string }[],
+  strengths: { text: string }[],
+  prescriptions: { text: string; priority: string }[],
+  mdPower: { score: number; tierEmoji: string; tierName: string },
+  shareUrl: string,
+): string {
+  const def = PERSONAS[persona];
+  const lines: string[] = [];
+
+  lines.push(`# ${def.emoji} ${def.nameKo} (${def.nameEn})`);
+  lines.push(`> "${def.tagline}"`);
+  if (secondary) {
+    const secDef = PERSONAS[secondary];
+    lines.push(`> + ${secDef.emoji} ${secDef.nameKo} 기질`);
+  }
+  lines.push("");
+
+  // 차원 점수
+  lines.push("## 차원 점수");
+  const dimOrder = ["automation", "control", "toolDiversity", "contextAwareness", "teamImpact", "security", "agentOrchestration"] as const;
+  for (const dim of dimOrder) {
+    const label = DIMENSION_LABELS[dim].label;
+    const val = scores[dim];
+    lines.push(`  ${label.padEnd(4)} ${scoreBar(val)} ${String(val).padStart(3)}`);
+  }
+  lines.push("");
+
+  // 로스팅
+  lines.push("## 🔥 로스팅");
+  for (const r of roasts) {
+    lines.push(`• ${r.text}`);
+    lines.push(`  └ ${r.detail}`);
+  }
+  lines.push("");
+
+  // 강점
+  lines.push("## 💎 강점");
+  for (const s of strengths) {
+    lines.push(`• ${s.text}`);
+  }
+  lines.push("");
+
+  // 처방전
+  lines.push("## 🛠️ 처방전");
+  prescriptions.forEach((rx, i) => {
+    const icon = rx.priority === "high" ? "🔴" : "🟡";
+    lines.push(`${i + 1}. ${icon} ${rx.text}`);
+  });
+  lines.push("");
+
+  lines.push(`md력: ${mdPower.tierEmoji} ${mdPower.score}/1000 (${mdPower.tierName})`);
+  lines.push(`📊 전체 결과 보기: ${shareUrl}`);
+
+  return lines.join("\n");
+}
 
 /**
  * GET /api/analyze — API 사용법 반환 (사람과 에이전트 모두를 위한 자기 문서화)
@@ -82,6 +154,24 @@ export async function POST(request: Request) {
 
   const result = analyze(trimmed);
 
+  // 결과 저장 → shareUrl 생성
+  const id = nanoid(10);
+  await saveResult(id, result);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mdti.vercel.app";
+  const shareUrl = `${baseUrl}/r/${id}`;
+
+  // 마크다운 리포트 생성
+  const markdownReport = generateReport(
+    result.persona,
+    result.secondaryPersona,
+    result.scores,
+    result.roasts,
+    result.strengths,
+    result.prescriptions,
+    result.mdPower,
+    shareUrl,
+  );
+
   return Response.json({
     persona: {
       primary: result.persona,
@@ -99,5 +189,7 @@ export async function POST(request: Request) {
       hasRoleDefinition: result.mdStats.hasRoleDefinition,
       isExpandedInput: result.mdStats.isExpandedInput,
     },
+    shareUrl,
+    markdownReport,
   });
 }
