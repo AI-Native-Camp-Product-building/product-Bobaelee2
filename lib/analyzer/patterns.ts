@@ -20,6 +20,8 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /pre-commit|husky/gi,
     /terraform|ansible|pulumi/gi,
     /clasp\s+push/gi,
+    /rollback|복구/gi,                        // agentOrchestration에서 이동 — 운영 자동화
+    /반드시.*후.*배포|deploy.*후.*반드시/gi,    // agentOrchestration에서 이동 — 배포 절차
   ],
 
   // 제어 성향 — AI 사용 스타일 제어 (응답 형식, 코딩 스타일, 행동 제약)
@@ -115,31 +117,31 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /보���|security/gi,
     /gitignore|deny|차단/gi,
     /취약|vulnerability|CVE/gi,
+    /실수로.*커밋|실패.*경험/gi,              // agentOrchestration에서 이동 — 보안 실수 언급
   ],
 
-  // 자율 에이전트 오케스트레이션 — 에이전트 루프, 가드레일, 이터레이션 설계
+  // 자율 에이전트 오케스트레이션 — 에이전트 루프, 가드레일, 자율 판단 위임
   agentOrchestration: [
     // 자율 실행 구조
     /autonomous|자율\s*에이전트|agent\s*loop/gi,
     /iteration|이터레이션|반복\s*실행/gi,
     /fresh\s*(instance|context)|clean\s*context/gi,
-    // 안전장치 (경험에서 나온 구체적 방어)
+    // 안전장치
     /stop\s*condition|중단\s*조건/gi,
-    /rollback|복구|escalat/gi,
     /dry[\s-]?run|사전\s*테스트/gi,
-    // 메모리 아키텍처 (이터레이션 간 학습)
+    // 메모리 아키텍처
     /progress\.txt|progress\s*log/gi,
     /cross[\s-]?iteration|이전\s*이터레이션/gi,
     /pattern\s*consolidat|패턴\s*축적/gi,
-    // 스코프 관리
+    // 스코프/위임
     /한\s*번에\s*하나|one\s*(story|task)\s*per/gi,
     /context\s*window|컨텍스트\s*윈도우/gi,
-    // 위임 범위 설계
     /병렬\s*(에이전트|처리|실행)|parallel\s*agent/gi,
     /권한\s*위임|자율.*실행.*확인\s*불필요/gi,
-    // 실패 학습 흔적
-    /반드시.*후.*배포|deploy.*후.*반드시/gi,
-    /실수로.*커밋|실패.*경험/gi,
+    // 신규 — 일반 사용자도 히트 가능한 패턴
+    /알아서|스스로\s*판단/gi,
+    /자동.*모드|auto.*mode/gi,
+    /에이전트|agent(?!s\.md)/gi,
   ],
 };
 

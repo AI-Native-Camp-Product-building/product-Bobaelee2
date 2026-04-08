@@ -209,3 +209,39 @@ describe("control 패턴 — 보안 맥락 제외", () => {
     expect(count).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe("agentOrchestration — 패턴 재배치", () => {
+  it("'반드시 테스트 후 배포'는 automation에 매칭, agentOrchestration에 미매칭", () => {
+    const text = "반드시 테스트 후 배포하라";
+    const autoCount = countUniqueSignals(text, DIMENSION_PATTERNS.automation);
+    const agentCount = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
+    expect(autoCount).toBeGreaterThan(0);
+    expect(agentCount).toBe(0);
+  });
+
+  it("'실수로 민감 파일을 커밋했다면'은 security에 매칭, agentOrchestration에 미매칭", () => {
+    const text = "실수로 민감 파일을 커밋했다면 즉시 경고하라";
+    const secCount = countUniqueSignals(text, DIMENSION_PATTERNS.security);
+    const agentCount = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
+    expect(secCount).toBeGreaterThan(0);
+    expect(agentCount).toBe(0);
+  });
+
+  it("'Claude가 알아서 판단해'는 agentOrchestration에 매칭", () => {
+    const text = "Claude가 알아서 판단해서 실행해줘";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it("'자동 모드로 실행'은 agentOrchestration에 매칭", () => {
+    const text = "auto mode로 자율 실행하도록 설정";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it("'AGENTS.md'는 agentOrchestration에 매칭되지 않아야 한다", () => {
+    const text = "참고: @AGENTS.md";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
+    expect(count).toBe(0);
+  });
+});
