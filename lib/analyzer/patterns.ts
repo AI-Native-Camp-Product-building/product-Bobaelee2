@@ -1,5 +1,5 @@
 /**
- * 6개 차원별 패턴 정의 및 도구명 추출 유틸리티
+ * 7개 차원별 패턴 정의 및 도구명 추출 유틸리티
  * 각 RegExp는 CLAUDE.md 텍스트에서 해당 차원의 신호를 감지한다
  */
 
@@ -22,18 +22,27 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /clasp\s+push/gi,
   ],
 
-  // 제어 성향 — 금지, 규칙, 경고 등 강한 지시어
+  // 제어 성향 — AI 사용 스타일 제어 (응답 형식, 코딩 스타일, 행동 제약)
+  // 보안 맥락(커밋/secret/.env/token/push)은 negative lookahead로 제외
   control: [
-    /금지|하지\s*말?|절대/gi,
-    /반드시|필수|항상/gi,
-    /확인.*후|승인/gi,
-    /절대.*안|안.*됨|하면\s*안/gi,
-    /MUST|NEVER|ALWAYS/gi,
-    /IMPORTANT|CRITICAL/gi,
-    /DO\s*NOT|FORBIDDEN|PROHIBITED/gi,
-    /mandatory|required|SHALL\s*NOT/gi,
-    /규칙|\brule\b/gi,
-    /주의|경고|WARNING|제약|constraints?/gi,
+    // 응답/출력 형식 제어
+    /한국어로|korean|영어로|english/gi,
+    /간결하게|짧게|concise|brief/gi,
+    /이모지|emoji/gi,
+    /마크다운|markdown|포맷/gi,
+    // 코딩 스타일 강제
+    /컨벤션|convention|naming/gi,
+    /타입.*annotation|타입.*주석/gi,
+    /주석.*필수|comment.*필수/gi,
+    // 행동 제약 (보안/배포 맥락 제외)
+    /확인.*후.*진행|승인.*후.*진행|before.*proceed/gi,
+    /DO\s*NOT(?!.*secret)(?!.*\.env)(?!.*token)(?!.*credential)/gi,
+    /(?<!커밋.{0,30})(?<!\.env.{0,30})(?<!push.{0,30})(?<!secret.{0,30})(?<!token.{0,30})금지(?!.{0,30}커밋)(?!.{0,30}\.env)(?!.{0,30}push)(?!.{0,30}secret)(?!.{0,30}token)/gi,
+    /MUST(?!.*commit)(?!.*secret)(?!.*\.env)(?!.*token)/gi,
+    // 비개발자도 쓰는 제어 표현
+    /형식|format|양식/gi,
+    /톤|tone|말투/gi,
+    /대상.*설명|쉽게.*설명/gi,
   ],
 
   // 도구 다양성 — 사용하는 외부 서비스/SaaS 종류 (프로그래밍 언어/프레임워크 제외)

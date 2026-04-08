@@ -8,7 +8,7 @@ import {
 } from "@/lib/analyzer/patterns";
 
 describe("DIMENSION_PATTERNS", () => {
-  it("6개 차원이 모두 정의되어야 한다", () => {
+  it("7개 차원이 모두 정의되어야 한다", () => {
     const expectedDimensions = [
       "automation",
       "control",
@@ -16,6 +16,7 @@ describe("DIMENSION_PATTERNS", () => {
       "contextAwareness",
       "teamImpact",
       "security",
+      "agentOrchestration",
     ];
     expectedDimensions.forEach((dim) => {
       expect(DIMENSION_PATTERNS[dim]).toBeDefined();
@@ -51,8 +52,8 @@ describe("countPatternMatches — automation 패턴", () => {
 });
 
 describe("countPatternMatches — control 패턴", () => {
-  it("'금지', 'NEVER', 'MUST' 등을 감지해야 한다", () => {
-    const text = "절대 커밋 금지. NEVER push to main. 반드시 확인 후 진행. IMPORTANT 규칙";
+  it("응답 형식, 코딩 스타일, 행동 제약 키워드를 감지해야 한다", () => {
+    const text = "항상 한국어로 간결하게 답변. DO NOT use emojis. 형식에 맞춰 작성. 톤을 맞춰서 대답.";
     const count = countPatternMatches(text, DIMENSION_PATTERNS.control);
     expect(count).toBeGreaterThan(3);
   });
@@ -168,5 +169,43 @@ describe("TOOL_NAMES", () => {
     Object.values(TOOL_NAMES).forEach((p) => {
       expect(p).toBeInstanceOf(RegExp);
     });
+  });
+});
+
+describe("control 패턴 — 보안 맥락 제외", () => {
+  it("'반드시 .env 파일은 커밋 금지'는 control에 매칭되지 않아야 한다", () => {
+    const text = "반드시 .env 파일은 커밋 금지";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBe(0);
+  });
+
+  it("'반드시 .env 커밋하지 마라'는 control에 매칭되지 않아야 한다", () => {
+    const text = "반드시 .env 커밋하지 마라";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBe(0);
+  });
+
+  it("'한국어로 간결하게 답변'은 control에 매칭되어야 한다", () => {
+    const text = "항상 한국어로 간결하게 답변해라";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBeGreaterThanOrEqual(2); // 한국어로 + 간결하게
+  });
+
+  it("'MUST NOT include secrets'는 control에 매칭되지 않아야 한다", () => {
+    const text = "MUST NOT include secrets in code";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBe(0);
+  });
+
+  it("'DO NOT use emojis'는 control에 매칭되어야 한다", () => {
+    const text = "DO NOT use emojis in responses";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it("'형식에 맞춰 작성'은 control에 매칭되어야 한다", () => {
+    const text = "보고서 형식에 맞춰 작성해주세요";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.control);
+    expect(count).toBeGreaterThanOrEqual(1);
   });
 });
