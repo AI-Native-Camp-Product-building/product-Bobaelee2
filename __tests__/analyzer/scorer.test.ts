@@ -221,3 +221,51 @@ describe("extractMdStats", () => {
     expect(stats.keywordUniqueHits).toEqual({});
   });
 });
+
+describe("threshold 재교정 — 벤치마크 기반", () => {
+  it("SaaS 6개 언급 시 toolDiversity가 100에 가까워야 한다", () => {
+    const md = "Slack Notion GitHub Supabase Vercel Linear 사용";
+    const scores = calculateScores(md);
+    expect(scores.toolDiversity).toBeGreaterThanOrEqual(80);
+  });
+
+  it("SaaS 3개 언급 시 toolDiversity가 50 내외여야 한다", () => {
+    const md = "Slack과 Notion, GitHub를 연동합니다";
+    const scores = calculateScores(md);
+    expect(scores.toolDiversity).toBeGreaterThanOrEqual(40);
+    expect(scores.toolDiversity).toBeLessThanOrEqual(60);
+  });
+
+  it("기존 automation 고득점 샘플의 점수가 유지되어야 한다", () => {
+    const md = `hook 설정, cron 스케줄, 자동 배포, bot 응답, pipeline, webhook, ci/cd, workflow, pre-commit`;
+    const scores = calculateScores(md);
+    expect(scores.automation).toBeGreaterThanOrEqual(80);
+  });
+});
+
+describe("deny 이중 가산 해소", () => {
+  it("deny 규칙이 있을 때 control에 가산되지 않아야 한다", () => {
+    const mdBase = "일반 텍스트입니다\n=== settings.json ===\n";
+    const mdWithDeny = mdBase + `"permissions": { "deny": ["Bash(rm -rf)", "Bash(git push --force)"] }`;
+    const baseScores = calculateScores(mdBase);
+    const denyScores = calculateScores(mdWithDeny);
+    // security는 올라가야 하고
+    expect(denyScores.security).toBeGreaterThan(baseScores.security);
+    // control은 deny 때문에 올라가면 안 된다
+    expect(denyScores.control).toBe(baseScores.control);
+  });
+});
+
+describe("확장 보정 — agentOrchestration/teamImpact", () => {
+  it("defaultMode:auto면 agentOrchestration이 올라가야 한다", () => {
+    const md = `=== settings.json ===\n{"defaultMode": "auto"}`;
+    const scores = calculateScores(md);
+    expect(scores.agentOrchestration).toBeGreaterThanOrEqual(15);
+  });
+
+  it("projectMdCount 3개 이상이면 teamImpact이 올라가야 한다", () => {
+    const md = `=== settings.json ===\n{}\n=== /proj1/CLAUDE.md ===\ntest\n=== /proj2/CLAUDE.md ===\ntest\n=== /proj3/CLAUDE.md ===\ntest`;
+    const stats = extractMdStats(md);
+    expect(stats.projectMdCount).toBeGreaterThanOrEqual(3);
+  });
+});

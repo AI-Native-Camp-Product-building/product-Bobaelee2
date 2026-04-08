@@ -13,6 +13,7 @@ import {
   extractCommandNames,
   countHooks,
   extractExpandedSignals,
+  extractSkillCount,
 } from "./patterns";
 
 /**
@@ -22,11 +23,14 @@ import {
  * 일반 사용자가 7개를 모두 쓸 가능성이 낮음
  */
 const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
-  contextAwareness: 0.5,
-  teamImpact: 0.6,
-  agentOrchestration: 0.5,  // 고급 패턴 비중 높아 50% 적용
+  toolDiversity: 0.3,         // 20개 중 6개 → 만점 (벤치마크: 최대 3개 히트)
+  agentOrchestration: 0.3,    // ~16개 중 5개 → 만점 (벤치마크: 75%가 0점)
+  contextAwareness: 0.4,      // ~14개 중 6개 → 만점
+  teamImpact: 0.5,            // ~16개 중 8개 → 만점 (분포가 건강)
+  security: 0.5,              // ~11개 중 6개 → 만점 (벤치마크: 중위값 0)
+  control: 0.7,               // 유지 (패턴 재설계로 점수 자연 하락)
 };
-const DEFAULT_RATIO = 0.7;
+const DEFAULT_RATIO = 0.6;    // automation: ~15개 중 9개 → 만점
 const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
 for (const dim of Object.keys(DIMENSION_PATTERNS) as (keyof DimensionScores)[]) {
   const ratio = THRESHOLD_RATIO[dim] ?? DEFAULT_RATIO;
@@ -74,19 +78,18 @@ export function calculateScores(md: string): DimensionScores {
   if (isExpandedInput(md)) {
     const sig = extractExpandedSignals(md);
 
-    // 보안: deny 규칙, 위험 명령어 차단, PreToolUse hook
+    // 보안: deny 규칙, 위험 명령어 차단, PreToolUse hook → security에만 귀속
     if (sig.blocksDangerousOps) result.security = Math.min(100, result.security + 12);
-    if (sig.hasDenyRules) result.security = Math.min(100, result.security + Math.min(sig.denyCount * 3, 9));
+    if (sig.hasDenyRules) result.security = Math.min(100, result.security + Math.min(sig.denyCount * 3, 12));
     if (sig.hasPreToolUseHook) result.security = Math.min(100, result.security + 6);
 
     // 자동화: PostToolUse hook, Session hook, hook 유형 다양성
     if (sig.hasPostToolUseHook) result.automation = Math.min(100, result.automation + 8);
     if (sig.hasSessionHooks) result.automation = Math.min(100, result.automation + 5);
     if (sig.hookTypeCommandCount >= 2) result.automation = Math.min(100, result.automation + 6);
-    // prompt 타입 hook = AI 판단 활용 → 컨텍스트 관리
-    if (sig.hookTypePromptCount >= 1) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
 
-    // 컨텍스트 관리: statusLine, 마켓플레이스, 플러그인 선별 비율, 프로젝트별 CLAUDE.md
+    // 컨텍스트 관리: prompt hook, statusLine, 마켓플레이스, 플러그인 선별, 프로젝트별 CLAUDE.md
+    if (sig.hookTypePromptCount >= 1) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
     if (sig.hasStatusLine) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
     if (sig.hasMultipleMarketplaces) result.contextAwareness = Math.min(100, result.contextAwareness + 3);
     if (sig.pluginEnabledRatio > 0 && sig.pluginEnabledRatio < 0.5) {
@@ -94,16 +97,23 @@ export function calculateScores(md: string): DimensionScores {
     }
     if (sig.projectMdCount >= 2) result.contextAwareness = Math.min(100, result.contextAwareness + 6);
 
-    // 제어: defaultMode가 auto가 아님 = 수동 승인 선호
-    if (!sig.defaultModeIsAuto) result.control = Math.min(100, result.control + 6);
-    // 제어: deny 규칙 = 명시적 행동 제한 → control 신호
-    if (sig.hasDenyRules) result.control = Math.min(100, result.control + Math.min(sig.denyCount * 3, 12));
-    if (sig.blocksDangerousOps) result.control = Math.min(100, result.control + 6);
+    // 제어: defaultMode가 auto가 아님 = 수동 승인 선호 (deny는 제거됨)
+    if (!sig.defaultModeIsAuto) result.control = Math.min(100, result.control + 8);
 
-    // 도구 다양성: MCP 서버 수 반영
+    // 도구 다양성: MCP 서버 수
     const mcpServers = extractMcpServerNames(md);
     if (mcpServers.length >= 3) result.toolDiversity = Math.min(100, result.toolDiversity + 10);
     else if (mcpServers.length >= 1) result.toolDiversity = Math.min(100, result.toolDiversity + 5);
+
+    // 에이전트 오케스트레이션: defaultMode:auto, AI 판단 hook, 스킬 수
+    if (sig.defaultModeIsAuto) result.agentOrchestration = Math.min(100, result.agentOrchestration + 15);
+    if (sig.hookTypePromptCount >= 2) result.agentOrchestration = Math.min(100, result.agentOrchestration + 8);
+    const skillCount = extractSkillCount(md);
+    if (skillCount >= 5) result.agentOrchestration = Math.min(100, result.agentOrchestration + 12);
+    else if (skillCount >= 2) result.agentOrchestration = Math.min(100, result.agentOrchestration + 6);
+
+    // 팀 임팩트: 프로젝트별 CLAUDE.md = 팀 환경
+    if (sig.projectMdCount >= 3) result.teamImpact = Math.min(100, result.teamImpact + 8);
   }
 
   return result;
@@ -229,4 +239,17 @@ export function extractMdStats(md: string): MdStats {
     pluginEnabledRatio: signals?.pluginEnabledRatio ?? 0,
     projectMdCount: signals?.projectMdCount ?? 0,
   };
+}
+
+/**
+ * 비개발자 프로파일인지 판정한다
+ * 역할 정의가 있으면서 개발자 특화 차원이 전부 낮은 경우
+ */
+export function isNonDevProfile(stats: MdStats, scores: DimensionScores): boolean {
+  return (
+    stats.hasRoleDefinition &&
+    scores.automation < 20 &&
+    scores.security < 20 &&
+    scores.agentOrchestration < 10
+  );
 }
