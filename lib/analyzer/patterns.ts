@@ -32,8 +32,9 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /간결하게|짧게|concise|brief/gi,
     /이모지|emoji/gi,
     /마크다운|markdown|포맷/gi,
-    // 코딩 스타일 강제
+    // 코딩 스타일 강제 (teamImpact에서 이동: 팀 협업보다 스타일 규칙)
     /컨벤션|convention|naming/gi,
+    /린트|lint|eslint|prettier/gi,
     /타입.*annotation|타입.*주석/gi,
     /주석.*필수|comment.*필수/gi,
     // 행동 제약 (보안/배포 맥락 제외)
@@ -89,24 +90,23 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /배경|background/gi,
   ],
 
-  // 팀 임팩트 — 팀 기여, 코드 리뷰, 컨벤션, 온보딩, 지식 공유
+  // 팀 임팩트 — 팀 기여, 코드 리뷰, 온보딩, 지식 공유
+  // convention/lint는 코딩 스타일 강제(→control), documentation은 팀 맥락으로 한정
   teamImpact: [
     /팀|team/gi,
     /코드\s*리뷰|code\s*review/gi,
     /\bPR\b|pull\s*request/gi,
-    /컨벤션|convention/gi,
-    /린트|lint|eslint|prettier/gi,
     /브랜치|branch/gi,
     /merge|머지/gi,
     /동료|peer/gi,
     /온보딩|onboard|신규\s*입사/gi,
     /공유|share|전파/gi,
-    /문서화|documentation/gi,
+    /팀.*문서|docs.*contribut|CONTRIBUTING/gi,
     /멘토|mentor/gi,
     /리뷰어|reviewer|CODEOWNERS/gi,
     /스탠드업|standup|회고|retro/gi,
     /회의|meeting|미팅/gi,
-    /보고|report|리포트/gi,
+    /주간.*보고|팀.*리포트|보고서/gi,
   ],
 
   // 보안 의식 — 민감 정보 보호, 환경 변수, 인증 관련

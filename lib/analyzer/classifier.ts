@@ -155,8 +155,11 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   candidates.sort((a, b) => b.fit - a.fit);
 
   if (candidates.length === 0) {
-    // fallback: 가장 높은 차원
+    // fallback: 가장 높은 차원 — 단, 최소 40점 이상이어야 의미 있는 분류
     const dominant = dominantDimension(scores);
+    if (scores[dominant] < 40) {
+      return { primary: "minimalist", secondary: null };
+    }
     return { primary: DIMENSION_TO_PERSONA[dominant], secondary: null };
   }
 

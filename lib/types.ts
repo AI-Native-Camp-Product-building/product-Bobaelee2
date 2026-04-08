@@ -176,4 +176,4 @@ export const DIMENSION_LABELS: Record<keyof DimensionScores, { label: string; de
 };
 
 /** 전체 패턴 수 (7차원 합산) */
-export const TOTAL_PATTERN_COUNT = 105;
+export const TOTAL_PATTERN_COUNT = 104;
