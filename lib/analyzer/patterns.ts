@@ -85,6 +85,8 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /subagent|서브에이전트|task\(/gi,
     /handoff|핸드오프|이전\s*세션/gi,
     /요약|summarize|히스토리/gi,
+    /프로젝트|project/gi,
+    /배경|background/gi,
   ],
 
   // 팀 임팩트 — 팀 기여, 코드 리뷰, 컨벤션, 온보딩, 지식 공유
@@ -103,6 +105,8 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /멘토|mentor/gi,
     /리뷰어|reviewer|CODEOWNERS/gi,
     /스탠드업|standup|회고|retro/gi,
+    /회의|meeting|미팅/gi,
+    /보고|report|리포트/gi,
   ],
 
   // 보안 의식 — 민감 정보 보호, 환경 변수, 인증 관련
@@ -334,6 +338,15 @@ export interface ExpandedSignals {
   hasMultipleMarketplaces: boolean;// 여러 플러그인 마켓플레이스 사용
   pluginEnabledRatio: number;      // 활성/설치 비율 (선별적 사용 = 성숙)
   projectMdCount: number;          // 프로젝트별 CLAUDE.md 파일 수
+}
+
+/**
+ * 확장 수집 데이터의 skills 섹션에서 스킬 수를 추출한다
+ */
+export function extractSkillCount(text: string): number {
+  const skillSection = text.match(/===\s*skills\s*===\n([\s\S]*?)(?=\n===|$)/);
+  if (!skillSection) return 0;
+  return skillSection[1].trim().split("\n").filter(l => l.trim() && !/^===/.test(l.trim())).length;
 }
 
 /**

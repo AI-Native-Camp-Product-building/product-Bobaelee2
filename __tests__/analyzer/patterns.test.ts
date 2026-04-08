@@ -5,6 +5,7 @@ import {
   countUniqueSignals,
   TOOL_NAMES,
   extractToolNames,
+  extractSkillCount,
 } from "@/lib/analyzer/patterns";
 
 describe("DIMENSION_PATTERNS", () => {
@@ -243,5 +244,46 @@ describe("agentOrchestration — 패턴 재배치", () => {
     const text = "참고: @AGENTS.md";
     const count = countUniqueSignals(text, DIMENSION_PATTERNS.agentOrchestration);
     expect(count).toBe(0);
+  });
+});
+
+describe("비개발자 패턴", () => {
+  it("'회의 일정 조율'은 teamImpact에 매칭", () => {
+    const text = "주간 회의 일정을 조율해주세요";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.teamImpact);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it("'보고서 작성'은 teamImpact에 매칭", () => {
+    const text = "주간 보고서를 작성해야 합니다";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.teamImpact);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  it("'프로젝트 배경 설명'은 contextAwareness에 매칭", () => {
+    const text = "이 프로젝트의 배경을 설명하면";
+    const count = countUniqueSignals(text, DIMENSION_PATTERNS.contextAwareness);
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("extractSkillCount", () => {
+  it("skills 섹션에서 스킬 수를 추출한다", () => {
+    const text = `=== skills ===
+commit
+review-pr
+deploy
+=== END ===`;
+    expect(extractSkillCount(text)).toBe(3);
+  });
+
+  it("skills 섹션이 없으면 0을 반환한다", () => {
+    expect(extractSkillCount("일반 텍스트")).toBe(0);
+  });
+
+  it("빈 skills 섹션이면 0을 반환한다", () => {
+    const text = `=== skills ===
+=== END ===`;
+    expect(extractSkillCount(text)).toBe(0);
   });
 });
