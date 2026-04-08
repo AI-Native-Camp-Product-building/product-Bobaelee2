@@ -259,8 +259,8 @@ describe("classifyPersona — 재교정된 임계값", () => {
     expect(result.primary).toBe("puppet-master");
   });
 
-  it("teamImpact=50이면 evangelist 후보로 등록되어야 한다", () => {
-    const scores = makeScores({ teamImpact: 50, automation: 10, control: 10, security: 10, toolDiversity: 10, contextAwareness: 10, agentOrchestration: 0 });
+  it("teamImpact=55이면 evangelist 후보로 등록되어야 한다", () => {
+    const scores = makeScores({ teamImpact: 55, automation: 10, control: 10, security: 10, toolDiversity: 10, contextAwareness: 10, agentOrchestration: 0 });
     const result = classifyPersona(scores, makeMdStats());
     expect(result.primary).toBe("evangelist");
   });

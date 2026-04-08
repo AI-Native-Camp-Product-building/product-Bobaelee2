@@ -110,8 +110,8 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     const fit = (scores.control - 55) / 45 * 100;
     candidates.push({ persona: "legislator", fit });
   }
-  if (scores.teamImpact >= 50) {
-    const fit = (scores.teamImpact - 50) / 50 * 100;
+  if (scores.teamImpact >= 55) {
+    const fit = (scores.teamImpact - 55) / 45 * 100;
     candidates.push({ persona: "evangelist", fit });
   }
   if (scores.toolDiversity >= 45 && scores.automation < 30) {
@@ -121,8 +121,8 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30 && max < 70) {
     candidates.push({ persona: "speedrunner", fit: 50 });
   }
-  if (sd < 20 && avg >= 30) {
-    let fit = Math.max(0, (avg - 30) / 70 * 100);
+  if (sd < 20 && avg >= 25) {
+    let fit = Math.max(0, (avg - 25) / 75 * 100);
     // 유의미한 경쟁자(fit ≥ 15)가 있을 때만 페널티 적용
     // fit < 15인 약한 후보(예: fortress fit=6)로는 craftsman을 억제하지 않음
     const hasStrongCompetitor = candidates.some(c => c.fit >= 15);
