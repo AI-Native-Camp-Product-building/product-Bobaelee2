@@ -22,6 +22,7 @@ import {
  * contextAwareness만 50%: 고급 기능 패턴(.claude/rules, @import, subagent 등)이 많아
  * 일반 사용자가 7개를 모두 쓸 가능성이 낮음
  */
+// A경로 (짧은 CLAUDE.md만) — 벤치마크 기반 저임계값
 const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
   toolDiversity: 0.3,         // 20개 중 6개 → 만점 (벤치마크: 최대 3개 히트)
   agentOrchestration: 0.3,    // ~16개 중 5개 → 만점 (벤치마크: 75%가 0점)
@@ -31,11 +32,35 @@ const THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
   control: 0.7,               // 유지 (패턴 재설계로 점수 자연 하락)
 };
 const DEFAULT_RATIO = 0.6;    // automation: ~15개 중 9개 → 만점
-const THRESHOLDS: Record<keyof DimensionScores, number> = {} as Record<keyof DimensionScores, number>;
-for (const dim of Object.keys(DIMENSION_PATTERNS) as (keyof DimensionScores)[]) {
-  const ratio = THRESHOLD_RATIO[dim] ?? DEFAULT_RATIO;
-  THRESHOLDS[dim] = Math.ceil(DIMENSION_PATTERNS[dim].length * ratio);
+
+// B경로 (수집 스크립트 — settings.json + MCP + hooks + 프로젝트 CLAUDE.md 전부 포함)
+// 텍스트가 길어서 패턴 히트가 자연적으로 높음 → 더 높은 임계값 필요
+const EXPANDED_THRESHOLD_RATIO: Partial<Record<keyof DimensionScores, number>> = {
+  toolDiversity: 0.6,
+  agentOrchestration: 0.7,
+  contextAwareness: 0.7,
+  teamImpact: 0.7,
+  security: 0.7,
+  control: 0.85,
+};
+const EXPANDED_DEFAULT_RATIO = 0.8;
+
+/** 단일 차원에 적용 가능한 보정 보너스 상한 (B경로에서 포화 방지) */
+const MAX_BONUS_PER_DIMENSION = 25;
+
+function computeThresholds(expanded: boolean): Record<keyof DimensionScores, number> {
+  const ratios = expanded ? EXPANDED_THRESHOLD_RATIO : THRESHOLD_RATIO;
+  const defaultRatio = expanded ? EXPANDED_DEFAULT_RATIO : DEFAULT_RATIO;
+  const result = {} as Record<keyof DimensionScores, number>;
+  for (const dim of Object.keys(DIMENSION_PATTERNS) as (keyof DimensionScores)[]) {
+    const ratio = ratios[dim] ?? defaultRatio;
+    result[dim] = Math.ceil(DIMENSION_PATTERNS[dim].length * ratio);
+  }
+  return result;
 }
+
+// A경로용 기본 threshold (하위 호환)
+const THRESHOLDS = computeThresholds(false);
 
 /**
  * 원시 매칭 횟수를 0~100 점수로 정규화한다
@@ -65,55 +90,68 @@ export function calculateScores(md: string): DimensionScores {
     };
   }
 
-  const dimensions = Object.keys(THRESHOLDS) as (keyof DimensionScores)[];
+  const expandedInput = isExpandedInput(md);
+  const thresholds = expandedInput ? computeThresholds(true) : THRESHOLDS;
+  const dimensions = Object.keys(thresholds) as (keyof DimensionScores)[];
   const result = {} as DimensionScores;
 
   for (const dim of dimensions) {
     const patterns = DIMENSION_PATTERNS[dim];
     const count = countUniqueSignals(md, patterns);
-    result[dim] = normalize(count, THRESHOLDS[dim]);
+    result[dim] = normalize(count, thresholds[dim]);
   }
 
   // 확장 수집 데이터가 있으면 구조화된 신호로 점수 보정
-  if (isExpandedInput(md)) {
+  if (expandedInput) {
     const sig = extractExpandedSignals(md);
 
+    // 보정 시 차원별 보너스 누적을 추적하여 상한 적용
+    const bonusUsed: Record<string, number> = {};
+    const addBonus = (dim: keyof DimensionScores, amount: number) => {
+      const used = bonusUsed[dim] ?? 0;
+      const remaining = MAX_BONUS_PER_DIMENSION - used;
+      if (remaining <= 0) return;
+      const actual = Math.min(amount, remaining);
+      result[dim] = Math.min(100, result[dim] + actual);
+      bonusUsed[dim] = used + actual;
+    };
+
     // 보안: deny 규칙, 위험 명령어 차단, PreToolUse hook → security에만 귀속
-    if (sig.blocksDangerousOps) result.security = Math.min(100, result.security + 12);
-    if (sig.hasDenyRules) result.security = Math.min(100, result.security + Math.min(sig.denyCount * 3, 12));
-    if (sig.hasPreToolUseHook) result.security = Math.min(100, result.security + 6);
+    if (sig.blocksDangerousOps) addBonus("security", 12);
+    if (sig.hasDenyRules) addBonus("security", Math.min(sig.denyCount * 3, 12));
+    if (sig.hasPreToolUseHook) addBonus("security", 6);
 
     // 자동화: PostToolUse hook, Session hook, hook 유형 다양성
-    if (sig.hasPostToolUseHook) result.automation = Math.min(100, result.automation + 8);
-    if (sig.hasSessionHooks) result.automation = Math.min(100, result.automation + 5);
-    if (sig.hookTypeCommandCount >= 2) result.automation = Math.min(100, result.automation + 6);
+    if (sig.hasPostToolUseHook) addBonus("automation", 8);
+    if (sig.hasSessionHooks) addBonus("automation", 5);
+    if (sig.hookTypeCommandCount >= 2) addBonus("automation", 6);
 
     // 컨텍스트 관리: prompt hook, statusLine, 마켓플레이스, 플러그인 선별, 프로젝트별 CLAUDE.md
-    if (sig.hookTypePromptCount >= 1) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
-    if (sig.hasStatusLine) result.contextAwareness = Math.min(100, result.contextAwareness + 5);
-    if (sig.hasMultipleMarketplaces) result.contextAwareness = Math.min(100, result.contextAwareness + 3);
+    if (sig.hookTypePromptCount >= 1) addBonus("contextAwareness", 5);
+    if (sig.hasStatusLine) addBonus("contextAwareness", 5);
+    if (sig.hasMultipleMarketplaces) addBonus("contextAwareness", 3);
     if (sig.pluginEnabledRatio > 0 && sig.pluginEnabledRatio < 0.5) {
-      result.contextAwareness = Math.min(100, result.contextAwareness + 6);
+      addBonus("contextAwareness", 6);
     }
-    if (sig.projectMdCount >= 2) result.contextAwareness = Math.min(100, result.contextAwareness + 6);
+    if (sig.projectMdCount >= 2) addBonus("contextAwareness", 6);
 
     // 제어: defaultMode가 auto가 아님 = 수동 승인 선호 (deny는 제거됨)
-    if (!sig.defaultModeIsAuto) result.control = Math.min(100, result.control + 8);
+    if (!sig.defaultModeIsAuto) addBonus("control", 8);
 
     // 도구 다양성: MCP 서버 수
     const mcpServers = extractMcpServerNames(md);
-    if (mcpServers.length >= 3) result.toolDiversity = Math.min(100, result.toolDiversity + 10);
-    else if (mcpServers.length >= 1) result.toolDiversity = Math.min(100, result.toolDiversity + 5);
+    if (mcpServers.length >= 3) addBonus("toolDiversity", 10);
+    else if (mcpServers.length >= 1) addBonus("toolDiversity", 5);
 
     // 에이전트 오케스트레이션: defaultMode:auto, AI 판단 hook, 스킬 수
-    if (sig.defaultModeIsAuto) result.agentOrchestration = Math.min(100, result.agentOrchestration + 15);
-    if (sig.hookTypePromptCount >= 2) result.agentOrchestration = Math.min(100, result.agentOrchestration + 8);
+    if (sig.defaultModeIsAuto) addBonus("agentOrchestration", 15);
+    if (sig.hookTypePromptCount >= 2) addBonus("agentOrchestration", 8);
     const skillCount = extractSkillCount(md);
-    if (skillCount >= 5) result.agentOrchestration = Math.min(100, result.agentOrchestration + 12);
-    else if (skillCount >= 2) result.agentOrchestration = Math.min(100, result.agentOrchestration + 6);
+    if (skillCount >= 5) addBonus("agentOrchestration", 12);
+    else if (skillCount >= 2) addBonus("agentOrchestration", 6);
 
     // 팀 임팩트: 프로젝트별 CLAUDE.md = 팀 환경
-    if (sig.projectMdCount >= 3) result.teamImpact = Math.min(100, result.teamImpact + 8);
+    if (sig.projectMdCount >= 3) addBonus("teamImpact", 8);
   }
 
   return result;
