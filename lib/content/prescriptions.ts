@@ -11,6 +11,7 @@ import type {
   DimensionScores,
   ConditionalPrescription,
 } from "@/lib/types";
+import { isNonDevProfile } from "@/lib/analyzer/scorer";
 
 // ─── 우선순위 정렬 기준 ────────────────────────────────
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 } as const;
@@ -380,11 +381,37 @@ function selectPrescriptions(
  * @param dimensionScores 분석 차원 점수 (6개 차원)
  * @returns 정확히 5개(또는 조건 부족 시 5개 이하)의 PrescriptionItem
  */
+/** 개발자 용어 → 비개발자 용어 치환 테이블 */
+const DEV_TO_GENERAL: [RegExp, string][] = [
+  [/커밋/g, "변경 사항 저장"],
+  [/디버깅/g, "문제 해결"],
+  [/린트/g, "자동 검수"],
+  [/코드\s*리뷰/g, "동료 검토"],
+  [/\bPR\b/g, "변경 요청"],
+  [/빌드/g, "실행 준비"],
+  [/CI\/CD/g, "자동 배포"],
+  [/Hook/gi, "자동 실행 규칙"],
+  [/\.env/g, "비밀 설정 파일"],
+  [/MCP/g, "외부 연결"],
+];
+
 export function generatePrescriptions(
   persona: PersonaKey,
   mdStats: MdStats,
   qualityScores: QualityScores,
   dimensionScores: DimensionScores,
 ): PrescriptionItem[] {
-  return selectPrescriptions(persona, mdStats, qualityScores, dimensionScores);
+  const selected = selectPrescriptions(persona, mdStats, qualityScores, dimensionScores);
+
+  // 비개발자 프로파일이면 개발자 용어를 일반 용어로 치환
+  if (isNonDevProfile(mdStats, dimensionScores)) {
+    for (const item of selected) {
+      item.text = DEV_TO_GENERAL.reduce(
+        (t, [from, to]) => t.replace(from, to),
+        item.text,
+      );
+    }
+  }
+
+  return selected;
 }

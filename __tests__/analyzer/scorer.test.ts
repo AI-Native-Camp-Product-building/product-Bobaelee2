@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { calculateScores, extractMdStats } from "@/lib/analyzer/scorer";
+import { calculateScores, extractMdStats, isNonDevProfile } from "@/lib/analyzer/scorer";
+import type { DimensionScores, MdStats } from "@/lib/types";
 
 // 자동화 특화 CLAUDE.md 샘플
 const HIGH_AUTOMATION_MD = `
@@ -267,5 +268,34 @@ describe("확장 보정 — agentOrchestration/teamImpact", () => {
     const md = `=== settings.json ===\n{}\n=== /proj1/CLAUDE.md ===\ntest\n=== /proj2/CLAUDE.md ===\ntest\n=== /proj3/CLAUDE.md ===\ntest`;
     const stats = extractMdStats(md);
     expect(stats.projectMdCount).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("isNonDevProfile", () => {
+  it("역할 정의 + 개발 차원 낮으면 true", () => {
+    const stats = { ...extractMdStats("나는 마케터입니다"), hasRoleDefinition: true } as MdStats;
+    const scores: DimensionScores = {
+      automation: 10, control: 30, toolDiversity: 15,
+      contextAwareness: 10, teamImpact: 20, security: 5, agentOrchestration: 0,
+    };
+    expect(isNonDevProfile(stats, scores)).toBe(true);
+  });
+
+  it("역할 정의가 없으면 false", () => {
+    const stats = { ...extractMdStats("일반 텍스트"), hasRoleDefinition: false } as MdStats;
+    const scores: DimensionScores = {
+      automation: 5, control: 5, toolDiversity: 5,
+      contextAwareness: 5, teamImpact: 5, security: 5, agentOrchestration: 0,
+    };
+    expect(isNonDevProfile(stats, scores)).toBe(false);
+  });
+
+  it("automation이 높으면 false", () => {
+    const stats = { ...extractMdStats("나는 DevOps입니다"), hasRoleDefinition: true } as MdStats;
+    const scores: DimensionScores = {
+      automation: 50, control: 30, toolDiversity: 15,
+      contextAwareness: 10, teamImpact: 20, security: 5, agentOrchestration: 0,
+    };
+    expect(isNonDevProfile(stats, scores)).toBe(false);
   });
 });

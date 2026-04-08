@@ -9,7 +9,7 @@ export interface DimensionScores {
   agentOrchestration: number;   // 자율 에이전트 오케스트레이션
 }
 
-/** 13가지 페르소나 키 */
+/** 12가지 페르소나 키 */
 export type PersonaKey =
   | "puppet-master"
   | "speedrunner"
@@ -166,14 +166,14 @@ export interface GlobalStats {
 
 /** 차원별 UI 라벨 (레이더 차트, 배지 등에서 사용) */
 export const DIMENSION_LABELS: Record<keyof DimensionScores, { label: string; description: string }> = {
-  automation: { label: "자동화", description: "Hook, CI/CD, 배포 파이프라인" },
-  control: { label: "통제", description: "금지 규칙, 지시어, 제약 조건" },
-  toolDiversity: { label: "도구", description: "연결한 외부 서비스 SaaS 종류" },
-  contextAwareness: { label: "맥락", description: "세션, 메모리, 핸드오프 설계" },
-  teamImpact: { label: "팀", description: "코드리뷰, PR, 온보딩, 문서화" },
-  security: { label: "보안", description: "민감 정보 보호, deny 규칙" },
-  agentOrchestration: { label: "에이전트", description: "자율 실행 루프, 가드레일, 병렬 처리" },
+  automation: { label: "자동화", description: "반복 작업을 자동으로 처리" },
+  control: { label: "규칙", description: "AI에게 지시하는 규칙과 제약" },
+  toolDiversity: { label: "도구", description: "연결한 외부 서비스 종류" },
+  contextAwareness: { label: "기억", description: "대화 맥락과 정보 관리" },
+  teamImpact: { label: "협업", description: "팀과 함께 일하는 방식" },
+  security: { label: "보안", description: "민감 정보 보호 규칙" },
+  agentOrchestration: { label: "자율", description: "AI에게 맡기는 판단 범위" },
 };
 
 /** 전체 패턴 수 (7차원 합산) */
-export const TOTAL_PATTERN_COUNT = 94;
+export const TOTAL_PATTERN_COUNT = 105;
