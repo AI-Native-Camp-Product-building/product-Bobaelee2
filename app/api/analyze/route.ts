@@ -91,9 +91,15 @@ export async function GET() {
     endpoint: "POST /api/analyze",
     request: {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: {
-        text: "(string, 필수) CLAUDE.md 파일 내용",
+      content_types: {
+        "application/json": {
+          headers: { "Content-Type": "application/json" },
+          body: { text: "(string, 필수) CLAUDE.md 파일 내용" },
+        },
+        "text/plain": {
+          headers: { "Content-Type": "text/plain" },
+          body: "CLAUDE.md 파일 내용을 그대로 전송",
+        },
       },
     },
     response: {
@@ -107,8 +113,10 @@ export async function GET() {
       markdownReport: "터미널에서 바로 출력 가능한 포맷된 리포트 (페르소나, 바 차트, 로스팅, 처방전 포함)",
     },
     example: {
-      curl: `curl -X POST https://mdti.vercel.app/api/analyze -H "Content-Type: application/json" -d '{"text": "# My Rules\\n- 항상 한국어로 답변"}'`,
-      agent_prompt: "내 ~/.claude/CLAUDE.md 파일을 읽어서 https://mdti.vercel.app/api/analyze 에 POST 요청을 보내줘. body는 {\"text\": \"파일내용\"} 형식이야. 응답의 markdownReport를 그대로 출력해주고, 처방전 중 바로 적용할 수 있는 게 있으면 뭘 어떻게 수정하면 좋을지 알려줘.",
+      curl_json: `curl -X POST https://mdti.vercel.app/api/analyze -H "Content-Type: application/json" -d '{"text": "# My Rules\\n- 항상 한국어로 답변"}'`,
+      curl_collect_mac: `(for f in ~/.claude/CLAUDE.md ~/.claude/settings.json; do [ -f "$f" ] && echo "=== $(basename "$f") ===" && cat "$f" && echo ""; done; [ -f ~/.claude/mcp_settings.json ] && echo "=== mcp_settings.json ===" && python3 -c "import json,sys; d=json.load(open(sys.argv[1])); [s['env'].update({k:'***' for k in s['env']}) for s in d.get('mcpServers',{}).values() if 'env' in s]; print(json.dumps(d,indent=2,ensure_ascii=False))" ~/.claude/mcp_settings.json && echo ""; echo "=== commands ===" && find ~/.claude/commands -name '*.md' 2>/dev/null | xargs -I{} basename {} .md; echo ""; find ~ -maxdepth 3 \\( -name 'CLAUDE.md' -o -name 'AGENTS.md' \\) -not -path '*/.claude/*' -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | while read f; do echo "=== $f ===" && cat "$f" && echo ""; done) | sed -E -e 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/***EMAIL***/g' -e 's/(xoxb-|xoxp-|sk-|ghp_|gho_|Bearer )[A-Za-z0-9_-]+/\\1***/g' -e 's/AKfycb[A-Za-z0-9_-]+/***DEPLOY_ID***/g' -e 's/ntn_[A-Za-z0-9_-]+/***NOTION***/g' | curl -s -X POST https://mdti.vercel.app/api/analyze -H "Content-Type: text/plain" --data-binary @- | jq -r .markdownReport`,
+      note: "curl_collect_mac은 전체 Claude 설정(CLAUDE.md, settings.json, MCP, commands, 프로젝트별 MD)을 수집하고 API 키/이메일을 자동 마스킹하여 분석합니다",
+      agent_prompt: "내 Claude 설정 파일들(~/.claude/CLAUDE.md, settings.json, mcp_settings.json, 프로젝트별 CLAUDE.md, AGENTS.md)을 모두 읽어서 하나로 합친 뒤 https://mdti.vercel.app/api/analyze 에 text/plain으로 POST 요청을 보내줘. API 키, 토큰, 이메일은 마스킹해서 보내고. 응답의 markdownReport를 그대로 출력해주고, 처방전 중 바로 적용할 수 있는 게 있으면 뭘 어떻게 수정하면 좋을지 알려줘.",
     },
     personas: [
       "puppet-master", "speedrunner", "fortress", "minimalist",
@@ -119,18 +127,26 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { text?: string };
+  let text: string | undefined;
 
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json(
-      { error: "요청 본문이 유효한 JSON이 아닙니다" },
-      { status: 400 },
-    );
+  const contentType = request.headers.get("content-type") ?? "";
+
+  if (contentType.includes("text/plain")) {
+    // text/plain — 파일 내용을 그대로 보낸 경우
+    text = await request.text();
+  } else {
+    // application/json (기본) — {"text": "..."} 형식
+    let body: { text?: string };
+    try {
+      body = await request.json();
+    } catch {
+      return Response.json(
+        { error: "요청 본문이 유효한 JSON이 아닙니다. text/plain으로 보내면 JSON 없이 텍스트만 전송할 수 있습니다." },
+        { status: 400 },
+      );
+    }
+    text = body.text;
   }
-
-  const { text } = body;
 
   if (!text || typeof text !== "string") {
     return Response.json(
