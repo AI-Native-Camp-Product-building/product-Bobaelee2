@@ -16,7 +16,7 @@ import type {
   GlobalStats,
 } from "@/lib/types";
 
-// PersonaKey 타입 검증용 — 13개 값 모두 할당 가능해야 함 (polymath 추가)
+// PersonaKey 타입 검증용 — 12개 값 모두 할당 가능해야 함
 const PERSONA_KEYS: PersonaKey[] = [
   "puppet-master",
   "speedrunner",
@@ -30,12 +30,11 @@ const PERSONA_KEYS: PersonaKey[] = [
   "architect",
   "huggies",
   "daredevil",
-  "polymath",
 ];
 
 describe("PersonaKey", () => {
-  it("13개 페르소나 키가 존재해야 한다", () => {
-    expect(PERSONA_KEYS).toHaveLength(13);
+  it("12개 페르소나 키가 존재해야 한다", () => {
+    expect(PERSONA_KEYS).toHaveLength(12);
   });
 
   it("모든 키가 문자열이어야 한다", () => {
@@ -46,7 +45,7 @@ describe("PersonaKey", () => {
 
   it("중복 없이 고유한 키여야 한다", () => {
     const unique = new Set(PERSONA_KEYS);
-    expect(unique.size).toBe(13);
+    expect(unique.size).toBe(12);
   });
 });
 
@@ -294,7 +293,6 @@ describe("GlobalStats", () => {
         architect: 0,
         huggies: 0,
         daredevil: 0,
-        polymath: 0,
       },
       avgLines: 85,
       userPercentile: {

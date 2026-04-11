@@ -115,14 +115,6 @@ const SIGNATURE_PRESCRIPTIONS: ConditionalPrescription[] = [
     tier: "signature",
     condition: (persona) => persona === "huggies",
   },
-  {
-    id: "sig-polymath",
-    text: "다음 레버리지는 '더 쌓기'가 아니라 '전파'입니다. 당신의 CLAUDE.md에서 팀에 전파 가능한 3가지를 골라 README로 옮기세요. 1주 투자, 팀 전체 md력 2배.",
-    priority: "high",
-    tag: "sig:polymath",
-    tier: "signature",
-    condition: (persona) => persona === "polymath",
-  },
 ];
 
 // ─── 차원별 처방전 (페르소나 특화 + 제네릭) ──────────────

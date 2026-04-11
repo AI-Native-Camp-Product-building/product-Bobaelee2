@@ -8,8 +8,8 @@ export interface DimensionScores {
     security: number;
     agentOrchestration: number;
 }
-/** 13가지 페르소나 키 */
-export type PersonaKey = "puppet-master" | "speedrunner" | "fortress" | "minimalist" | "collector" | "legislator" | "craftsman" | "deep-diver" | "evangelist" | "architect" | "huggies" | "daredevil" | "polymath";
+/** 12가지 페르소나 키 */
+export type PersonaKey = "puppet-master" | "speedrunner" | "fortress" | "minimalist" | "collector" | "legislator" | "craftsman" | "deep-diver" | "evangelist" | "architect" | "huggies" | "daredevil";
 /** 페르소나 정의 */
 export interface PersonaDefinition {
     key: PersonaKey;

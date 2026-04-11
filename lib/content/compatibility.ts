@@ -18,7 +18,6 @@ const COMPATIBILITY_MAP: Record<PersonaKey, { perfect: PersonaKey; chaos: Person
   architect: { perfect: "evangelist", chaos: "minimalist" },
   huggies: { perfect: "architect", chaos: "daredevil" },
   daredevil: { perfect: "daredevil", chaos: "fortress" },
-  polymath: { perfect: "huggies", chaos: "minimalist" },
 };
 
 /** 페르소나 이름 (한글, 짧게) */
@@ -35,7 +34,6 @@ const PERSONA_NAME_KO: Record<PersonaKey, string> = {
   architect: "하네스 아키텍트",
   daredevil: "위험물 취급자",
   huggies: "하기스 아키텍트",
-  polymath: "팔방미인",
 };
 
 /** 최고 궁합 설명 템플릿 */
@@ -64,8 +62,6 @@ const PERFECT_DESCRIPTIONS: Record<PersonaKey, string> = {
     "하기스 아키텍트 + 로데오 마스터 = 사제 관계의 꿈. 기저귀 단계의 하기스가 카우보이의 목장을 견학하면 성장 속도 10배. 가장 이상적인 멘토링 궁합.",
   daredevil:
     "위험물 취급자 + 위험물 취급자 = 스피드의 끝판왕. 보안도 도구도 최소한으로 줄이고 오직 결과물에만 집중하는 조합. 단, 사고 나면 둘 다 도망갈 곳이 없다.",
-  polymath:
-    "팔방미인 + 하기스 아키텍트 = 이상적인 멘토링 궁합. 모든 차원을 이미 넘어선 팔방미인이 아직 기저귀 단계의 하기스에게 '다음 스텝은 여기'를 짚어주는 구조. 팔방미인에게는 가르치는 보람이, 하기스에게는 압축된 성장이 돌아오는 윈윈.",
 };
 
 /** 최악 궁합 설명 템플릿 */
@@ -94,8 +90,6 @@ const CHAOS_DESCRIPTIONS: Record<PersonaKey, string> = {
     "하기스 아키텍트 vs 위험물 취급자 = 기저귀 vs 무보호의 충돌. 하기스가 '이 Hook 왜 안 돼요?'라고 물으면 데어데블이 'Hook이 뭐예요?'라고 답하는 평행우주.",
   daredevil:
     "위험물 취급자 vs 보안 편집증 = 속도 vs 안전의 정면충돌. 데어데블이 'ship fast'를 외치면 요새가 보안 감사 보고서를 내미는 영원한 평행선.",
-  polymath:
-    "팔방미인 vs CLAUDE.md 3줄러 = 풀세팅 vs 백지의 극과 극. 팔방미인이 '이렇게 설정하면 생산성이 3배가 돼요'라고 설명하면 3줄러는 '그 3배가 원래 필요 없던 3배 아닐까요?'라고 되묻는 평행우주. 세계관 자체가 다름.",
 };
 
 /**

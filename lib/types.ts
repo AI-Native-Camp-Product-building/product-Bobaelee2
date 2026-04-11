@@ -9,7 +9,7 @@ export interface DimensionScores {
   agentOrchestration: number;   // 자율 에이전트 오케스트레이션
 }
 
-/** 13가지 페르소나 키 */
+/** 12가지 페르소나 키 */
 export type PersonaKey =
   | "puppet-master"
   | "speedrunner"
@@ -22,8 +22,7 @@ export type PersonaKey =
   | "evangelist"
   | "architect"
   | "huggies"
-  | "daredevil"
-  | "polymath";
+  | "daredevil";
 
 /** 페르소나 정의 */
 export interface PersonaDefinition {

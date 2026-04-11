@@ -130,20 +130,6 @@ function buildCandidates(scores: DimensionScores, mdStats: MdStats): BuildResult
   // Step 2: 후보 등록
   const candidates: ClassificationCandidate[] = [];
 
-  // 팔방미인 (polymath) — 모든 차원이 고르게 높은 희귀 케이스
-  // 조건: min ≥ 50, avg ≥ 80, 차원 5개 이상이 70+
-  // fit을 120+로 강하게 부여해서 단일 차원 페르소나(legislator/evangelist 등 100)를 이김
-  const minScoreVal = Math.min(...Object.values(scores));
-  const highDimCount = Object.values(scores).filter((v) => v >= 70).length;
-  if (minScoreVal >= 50 && avg >= 80 && highDimCount >= 5) {
-    const fit = 120 + (avg - 80) * 2 + (minScoreVal - 50);
-    candidates.push({
-      persona: "polymath",
-      fit,
-      reason: `최저점 ${minScoreVal.toFixed(0)} ≥ 50, 평균 ${avg.toFixed(0)} ≥ 80, ${highDimCount}/7 차원이 70+ — 균형형 초과달성자`,
-    });
-  }
-
   // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 구분
   if (mdStats.isExpandedInput) {
     // 직접 작성: SKILL.md, 에이전트 정의 (가장 강한 "만든다" 시그널)
