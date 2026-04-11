@@ -21,6 +21,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hookCount: 0,
     skillCount: 0,
     agentCount: 0,
+    skillNames: [],
     pluginSkillCount: 0,
     userSkillCount: 0,
     pluginAgentCount: 0,
@@ -277,67 +278,49 @@ describe("classifyPersona — 재교정된 임계값", () => {
     expect(result.primary).not.toBe("minimalist");
   });
 
-  it("플러그인 많으면 하기스: pluginCount=8이면 스킬이 많아도 huggies", () => {
+  it("하기스: OMC 스킬 사용 + agentOrchestration 낮으면 huggies", () => {
     const scores = makeScores({ automation: 50, agentOrchestration: 30 });
     const stats = makeMdStats({
       isExpandedInput: true,
       pluginCount: 8,
       mcpServerCount: 5,
-      commandCount: 7,
-      hookCount: 3,
-      skillCount: 30, // 플러그인이 설치한 스킬
+      skillNames: ["autopilot", "ralph", "ultrawork", "team", "handoff", "pickup"],
     });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("huggies");
   });
 
-  it("huggies: 플러그인 4개 + MCP 2개면 huggies", () => {
+  it("하기스: 플러그인/MCP 3개 이상이면 huggies", () => {
     const scores = makeScores({ automation: 30, agentOrchestration: 10 });
     const stats = makeMdStats({
       isExpandedInput: true,
       pluginCount: 4,
       mcpServerCount: 2,
-      commandCount: 2,
-      hookCount: 1,
+      skillNames: [],
     });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("huggies");
   });
 
-  it("로데오: 플러그인 없이(< 3) 스킬/에이전트를 직접 만든 경우 architect", () => {
-    const scores = makeScores({ automation: 50, agentOrchestration: 45 });
-    const stats = makeMdStats({
-      isExpandedInput: true,
-      pluginCount: 1, // 플러그인 거의 없음
-      mcpServerCount: 2,
-      commandCount: 3,
-      hookCount: 2,
-      skillCount: 3, // 직접 만든 스킬
-      agentCount: 2, // 직접 만든 에이전트
-      pluginSkillCount: 0,
-      userSkillCount: 3, // 전부 직접 만든 것
-    });
+  it("로데오: agentOrchestration ≥ 70이면 architect", () => {
+    const scores = makeScores({ agentOrchestration: 75, automation: 40 });
+    const stats = makeMdStats({ totalLines: 200 });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("architect");
   });
 
-  it("플러그인 많으면 스킬+에이전트 있어도 huggies", () => {
-    const scores = makeScores({ automation: 50 });
+  it("하기스+로데오 동시 해당 시: agentOrch 높으면 로데오가 이김", () => {
+    const scores = makeScores({ agentOrchestration: 80, automation: 50 });
     const stats = makeMdStats({
       isExpandedInput: true,
-      pluginCount: 10, // 플러그인 ≥ 3
+      pluginCount: 10,
       mcpServerCount: 5,
-      commandCount: 5,
-      hookCount: 0,
-      skillCount: 20, // 전부 플러그인 소산물
-      agentCount: 10,
-      pluginSkillCount: 20, // 전부 플러그인이 설치
-      userSkillCount: 0,
-      pluginAgentCount: 10,
-      userAgentCount: 0, // 직접 만든 것 없음
+      skillNames: ["autopilot", "ralph", "team"],
     });
     const result = classifyPersona(scores, stats);
-    expect(result.primary).toBe("huggies");
+    // architect fit(90+10=100) > huggies fit(75+15=90)
+    expect(result.primary).toBe("architect");
+    expect(result.secondary).toBe("huggies");
   });
 });
 

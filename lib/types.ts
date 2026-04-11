@@ -53,6 +53,7 @@ export interface MdStats {
   hookCount: number;           // 설정된 hook 수
   skillCount: number;          // ~/.claude/skills 하위 스킬 수 (확장 입력 시)
   agentCount: number;          // ~/.claude/agents 하위 에이전트 수 (확장 입력 시)
+  skillNames: string[];        // 스킬 이름 목록 (레지스트리 매칭용)
   pluginSkillCount: number;    // 플러그인이 설치한 스킬 수 (plugins/cache 기반)
   userSkillCount: number;      // 직접 만든 스킬 수 (skillCount - pluginSkillCount)
   pluginAgentCount: number;    // 플러그인이 설치한 에이전트 수

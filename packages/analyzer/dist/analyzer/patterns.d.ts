@@ -68,6 +68,8 @@ export interface ExpandedSignals {
  * 섹션이 없거나 비어있으면 0을 반환한다
  */
 export declare function extractSkillCount(text: string): number;
+/** 스킬 이름 목록을 반환한다 (분류기에서 레지스트리 매칭에 사용) */
+export declare function extractSkillNames(text: string): string[];
 /**
  * 확장 수집 데이터의 agents 섹션에서 에이전트 수를 추출한다
  * ~/.claude/agents 하위의 .md 파일 수에 대응

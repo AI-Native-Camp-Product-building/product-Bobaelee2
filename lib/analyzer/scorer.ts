@@ -14,6 +14,7 @@ import {
   countHooks,
   extractExpandedSignals,
   extractSkillCount,
+  extractSkillNames,
   extractAgentCount,
   extractPluginSkillCount,
   extractPluginAgentCount,
@@ -195,6 +196,7 @@ export function extractMdStats(md: string): MdStats {
       hookCount: 0,
       skillCount: 0,
       agentCount: 0,
+      skillNames: [],
       pluginSkillCount: 0,
       userSkillCount: 0,
       pluginAgentCount: 0,
@@ -265,7 +267,8 @@ export function extractMdStats(md: string): MdStats {
   const mcpServerNames = expanded ? extractMcpServerNames(md) : [];
   const commandNames = expanded ? extractCommandNames(md) : [];
   const hookCount = expanded ? countHooks(md) : (hasHooks ? 1 : 0);
-  const skillCount = expanded ? extractSkillCount(md) : 0;
+  const skillNames = expanded ? extractSkillNames(md) : [];
+  const skillCount = skillNames.length;
   const agentCount = expanded ? extractAgentCount(md) : 0;
   const pluginSkillCount = expanded ? extractPluginSkillCount(md) : 0;
   const userSkillCount = Math.max(0, skillCount - pluginSkillCount);
@@ -293,6 +296,7 @@ export function extractMdStats(md: string): MdStats {
     hookCount,
     skillCount,
     agentCount,
+    skillNames,
     pluginSkillCount,
     userSkillCount,
     pluginAgentCount,

@@ -9,6 +9,33 @@
  */
 import type { DimensionScores, MdStats, PersonaKey, PersonaResult } from "@/lib/types";
 
+/**
+ * 알려진 커뮤니티/생태계 스킬 레지스트리
+ * 이 목록에 있는 스킬은 "가져다 쓴 것"으로 분류
+ * 목록에 없는 스킬은 "직접 만든 것"으로 추정
+ */
+const KNOWN_COMMUNITY_SKILLS = new Set([
+  // oh-my-claudecode (OMC) 스킬
+  "ai-slop-cleaner", "ask", "autopilot", "cancel", "ccg", "compound",
+  "configure-notifications", "deep-dive", "deep-interview", "deepinit",
+  "external-context", "handoff", "harness", "hud", "learner", "mcp-setup",
+  "omc-doctor", "omc-plan", "omc-reference", "omc-setup", "omc-teams",
+  "pickup", "prd", "project-session-manager", "ralph", "ralplan", "release",
+  "sciomc", "self-improve", "setup", "skill", "team", "team-assemble",
+  "trace", "ultraqa", "ultrawork", "visual-verdict", "wiki", "writer-memory",
+  // Anthropic 공식 플러그인 스킬
+  "agent-council", "agent-development", "brainstorming", "claude-automation-recommender",
+  "claude-md-improver", "command-development", "dispatching-parallel-agents",
+  "executing-plans", "finishing-a-development-branch", "frontend-design",
+  "history-insight", "hook-development", "mcp-integration", "metamedium",
+  "playground", "plugin-settings", "plugin-structure", "receiving-code-review",
+  "requesting-code-review", "session-analyzer", "session-wrap", "skill-creator",
+  "skill-development", "slack-messaging", "slack-search", "stripe-best-practices",
+  "subagent-driven-development", "systematic-debugging", "test-driven-development",
+  "using-git-worktrees", "using-superpowers", "verification-before-completion",
+  "writing-plans", "writing-rules", "writing-skills",
+]);
+
 /** 차원별 전용 페르소나 매핑 — deep-diver 억제 및 부 페르소나 선택에 사용 */
 const DIMENSION_SPECIFIC_PERSONAS: Partial<Record<keyof DimensionScores, PersonaKey[]>> = {
   security: ["fortress"],
@@ -130,46 +157,33 @@ function buildCandidates(scores: DimensionScores, mdStats: MdStats): BuildResult
   // Step 2: 후보 등록
   const candidates: ClassificationCandidate[] = [];
 
-  // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 정확 구분
-  // userSkillCount = 전체 스킬 - 플러그인이 설치한 스킬 (수집 스크립트에서 계산)
-  if (mdStats.isExpandedInput) {
-    const userSkills = mdStats.userSkillCount ?? 0;
-    const userAgents = mdStats.userAgentCount ?? 0;
-    const selfAuthored = userSkills + userAgents;
-    const pluginCount = mdStats.pluginCount;
-    const adopted = pluginCount + mdStats.mcpServerCount;
-    const selfConfigured = mdStats.commandCount + mdStats.hookCount;
-
-    notes.push(`하네스 분석: 스킬 ${mdStats.skillCount ?? 0}개(플러그인 ${mdStats.pluginSkillCount ?? 0}개, 직접 ${userSkills}개), 에이전트 ${mdStats.agentCount ?? 0}개(플러그인 ${mdStats.pluginAgentCount ?? 0}개, 직접 ${userAgents}개), 설정 ${selfConfigured}개, 활용 ${adopted}개`);
-
-    // 로데오 마스터: 직접 만든 스킬/에이전트가 있는 사람
-    if (selfAuthored >= 2) {
-      const fit = 90 + Math.min(selfAuthored * 3 + selfConfigured, 15);
-      candidates.push({
-        persona: "architect",
-        fit,
-        reason: `하네스 제작자 — 직접 만든 스킬 ${userSkills}개 + 에이전트 ${userAgents}개 = ${selfAuthored}개 ≥ 2`,
-      });
-    }
-    // 하기스 아키텍트: 플러그인/MCP 생태계를 활용하는 사람
-    if (adopted >= 3 || adopted + selfConfigured >= 6) {
-      const fit = 75 + Math.min(adopted + selfConfigured, 15);
-      candidates.push({
-        persona: "huggies",
-        fit,
-        reason: `하네스 활용자 — 플러그인 ${pluginCount}개, MCP ${mdStats.mcpServerCount}개, 명령어 ${mdStats.commandCount}개, 훅 ${mdStats.hookCount}개`,
-      });
-    }
-  }
-
-  // 텍스트 기반 보조 진입: 수집 스크립트 미사용이어도 에이전트 오케스트레이션 시그널이 강하면 후보
-  if (!mdStats.isExpandedInput && scores.agentOrchestration >= 70 && scores.toolDiversity >= 40) {
-    const fit = scores.agentOrchestration - 10;
+  // 로데오 마스터: 텍스트에서 하네스 설계 패턴이 강하게 감지되는 사람
+  // agentOrchestration 점수 = .md에 에이전트 오케스트레이션 관련 키워드(agent loop, 병렬 에이전트, 중단 조건 등)가 얼마나 있는가
+  if (scores.agentOrchestration >= 70) {
+    const fit = 90 + Math.min(scores.agentOrchestration - 70, 15);
     candidates.push({
       persona: "architect",
       fit,
-      reason: `텍스트 기반: agentOrchestration ${scores.agentOrchestration} ≥ 70 AND toolDiversity ${scores.toolDiversity} ≥ 40 — 수집 스크립트 없이도 하네스 제작 시그널 감지`,
+      reason: `하네스 설계자 — agentOrchestration ${scores.agentOrchestration} ≥ 70. .md에 에이전트 오케스트레이션 패턴이 강하게 감지됨`,
     });
+  }
+
+  // 하기스 아키텍트: 커뮤니티 스킬/플러그인/MCP 생태계를 활용하는 사람
+  if (mdStats.isExpandedInput) {
+    const allSkillNames = mdStats.skillNames ?? [];
+    const knownSkills = allSkillNames.filter(s => KNOWN_COMMUNITY_SKILLS.has(s));
+    const pluginCount = mdStats.pluginCount;
+    const adopted = pluginCount + mdStats.mcpServerCount;
+
+    if (knownSkills.length >= 1 || adopted >= 3) {
+      const fit = 75 + Math.min(knownSkills.length + adopted, 15);
+      candidates.push({
+        persona: "huggies",
+        fit,
+        reason: `하네스 활용자 — 커뮤니티 스킬 ${knownSkills.length}개, 플러그인 ${pluginCount}개, MCP ${mdStats.mcpServerCount}개`,
+      });
+      notes.push(`하네스 분석: 커뮤니티 스킬 ${knownSkills.length}개 감지 (${knownSkills.slice(0, 5).join(", ")}${knownSkills.length > 5 ? "..." : ""})`);
+    }
   }
 
   // 차원 기반 후보들 — 벤치마크 기반 임계값

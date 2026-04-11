@@ -38,6 +38,7 @@ export interface MdStats {
     hookCount: number;
     skillCount: number;
     agentCount: number;
+    skillNames: string[];
     pluginSkillCount: number;
     userSkillCount: number;
     pluginAgentCount: number;

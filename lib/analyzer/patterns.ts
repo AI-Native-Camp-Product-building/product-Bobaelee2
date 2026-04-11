@@ -345,13 +345,18 @@ export interface ExpandedSignals {
  * 섹션이 없거나 비어있으면 0을 반환한다
  */
 export function extractSkillCount(text: string): number {
+  return extractSkillNames(text).length;
+}
+
+/** 스킬 이름 목록을 반환한다 (분류기에서 레지스트리 매칭에 사용) */
+export function extractSkillNames(text: string): string[] {
   const skillSection = text.match(/===\s*skills\s*===\n([\s\S]*?)(?=\n===|$)/);
-  if (!skillSection) return 0;
+  if (!skillSection) return [];
   return skillSection[1]
     .trim()
     .split("\n")
     .filter((l) => l.trim() && !/^===/.test(l.trim()))
-    .length;
+    .map((l) => l.trim());
 }
 
 /**
