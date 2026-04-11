@@ -1,0 +1,26 @@
+{
+  "name": "@mdti/analyzer",
+  "version": "0.1.0",
+  "description": "mdti 분석 엔진 — .md 파일을 분석하여 AI 활용 페르소나 + md력 점수를 반환",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["mdti", "claude", "md", "analyzer", "persona"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
