@@ -96,33 +96,34 @@ function buildCandidates(scores, mdStats) {
     // Step 2: 후보 등록
     const candidates = [];
     // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 구분
+    // 핵심 원칙: 플러그인이 3개 이상이면 스킬/에이전트 대부분이 플러그인 소산물
+    // → skillCount/agentCount를 "직접 만든 것"으로 신뢰할 수 없음
     if (mdStats.isExpandedInput) {
-        // 직접 작성: SKILL.md, 에이전트 정의 (가장 강한 "만든다" 시그널)
-        const selfAuthored = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
-        // 직접 설정: 커스텀 명령어, 훅 (중간 시그널)
+        const pluginCount = mdStats.pluginCount;
+        const rawSkills = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
+        const hasPluginEcosystem = pluginCount >= 3;
+        // 플러그인 생태계가 있으면: 스킬/에이전트는 "쓴다" 쪽으로 간주
+        // 플러그인이 거의 없는데 스킬이 있으면: 직접 만든 것
+        const selfAuthored = hasPluginEcosystem ? 0 : rawSkills;
         const selfConfigured = mdStats.commandCount + mdStats.hookCount;
-        // 가져다 쓰기: 플러그인, MCP 서버 (남이 만든 도구)
-        const adopted = mdStats.pluginCount + mdStats.mcpServerCount;
-        const total = selfAuthored + selfConfigured + adopted;
-        // 로데오 마스터: 하네스를 직접 만드는 사람
-        // - 스킬/에이전트를 직접 작성했거나 (selfAuthored >= 2)
-        // - 명령어+훅을 많이 설정하면서 전체 생태계가 큰 경우 (selfConfigured >= 5 AND total >= 15)
-        if (selfAuthored >= 2 || (selfConfigured >= 5 && total >= 15)) {
+        const adopted = pluginCount + mdStats.mcpServerCount;
+        notes.push(`하네스 분석: 플러그인 ${pluginCount}개${hasPluginEcosystem ? " (≥3 → 스킬/에이전트는 플러그인 소산물로 간주)" : ""}, 스킬+에이전트 ${rawSkills}개, 직접 작성 추정 ${selfAuthored}개, 설정 ${selfConfigured}개`);
+        // 로데오 마스터: 플러그인 없이 직접 스킬/에이전트를 만든 사람
+        if (selfAuthored >= 2) {
             const fit = 90 + Math.min(selfAuthored * 3 + selfConfigured, 15);
             candidates.push({
                 persona: "architect",
                 fit,
-                reason: `하네스 제작자 — 직접 작성 ${selfAuthored}개(스킬 ${mdStats.skillCount ?? 0}, 에이전트 ${mdStats.agentCount ?? 0}), 직접 설정 ${selfConfigured}개(명령어 ${mdStats.commandCount}, 훅 ${mdStats.hookCount})`,
+                reason: `하네스 제작자 — 플러그인 ${pluginCount}개(< 3)인데 스킬+에이전트 ${rawSkills}개 → 직접 만든 것으로 판단`,
             });
         }
-        // 하기스 아키텍트: 생태계 위에 올라탄 사람
-        // - 도구는 쓰지만 직접 만든 하네스는 아직 없는 단계
-        if (adopted + selfConfigured >= 6 && selfAuthored < 2) {
+        // 하기스 아키텍트: 플러그인/MCP 생태계를 활용하는 사람
+        if (hasPluginEcosystem || adopted + selfConfigured >= 6) {
             const fit = 75 + Math.min(adopted + selfConfigured, 15);
             candidates.push({
                 persona: "huggies",
                 fit,
-                reason: `하네스 활용자 — 설치한 도구 ${adopted}개(플러그인 ${mdStats.pluginCount}, MCP ${mdStats.mcpServerCount}), 설정 ${selfConfigured}개 BUT 직접 작성 ${selfAuthored}개 < 2`,
+                reason: `하네스 활용자 — 플러그인 ${pluginCount}개, MCP ${mdStats.mcpServerCount}개, 명령어 ${mdStats.commandCount}개, 훅 ${mdStats.hookCount}개`,
             });
         }
     }

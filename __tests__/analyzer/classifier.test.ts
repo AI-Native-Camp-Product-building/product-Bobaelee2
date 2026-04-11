@@ -273,7 +273,7 @@ describe("classifyPersona — 재교정된 임계값", () => {
     expect(result.primary).not.toBe("minimalist");
   });
 
-  it("architect: eco=20, hookCount=3이면 architect", () => {
+  it("플러그인 많으면 하기스: pluginCount=8이면 스킬이 많아도 huggies", () => {
     const scores = makeScores({ automation: 50, agentOrchestration: 30 });
     const stats = makeMdStats({
       isExpandedInput: true,
@@ -281,12 +281,13 @@ describe("classifyPersona — 재교정된 임계값", () => {
       mcpServerCount: 5,
       commandCount: 7,
       hookCount: 3,
+      skillCount: 30, // 플러그인이 설치한 스킬
     });
     const result = classifyPersona(scores, stats);
-    expect(result.primary).toBe("architect");
+    expect(result.primary).toBe("huggies");
   });
 
-  it("huggies: eco=8, hookCount=1이면 huggies", () => {
+  it("huggies: 플러그인 4개 + MCP 2개면 huggies", () => {
     const scores = makeScores({ automation: 30, agentOrchestration: 10 });
     const stats = makeMdStats({
       isExpandedInput: true,
@@ -299,34 +300,34 @@ describe("classifyPersona — 재교정된 임계값", () => {
     expect(result.primary).toBe("huggies");
   });
 
-  it("architect 게이트 완화: eco=20, hookCount=2에서도 architect 후보 등록", () => {
-    // Rich 케이스 재현: 기존엔 hookCount=3 게이트 때문에 탈락했음
+  it("로데오: 플러그인 없이(< 3) 스킬/에이전트를 직접 만든 경우 architect", () => {
     const scores = makeScores({ automation: 50, agentOrchestration: 45 });
     const stats = makeMdStats({
       isExpandedInput: true,
-      pluginCount: 11,
-      mcpServerCount: 0,
-      commandCount: 9,
-      hookCount: 2, // 기존 게이트 미달, 완화된 게이트는 통과
+      pluginCount: 1, // 플러그인 거의 없음
+      mcpServerCount: 2,
+      commandCount: 3,
+      hookCount: 2,
+      skillCount: 3, // 직접 만든 스킬
+      agentCount: 2, // 직접 만든 에이전트
     });
     const result = classifyPersona(scores, stats);
-    // 점수들이 낮아 다른 1등 후보가 없으므로 architect가 primary
     expect(result.primary).toBe("architect");
   });
 
-  it("architect 게이트 대체 경로: hookCount=0이어도 skillCount+agentCount>=3이면 architect", () => {
+  it("플러그인 많으면 스킬+에이전트 있어도 huggies", () => {
     const scores = makeScores({ automation: 50 });
     const stats = makeMdStats({
       isExpandedInput: true,
-      pluginCount: 10,
+      pluginCount: 10, // 플러그인 ≥ 3
       mcpServerCount: 5,
       commandCount: 5,
       hookCount: 0,
-      skillCount: 2,
-      agentCount: 3,
+      skillCount: 20, // 전부 플러그인 소산물
+      agentCount: 10,
     });
     const result = classifyPersona(scores, stats);
-    expect(result.primary).toBe("architect");
+    expect(result.primary).toBe("huggies");
   });
 });
 
