@@ -446,16 +446,16 @@ describe("classifyPersonaDebug — 투명성 디버그 정보", () => {
     });
   });
 
-  it("B경로 사용 시 notes에 'B경로' 문구가 포함되어야 한다", () => {
+  it("전체 수집 분석 시 notes에 관련 문구가 포함되어야 한다", () => {
     const stats = makeMdStats({ isExpandedInput: true });
     const debug = classifyPersonaDebug(makeScores({ automation: 60 }), stats);
-    expect(debug.notes.some((n) => n.includes("B경로"))).toBe(true);
+    expect(debug.notes.some((n) => n.includes("전체 수집 분석"))).toBe(true);
   });
 
-  it("A경로 사용 시 notes에 'A경로' 문구와 수집 스크립트 안내가 포함되어야 한다", () => {
+  it("CLAUDE.md만 분석 시 notes에 수집 스크립트 안내가 포함되어야 한다", () => {
     const stats = makeMdStats({ isExpandedInput: false });
     const debug = classifyPersonaDebug(makeScores({ automation: 60 }), stats);
-    expect(debug.notes.some((n) => n.includes("A경로"))).toBe(true);
+    expect(debug.notes.some((n) => n.includes("본문만으로 분석"))).toBe(true);
     expect(debug.notes.some((n) => n.includes("수집 스크립트"))).toBe(true);
   });
 

@@ -100,9 +100,9 @@ function buildCandidates(scores: DimensionScores, mdStats: MdStats): BuildResult
 
   // 메타 노트: 입력 경로
   if (mdStats.isExpandedInput) {
-    notes.push("B경로 사용 — settings.json/플러그인/hook/스킬/에이전트 정보가 분석에 포함되었습니다.");
+    notes.push("전체 수집 분석 — settings.json, 플러그인, hook, 스킬, 에이전트 정보가 포함되어 더 정확한 분류가 가능합니다.");
   } else {
-    notes.push("A경로 사용 — CLAUDE.md 본문만으로 분석. 더 정확한 분류를 원한다면 결과 페이지의 수집 스크립트를 실행해보세요.");
+    notes.push("CLAUDE.md 본문만으로 분석했습니다. 더 정확한 분류를 원한다면 수집 스크립트를 실행해보세요.");
   }
 
   // Step 1: 특수 케이스 — 내용이 없는 경우
