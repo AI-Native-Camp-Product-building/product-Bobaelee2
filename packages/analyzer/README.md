@@ -83,7 +83,7 @@ import {
 } from '@mdti/analyzer'
 ```
 
-## 13가지 페르소나
+## 12가지 페르소나
 
 | 키 | 이모지 | 이름 |
 |----|--------|------|
@@ -99,7 +99,6 @@ import {
 | deep-diver | 🕳️ | 과몰입러 |
 | evangelist | 📢 | 협업 전도사 |
 | daredevil | 🎲 | 위험물 취급자 |
-| polymath | 🧙 | 팔방미인 |
 
 ## 라이선스
 
