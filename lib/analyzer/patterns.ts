@@ -369,6 +369,33 @@ export function extractAgentCount(text: string): number {
 }
 
 /**
+ * 플러그인이 설치한 스킬 수를 추출한다 (=== plugin-skills === 섹션)
+ * 이 수치를 전체 skillCount에서 빼면 직접 만든 스킬 수를 알 수 있다
+ */
+export function extractPluginSkillCount(text: string): number {
+  const section = text.match(/===\s*plugin-skills\s*===\n([\s\S]*?)(?=\n===|$)/);
+  if (!section) return 0;
+  return section[1]
+    .trim()
+    .split("\n")
+    .filter((l) => l.trim() && !/^===/.test(l.trim()))
+    .length;
+}
+
+/**
+ * 플러그인이 설치한 에이전트 수를 추출한다 (=== plugin-agents === 섹션)
+ */
+export function extractPluginAgentCount(text: string): number {
+  const section = text.match(/===\s*plugin-agents\s*===\n([\s\S]*?)(?=\n===|$)/);
+  if (!section) return 0;
+  return section[1]
+    .trim()
+    .split("\n")
+    .filter((l) => l.trim() && !/^===/.test(l.trim()))
+    .length;
+}
+
+/**
  * 확장 수집 데이터에서 구조화된 신호를 추출한다
  */
 export function extractExpandedSignals(text: string): ExpandedSignals {

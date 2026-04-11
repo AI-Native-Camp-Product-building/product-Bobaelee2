@@ -1,4 +1,4 @@
-import { DIMENSION_PATTERNS, countPatternMatches, countUniqueSignals, extractToolNames, isExpandedInput, extractEnabledPlugins, extractMcpServerNames, extractCommandNames, countHooks, extractExpandedSignals, extractSkillCount, extractAgentCount, } from "./patterns.js";
+import { DIMENSION_PATTERNS, countPatternMatches, countUniqueSignals, extractToolNames, isExpandedInput, extractEnabledPlugins, extractMcpServerNames, extractCommandNames, countHooks, extractExpandedSignals, extractSkillCount, extractAgentCount, extractPluginSkillCount, extractPluginAgentCount, } from "./patterns.js";
 /**
  * 각 차원의 정규화 기준값 — 패턴 수의 70%를 만점 기준으로 자동 계산
  * 고유 신호 카운팅이므로 만점 = 패턴 종류 수, 70%는 일부 패턴이 해당 없는 경우 허용
@@ -176,6 +176,10 @@ export function extractMdStats(md) {
             hookCount: 0,
             skillCount: 0,
             agentCount: 0,
+            pluginSkillCount: 0,
+            userSkillCount: 0,
+            pluginAgentCount: 0,
+            userAgentCount: 0,
             pluginNames: [],
             mcpServerNames: [],
             commandNames: [],
@@ -231,6 +235,10 @@ export function extractMdStats(md) {
     const hookCount = expanded ? countHooks(md) : (hasHooks ? 1 : 0);
     const skillCount = expanded ? extractSkillCount(md) : 0;
     const agentCount = expanded ? extractAgentCount(md) : 0;
+    const pluginSkillCount = expanded ? extractPluginSkillCount(md) : 0;
+    const userSkillCount = Math.max(0, skillCount - pluginSkillCount);
+    const pluginAgentCount = expanded ? extractPluginAgentCount(md) : 0;
+    const userAgentCount = Math.max(0, agentCount - pluginAgentCount);
     // 심층 분석 신호
     const signals = expanded ? extractExpandedSignals(md) : null;
     return {
@@ -251,6 +259,10 @@ export function extractMdStats(md) {
         hookCount,
         skillCount,
         agentCount,
+        pluginSkillCount,
+        userSkillCount,
+        pluginAgentCount,
+        userAgentCount,
         pluginNames,
         mcpServerNames,
         commandNames,

@@ -34,6 +34,8 @@ print(json.dumps(d,indent=2,ensure_ascii=False))
   if [ -d ~/.claude/agents ]; then
     echo "=== agents ===" && find ~/.claude/agents -maxdepth 1 -name "*.md" 2>/dev/null | xargs -I{} basename {} .md; echo ""
   fi
+  echo "=== plugin-skills ===" && find ~/.claude/plugins/cache -path "*/skills/*" -name "SKILL.md" 2>/dev/null | while read f; do dirname "$f" | xargs basename; done; echo ""
+  echo "=== plugin-agents ===" && find ~/.claude/plugins/cache -path "*/agents/*" -name "*.md" 2>/dev/null | xargs -I{} basename {} .md; echo ""
   find ~/.claude/projects -name "MEMORY.md" 2>/dev/null | while read f; do
     echo "=== PROJECT MEMORY ===" && cat "$f" && echo ""
   done
@@ -71,6 +73,10 @@ if (Test-Path "$home\\.claude\\agents") {
   $agents = Get-ChildItem "$home\\.claude\\agents" -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
   if ($agents) { $out += "=== agents ===\`n$($agents -join "\`n")\`n" }
 }
+$pluginSkills = Get-ChildItem "$home\\.claude\\plugins\\cache" -Recurse -Filter "SKILL.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.Directory.Name }
+if ($pluginSkills) { $out += "=== plugin-skills ===\`n$($pluginSkills -join "\`n")\`n" }
+$pluginAgents = Get-ChildItem "$home\\.claude\\plugins\\cache" -Recurse -Path "*agents*" -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
+if ($pluginAgents) { $out += "=== plugin-agents ===\`n$($pluginAgents -join "\`n")\`n" }
 Get-ChildItem "$home\\.claude\\projects" -Recurse -Filter "MEMORY.md" -ErrorAction SilentlyContinue | ForEach-Object {
   $out += "=== PROJECT MEMORY ===\`n$(Get-Content $_.FullName -Raw)\`n"
 }

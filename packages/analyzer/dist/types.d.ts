@@ -38,6 +38,10 @@ export interface MdStats {
     hookCount: number;
     skillCount: number;
     agentCount: number;
+    pluginSkillCount: number;
+    userSkillCount: number;
+    pluginAgentCount: number;
+    userAgentCount: number;
     pluginNames: string[];
     mcpServerNames: string[];
     commandNames: string[];

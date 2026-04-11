@@ -15,6 +15,8 @@ import {
   extractExpandedSignals,
   extractSkillCount,
   extractAgentCount,
+  extractPluginSkillCount,
+  extractPluginAgentCount,
 } from "./patterns.js";
 
 /**
@@ -193,6 +195,10 @@ export function extractMdStats(md: string): MdStats {
       hookCount: 0,
       skillCount: 0,
       agentCount: 0,
+      pluginSkillCount: 0,
+      userSkillCount: 0,
+      pluginAgentCount: 0,
+      userAgentCount: 0,
       pluginNames: [],
       mcpServerNames: [],
       commandNames: [],
@@ -261,6 +267,10 @@ export function extractMdStats(md: string): MdStats {
   const hookCount = expanded ? countHooks(md) : (hasHooks ? 1 : 0);
   const skillCount = expanded ? extractSkillCount(md) : 0;
   const agentCount = expanded ? extractAgentCount(md) : 0;
+  const pluginSkillCount = expanded ? extractPluginSkillCount(md) : 0;
+  const userSkillCount = Math.max(0, skillCount - pluginSkillCount);
+  const pluginAgentCount = expanded ? extractPluginAgentCount(md) : 0;
+  const userAgentCount = Math.max(0, agentCount - pluginAgentCount);
 
   // 심층 분석 신호
   const signals = expanded ? extractExpandedSignals(md) : null;
@@ -283,6 +293,10 @@ export function extractMdStats(md: string): MdStats {
     hookCount,
     skillCount,
     agentCount,
+    pluginSkillCount,
+    userSkillCount,
+    pluginAgentCount,
+    userAgentCount,
     pluginNames,
     mcpServerNames,
     commandNames,

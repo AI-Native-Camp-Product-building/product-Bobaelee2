@@ -95,30 +95,27 @@ function buildCandidates(scores, mdStats) {
     }
     // Step 2: 후보 등록
     const candidates = [];
-    // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 구분
-    // 핵심 원칙: 플러그인이 3개 이상이면 스킬/에이전트 대부분이 플러그인 소산물
-    // → skillCount/agentCount를 "직접 만든 것"으로 신뢰할 수 없음
+    // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 정확 구분
+    // userSkillCount = 전체 스킬 - 플러그인이 설치한 스킬 (수집 스크립트에서 계산)
     if (mdStats.isExpandedInput) {
+        const userSkills = mdStats.userSkillCount ?? 0;
+        const userAgents = mdStats.userAgentCount ?? 0;
+        const selfAuthored = userSkills + userAgents;
         const pluginCount = mdStats.pluginCount;
-        const rawSkills = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
-        const hasPluginEcosystem = pluginCount >= 3;
-        // 플러그인 생태계가 있으면: 스킬/에이전트는 "쓴다" 쪽으로 간주
-        // 플러그인이 거의 없는데 스킬이 있으면: 직접 만든 것
-        const selfAuthored = hasPluginEcosystem ? 0 : rawSkills;
-        const selfConfigured = mdStats.commandCount + mdStats.hookCount;
         const adopted = pluginCount + mdStats.mcpServerCount;
-        notes.push(`하네스 분석: 플러그인 ${pluginCount}개${hasPluginEcosystem ? " (≥3 → 스킬/에이전트는 플러그인 소산물로 간주)" : ""}, 스킬+에이전트 ${rawSkills}개, 직접 작성 추정 ${selfAuthored}개, 설정 ${selfConfigured}개`);
-        // 로데오 마스터: 플러그인 없이 직접 스킬/에이전트를 만든 사람
+        const selfConfigured = mdStats.commandCount + mdStats.hookCount;
+        notes.push(`하네스 분석: 스킬 ${mdStats.skillCount ?? 0}개(플러그인 ${mdStats.pluginSkillCount ?? 0}개, 직접 ${userSkills}개), 에이전트 ${mdStats.agentCount ?? 0}개(플러그인 ${mdStats.pluginAgentCount ?? 0}개, 직접 ${userAgents}개), 설정 ${selfConfigured}개, 활용 ${adopted}개`);
+        // 로데오 마스터: 직접 만든 스킬/에이전트가 있는 사람
         if (selfAuthored >= 2) {
             const fit = 90 + Math.min(selfAuthored * 3 + selfConfigured, 15);
             candidates.push({
                 persona: "architect",
                 fit,
-                reason: `하네스 제작자 — 플러그인 ${pluginCount}개(< 3)인데 스킬+에이전트 ${rawSkills}개 → 직접 만든 것으로 판단`,
+                reason: `하네스 제작자 — 직접 만든 스킬 ${userSkills}개 + 에이전트 ${userAgents}개 = ${selfAuthored}개 ≥ 2`,
             });
         }
         // 하기스 아키텍트: 플러그인/MCP 생태계를 활용하는 사람
-        if (hasPluginEcosystem || adopted + selfConfigured >= 6) {
+        if (adopted >= 3 || adopted + selfConfigured >= 6) {
             const fit = 75 + Math.min(adopted + selfConfigured, 15);
             candidates.push({
                 persona: "huggies",

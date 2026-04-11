@@ -21,6 +21,10 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hookCount: 0,
     skillCount: 0,
     agentCount: 0,
+    pluginSkillCount: 0,
+    userSkillCount: 0,
+    pluginAgentCount: 0,
+    userAgentCount: 0,
     pluginNames: [],
     mcpServerNames: [],
     commandNames: [],
@@ -310,6 +314,8 @@ describe("classifyPersona — 재교정된 임계값", () => {
       hookCount: 2,
       skillCount: 3, // 직접 만든 스킬
       agentCount: 2, // 직접 만든 에이전트
+      pluginSkillCount: 0,
+      userSkillCount: 3, // 전부 직접 만든 것
     });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("architect");
@@ -325,6 +331,10 @@ describe("classifyPersona — 재교정된 임계값", () => {
       hookCount: 0,
       skillCount: 20, // 전부 플러그인 소산물
       agentCount: 10,
+      pluginSkillCount: 20, // 전부 플러그인이 설치
+      userSkillCount: 0,
+      pluginAgentCount: 10,
+      userAgentCount: 0, // 직접 만든 것 없음
     });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("huggies");
