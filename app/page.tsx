@@ -7,6 +7,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { analyze } from "@/lib/analyzer";
+import { track, mdSizeBucket } from "@/lib/analytics";
+import { getSessionId, rememberOwnResult } from "@/lib/session-id";
 import PrivacyBadge from "@/components/PrivacyBadge";
 import MdInput from "@/components/MdInput";
 import ClaudeIcon from "@/components/ClaudeIcon";
@@ -24,15 +26,18 @@ export default function HomePage() {
     setLoading(true);
     setError(null);
 
+    const sizeBucket = mdSizeBucket(md.length);
+    track("analysis_started", { size_bucket: sizeBucket });
+
     try {
       // 1. 클라이언트 사이드 분석 (MD 텍스트는 브라우저를 떠나지 않음)
       const result = analyze(md);
 
-      // 2. 분석 결과를 서버에 저장 (MD 원본은 전송하지 않음)
+      // 2. 분석 결과를 서버에 저장 (MD 원본은 전송하지 않음, session_id만 추가)
       const res = await fetch("/api/results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result),
+        body: JSON.stringify({ ...result, sessionId: getSessionId() }),
       });
 
       if (!res.ok) {
@@ -41,9 +46,19 @@ export default function HomePage() {
 
       const { id } = await res.json();
 
+      rememberOwnResult(id);
+      track("analysis_completed", {
+        persona: result.persona,
+        size_bucket: sizeBucket,
+      });
+
       // 3. 결과 페이지로 이동
       router.push(`/r/${id}`);
     } catch (err) {
+      track("analysis_failed", {
+        stage: "save",
+        size_bucket: sizeBucket,
+      });
       setError(err instanceof Error ? err.message : "오류가 발생했습니다");
       setLoading(false);
     }

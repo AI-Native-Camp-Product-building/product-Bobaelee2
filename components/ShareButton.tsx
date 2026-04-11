@@ -10,6 +10,7 @@ import type { PersonaKey, PersonaDefinition, RoastItem, MdStats, DimensionScores
 import { PERSONAS } from "@/lib/content/personas";
 import { DIMENSION_LABELS } from "@/lib/types";
 import type { PercentileData } from "@/lib/store";
+import { track } from "@/lib/analytics";
 
 interface ShareButtonProps {
   id: string;
@@ -90,6 +91,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
   /** LinkedIn: 공유 멘트 클립보드 복사 → OG 카드 포함 공유창 열기 */
   const handleLinkedIn = useCallback(async () => {
     setCapturing("linkedin");
+    track("result_shared", { channel: "linkedin", persona, result_id: id });
     // 공유 멘트를 클립보드에 복사 (붙여넣기용)
     try {
       await navigator.clipboard.writeText(shareText);
@@ -101,11 +103,12 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
       "noopener,noreferrer"
     );
     setCapturing(null);
-  }, [shareText, shareUrl]);
+  }, [shareText, shareUrl, persona, id]);
 
   /** X(Twitter): 캡처 → 클립보드 → 텍스트 프리셋 + 글쓰기 */
   const handleX = useCallback(async () => {
     setCapturing("x");
+    track("result_shared", { channel: "x", persona, result_id: id });
     await captureToClipboard();
     const encodedText = encodeURIComponent(`${shareText}\n${shareUrl}`);
     window.open(
@@ -114,10 +117,11 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
       "noopener,noreferrer"
     );
     setCapturing(null);
-  }, [captureToClipboard, shareText, shareUrl]);
+  }, [captureToClipboard, shareText, shareUrl, persona, id]);
 
   /** 이미지 저장 (다운로드) */
   const handleDownload = useCallback(async () => {
+    track("result_shared", { channel: "download", persona, result_id: id });
     setShowCard(true);
     setCapturing("download");
     await new Promise((r) => setTimeout(r, 100));
@@ -151,6 +155,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
 
   /** 링크 + 텍스트 클립보드 복사 */
   const handleCopyLink = useCallback(async () => {
+    track("result_shared", { channel: "copy_link", persona, result_id: id });
     try {
       await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
       setCopied(true);
@@ -164,7 +169,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
         // 클립보드 API 불가 환경
       }
     }
-  }, [shareText, shareUrl]);
+  }, [shareText, shareUrl, persona, id]);
 
   const isCapturing = capturing !== null;
   const totalEcosystem = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.toolNames.length;

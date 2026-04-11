@@ -22,7 +22,8 @@ async function getSupabase() {
 /** 결과 저장 */
 export async function saveResult(
   id: string,
-  result: AnalysisResult
+  result: AnalysisResult,
+  sessionId: string | null = null
 ): Promise<void> {
   const saved: SavedResult = {
     ...result,
@@ -49,6 +50,7 @@ export async function saveResult(
     strengths: result.strengths,
     prescriptions: result.prescriptions,
     md_stats: result.mdStats,
+    session_id: sessionId,
   });
 
   await supabase

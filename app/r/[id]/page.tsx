@@ -21,6 +21,7 @@ import ShareButton from "@/components/ShareButton";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 import RegisterLeaderboard from "@/components/RegisterLeaderboard";
 import BattlePower from "@/components/BattlePower";
+import ResultPageTracker from "@/components/ResultPageTracker";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -80,6 +81,8 @@ export default async function ResultPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-bg-primary px-4 py-8">
+      {/* 클라이언트 tracker — 마운트 시 result_page_viewed 이벤트 1회 발행 */}
+      <ResultPageTracker id={id} persona={result.persona} />
       <div className="max-w-lg mx-auto flex flex-col gap-8">
         {/* 페르소나 히어로 */}
         <ResultHero persona={personaDef} />
