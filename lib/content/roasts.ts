@@ -1,6 +1,14 @@
 /**
  * 페르소나별 로스팅 생성기
- * 팩폭 톤 — 짧고 날카롭게, "아 이거 나인데" 하게 만드는 한 줄
+ *
+ * 톤 설계 원칙 (2026-04-10 재정립):
+ * - 관찰은 날카롭게 유지하되, 사용자에 대한 판단/라벨링은 피한다
+ * - "상황에 대한 지적" OK / "사람에 대한 단정" NO
+ * - 강점은 StrengthSection이 별도로 공급하므로 로스팅은 제 본업(예리한 관찰)에 집중
+ *
+ * "톡 쏘는 맛"과 "개인 공격"의 차이:
+ * ✓ "Claude 장애 공지 뜨면 심장 먼저 멈추는 사람" — 상황 관찰
+ * ✗ "기저귀 단계인 걸 본인만 몰라요" — 사람 단정
  */
 import type { PersonaKey, MdStats, RoastItem } from "@/lib/types";
 
@@ -13,14 +21,14 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
       text: "Claude 장애 공지 뜨면 심장 먼저 멈추는 사람",
       detail: stats.hookCount > 0
         ? `Hook ${stats.hookCount}개, MCP ${stats.mcpServerCount}개로 구축한 자동화 제국. 장애 복구 시간 동안 할 수 있는 일: 없음. 수동 대응 플랜: 없음.`
-        : `자동화 키워드 ${stats.keywordHits?.automation ?? "수십"}개. 장애 나면 할 수 있는 일이 없는 구조를 직접 만들어놓고, 그걸 효율이라고 부르고 있어요.`,
+        : `자동화 키워드 ${stats.keywordHits?.automation ?? "수십"}개. 지금은 효율로 보이지만 Plan B 1줄이 없으면 그 효율이 리스크로 바뀌는 순간이 옵니다 — 장애 한 번이면 증명되는 종류의.`,
       color: "red",
     },
     {
-      text: "당신이 만든 자동화의 유일한 사용자는 당신입니다",
+      text: "당신이 만든 자동화의 유일한 독자는 3개월 후의 당신입니다",
       detail: stats.commandCount > 0
-        ? `/${stats.commandNames.slice(0, 3).join(", /")} 등 ${stats.commandCount}개 명령어. 팀원한테 인수인계 해보세요. 설명하다가 본인이 먼저 포기합니다.`
-        : `${stats.toolNames.slice(0, 3).join(", ")} 등 ${stats.toolNames.length}개 도구를 엮어놨는데, 이걸 다른 사람이 이해할 수 있다고 진심으로 생각해요?`,
+        ? `/${stats.commandNames.slice(0, 3).join(", /")} 등 ${stats.commandCount}개 명령어. 지금은 머리에 다 있겠지만, 3개월 후 본인한테 인수인계하려는 순간 '아 이거 왜 이렇게 했더라'가 옵니다. 과거의 본인도 타인이에요.`
+        : `${stats.toolNames.slice(0, 3).join(", ")} 등 ${stats.toolNames.length}개 도구를 엮어놓은 이 시스템, 인수인계 대상이 미래의 본인이라고 생각해보세요. 그 순간 구조가 다르게 보입니다.`,
       color: "orange",
     },
     {
@@ -55,7 +63,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
       text: "API 키 유출되는 악몽 꿔본 적 있죠?",
       detail: stats.blocksDangerousOps
         ? `deny ${stats.denyCount}개에 rm -rf까지 차단. 대단한데, 이 규칙 만드는 데 쓴 시간으로 실제 코딩 얼마나 했어요?`
-        : `보안 키워드 ${stats.keywordHits?.security ?? "다수"}회. .env 파일 보호에 진심인 건 좋은데, 정작 보호할 서비스는 아직 안 만들었잖아요.`,
+        : `보안 키워드 ${stats.keywordHits?.security ?? "다수"}회. 방어 본능은 훈련으로 만들기 어려운 감각이에요. 다만 이 에너지의 10%만 '해도 되는 것' 명시에 쓰면, 팀원이 당신한테 뭘 물어봐도 되는지 알게 됩니다.`,
       color: "red",
     },
     {
@@ -69,7 +77,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     },
     {
       text: "팀원이 .env 어딨냐고 물어보면 눈이 반짝이는 사람",
-      detail: "보안 교육할 때가 가장 신나 보이는 사람이 있는데, 그게 당신이에요. 팀원들은 무서워서 질문을 안 하는 거예요.",
+      detail: "보안 교육할 때 눈이 가장 빛나는 사람 — 팀에 꼭 있어야 하는 포지션이에요. 다만 너무 빛나면 후배가 '물어봐도 되나' 한 번 망설입니다. '좋은 질문이야' 한 마디가 당신의 보안 문화를 팀 전체로 퍼뜨려요.",
       color: "blue",
     },
   ],
@@ -79,7 +87,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
       text: "'Claude야 알아서 해' — 가장 비싼 프롬프트",
       detail: stats.isExpandedInput
         ? `플러그인 ${stats.pluginCount}개 깔아놓고 CLAUDE.md는 ${stats.claudeMdLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
-        : `${stats.claudeMdLines}줄. 이걸로 Claude한테 뭘 기대하는 건가요? Claude는 독심술사가 아닙니다.`,
+        : `${stats.claudeMdLines}줄. Claude가 매 세션 당신 취향 재추론하느라 독심술 쓰고 있어요 — 그 토큰비 합치면 밥값은 나옵니다. 한 줄 추가가 그대로 내 시간으로 돌아오는 거래.`,
       color: "red",
     },
     {
@@ -172,7 +180,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     },
     {
       text: "다른 사람이 당신의 CLAUDE.md를 읽으면 논문인 줄 알아요",
-      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.claudeMdLines}줄. 밀도가 아니라 편집증이에요.`,
+      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.claudeMdLines}줄. 한 영역에 500줄 쏟은 시간에 옆 영역 50줄만 건드렸어도 지금보다 3배 넓은 Claude가 됐을 거예요. 다음 주제 하나만 골라보세요.`,
       color: "blue",
     },
   ],
@@ -209,8 +217,8 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
         color: "orange" as const,
       },
       {
-        text: "기저귀 단계인 걸 본인만 몰라요",
-        detail: "설정은 복잡한데 활용은 기본 수준. 마치 레이싱 장비를 풀세트로 갖추고 동네 마트까지 운전하는 느낌이에요.",
+        text: "기저귀 단계라는 거 본인이 먼저 인정할 때 성장 속도가 2배 돼요",
+        detail: "설정은 복잡한데 활용은 기본 수준 — 마치 레이싱 장비 풀세트로 동네 마트까지 운전하는 느낌이에요. 지금은 과하지만 6개월 뒤엔 딱 맞는 옷이 될 수도 있어요. 단, '이거 왜 깔았지?' 싶은 건 한 달에 한 개씩 빼보세요.",
         color: "blue" as const,
       },
     ];
@@ -233,6 +241,29 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
         text: "이 설정을 인수인계 받을 사람이 불쌍합니다",
         detail: `이 복잡도를 이해하려면 최소 일주일이 필요해요. 본인도 3개월 전에 왜 이렇게 설정했는지 기억 못 하는 부분이 있잖아요.`,
         color: "blue" as const,
+      },
+    ];
+  },
+
+  polymath: (stats) => {
+    const eco = stats.pluginCount + stats.mcpServerCount + stats.commandCount;
+    return [
+      {
+        text: "'뭘 더 해야 하죠?'가 당신의 유일한 고민이라는 게 가장 억울한 점",
+        detail: eco > 0
+          ? `7개 차원이 다 높습니다 — 이 테스트에서 매우 드문 케이스예요. 플러그인 ${stats.pluginCount}개, 명령어 ${stats.commandCount}개, hook ${stats.hookCount}개까지 고루 갖춘 풀스택이죠. 다만 어느 한 영역도 '이 사람의 시그니처'라고 부르기엔 전부 너무 고르게 잘해요. 튀는 약점이 없으니 칭찬받을 포인트도 덜 명확해지는 역설.`
+          : `${stats.claudeMdLines}줄에 자동화/규칙/도구/협업/보안이 전부 담겼어요. 팀에서 '이건 누구한테 물어봐야 하지?' 할 때 결국 당신 이름이 튀어나오는 유형. 그런데 정작 본인은 자기가 뭘 잘하는지 한 단어로 설명 못 할 때가 많죠.`,
+        color: "red",
+      },
+      {
+        text: "다른 사람들의 CLAUDE.md를 보면 하나씩 부족한 게 눈에 들어오죠?",
+        detail: `그 '눈에 보이는 부족함'이 당신이 이미 넘어선 지점이에요. 팀원이 자동화만 파면 '보안은요?'가 떠오르고, 보안만 파면 '협업은요?'가 떠오르고. 당신한테는 자연스러운데 다른 사람들한텐 아직 추상이에요. 이 갭을 글로 풀어내면 팀 전체 md력이 올라갑니다.`,
+        color: "orange",
+      },
+      {
+        text: "그래서 이제 뭐 할 거예요?",
+        detail: `숫자상 당신은 이미 이 테스트가 줄 수 있는 피드백의 끝에 도달했어요. 여기서부터는 '내 설정을 더 쌓는 것'보다 '내 설정을 팀에 전파하는 것'이 더 큰 레버리지예요. 팔방미인의 다음 단계는 팔방미인을 복제하는 사람이 되는 거예요. 팀 온보딩 문서, 사내 공유 세션, 멘토링 — 당신이 하면 이미 신뢰도가 붙어 있는 상태라 반은 먹고 들어갑니다.`,
+        color: "blue",
       },
     ];
   },

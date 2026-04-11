@@ -16,7 +16,7 @@ import type {
   GlobalStats,
 } from "@/lib/types";
 
-// PersonaKey 타입 검증용 — 12개 값 모두 할당 가능해야 함 (macgyver 제거됨)
+// PersonaKey 타입 검증용 — 13개 값 모두 할당 가능해야 함 (polymath 추가)
 const PERSONA_KEYS: PersonaKey[] = [
   "puppet-master",
   "speedrunner",
@@ -30,11 +30,12 @@ const PERSONA_KEYS: PersonaKey[] = [
   "architect",
   "huggies",
   "daredevil",
+  "polymath",
 ];
 
 describe("PersonaKey", () => {
-  it("12개 페르소나 키가 존재해야 한다", () => {
-    expect(PERSONA_KEYS).toHaveLength(12);
+  it("13개 페르소나 키가 존재해야 한다", () => {
+    expect(PERSONA_KEYS).toHaveLength(13);
   });
 
   it("모든 키가 문자열이어야 한다", () => {
@@ -45,12 +46,12 @@ describe("PersonaKey", () => {
 
   it("중복 없이 고유한 키여야 한다", () => {
     const unique = new Set(PERSONA_KEYS);
-    expect(unique.size).toBe(12);
+    expect(unique.size).toBe(13);
   });
 });
 
 describe("DimensionScores", () => {
-  it("6개 차원을 모두 가져야 한다", () => {
+  it("7개 차원을 모두 가져야 한다", () => {
     const scores: DimensionScores = {
       automation: 80,
       control: 60,
@@ -58,15 +59,17 @@ describe("DimensionScores", () => {
       contextAwareness: 90,
       teamImpact: 50,
       security: 75,
+      agentOrchestration: 65,
     };
 
-    expect(Object.keys(scores)).toHaveLength(6);
+    expect(Object.keys(scores)).toHaveLength(7);
     expect(scores.automation).toBeDefined();
     expect(scores.control).toBeDefined();
     expect(scores.toolDiversity).toBeDefined();
     expect(scores.contextAwareness).toBeDefined();
     expect(scores.teamImpact).toBeDefined();
     expect(scores.security).toBeDefined();
+    expect(scores.agentOrchestration).toBeDefined();
   });
 
   it("0~100 범위의 숫자 값을 가져야 한다", () => {
@@ -77,6 +80,7 @@ describe("DimensionScores", () => {
       contextAwareness: 25,
       teamImpact: 75,
       security: 10,
+      agentOrchestration: 40,
     };
 
     Object.values(scores).forEach((v) => {
@@ -96,6 +100,7 @@ describe("MdStats", () => {
       hasMemory: true,
       hasHooks: false,
       hasProjectMd: true,
+      hasRoleDefinition: false,
       ruleCount: 10,
       claudeMdLines: 100,
       keywordHits: { automation: 3, security: 2 },
@@ -104,6 +109,8 @@ describe("MdStats", () => {
       mcpServerCount: 0,
       commandCount: 0,
       hookCount: 0,
+      skillCount: 0,
+      agentCount: 0,
       pluginNames: [],
       mcpServerNames: [],
       commandNames: [],
@@ -153,6 +160,7 @@ describe("AnalysisResult", () => {
         contextAwareness: 85,
         teamImpact: 70,
         security: 65,
+        agentOrchestration: 50,
       },
       qualityScores: {
         actionability: 70,
@@ -172,6 +180,7 @@ describe("AnalysisResult", () => {
         hasMemory: true,
         hasHooks: true,
         hasProjectMd: true,
+        hasRoleDefinition: false,
         ruleCount: 20,
         claudeMdLines: 200,
         keywordHits: {},
@@ -180,6 +189,8 @@ describe("AnalysisResult", () => {
         mcpServerCount: 0,
         commandCount: 0,
         hookCount: 0,
+        skillCount: 0,
+        agentCount: 0,
         pluginNames: [],
         mcpServerNames: [],
         commandNames: [],
@@ -217,6 +228,7 @@ describe("SavedResult", () => {
         contextAwareness: 10,
         teamImpact: 10,
         security: 10,
+        agentOrchestration: 0,
       },
       qualityScores: {
         actionability: 0,
@@ -236,6 +248,7 @@ describe("SavedResult", () => {
         hasMemory: false,
         hasHooks: false,
         hasProjectMd: false,
+        hasRoleDefinition: false,
         ruleCount: 0,
         claudeMdLines: 3,
         keywordHits: {},
@@ -244,6 +257,8 @@ describe("SavedResult", () => {
         mcpServerCount: 0,
         commandCount: 0,
         hookCount: 0,
+        skillCount: 0,
+        agentCount: 0,
         pluginNames: [],
         mcpServerNames: [],
         commandNames: [],
@@ -279,6 +294,7 @@ describe("GlobalStats", () => {
         architect: 0,
         huggies: 0,
         daredevil: 0,
+        polymath: 0,
       },
       avgLines: 85,
       userPercentile: {

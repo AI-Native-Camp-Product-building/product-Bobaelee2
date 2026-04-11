@@ -57,10 +57,10 @@ export default function RadarChart({ scores, size = 300 }: RadarChartProps) {
           stroke="rgba(245,230,211,0.08)" strokeWidth="1" />;
       })}
       <polygon points={polygonPoints(values, radius, cx, cy)}
-        fill="rgba(217,119,87,0.25)" stroke="#D97757" strokeWidth="2" />
+        fill="rgba(192,240,251,0.25)" stroke="#c0f0fb" strokeWidth="2" />
       {values.map((v, i) => {
         const [x, y] = pointAt(i, v, radius);
-        return <circle key={`point-${i}`} cx={cx + x} cy={cy + y} r="3" fill="#D97757" />;
+        return <circle key={`point-${i}`} cx={cx + x} cy={cy + y} r="3" fill="#c0f0fb" />;
       })}
       {DIMENSIONS.map((dim, i) => {
         const [lx, ly] = pointAt(i, 100, labelRadius);
@@ -76,7 +76,7 @@ export default function RadarChart({ scores, size = 300 }: RadarChartProps) {
               {DIMENSION_LABELS[dim].label}
             </text>
             <text x={x} y={y + 10} textAnchor={textAnchor}
-              fill="#D97757" fontSize="11" fontWeight="700">
+              fill="#c0f0fb" fontSize="11" fontWeight="700">
               {scores[dim]}
             </text>
           </g>

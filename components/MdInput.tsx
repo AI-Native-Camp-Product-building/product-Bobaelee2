@@ -28,6 +28,12 @@ for s in d.get('mcpServers',{}).values():
 print(json.dumps(d,indent=2,ensure_ascii=False))
 " ~/.claude/mcp_settings.json && echo ""
   echo "=== commands ===" && find ~/.claude/commands -name "*.md" 2>/dev/null | xargs -I{} basename {} .md; echo ""
+  if [ -d ~/.claude/skills ]; then
+    echo "=== skills ===" && find ~/.claude/skills -maxdepth 1 -mindepth 1 -type d 2>/dev/null | xargs -I{} basename {}; echo ""
+  fi
+  if [ -d ~/.claude/agents ]; then
+    echo "=== agents ===" && find ~/.claude/agents -maxdepth 1 -name "*.md" 2>/dev/null | xargs -I{} basename {} .md; echo ""
+  fi
   find ~/.claude/projects -name "MEMORY.md" 2>/dev/null | while read f; do
     echo "=== PROJECT MEMORY ===" && cat "$f" && echo ""
   done
@@ -57,6 +63,14 @@ if (Test-Path "$home\\.claude\\mcp_settings.json") {
 }
 $cmds = Get-ChildItem "$home\\.claude\\commands" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
 if ($cmds) { $out += "=== commands ===\`n$($cmds -join "\`n")\`n" }
+if (Test-Path "$home\\.claude\\skills") {
+  $skills = Get-ChildItem "$home\\.claude\\skills" -Directory -ErrorAction SilentlyContinue | ForEach-Object { $_.Name }
+  if ($skills) { $out += "=== skills ===\`n$($skills -join "\`n")\`n" }
+}
+if (Test-Path "$home\\.claude\\agents") {
+  $agents = Get-ChildItem "$home\\.claude\\agents" -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.BaseName }
+  if ($agents) { $out += "=== agents ===\`n$($agents -join "\`n")\`n" }
+}
 Get-ChildItem "$home\\.claude\\projects" -Recurse -Filter "MEMORY.md" -ErrorAction SilentlyContinue | ForEach-Object {
   $out += "=== PROJECT MEMORY ===\`n$(Get-Content $_.FullName -Raw)\`n"
 }

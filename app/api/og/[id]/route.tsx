@@ -52,7 +52,7 @@ export async function GET(request: Request, { params }: Props) {
             width: "400px",
             height: "400px",
             borderRadius: "50%",
-            background: "rgba(217, 119, 87, 0.08)",
+            background: "rgba(192, 240, 251, 0.08)",
           }}
         />
         <div
@@ -63,7 +63,7 @@ export async function GET(request: Request, { params }: Props) {
             width: "300px",
             height: "300px",
             borderRadius: "50%",
-            background: "rgba(217, 119, 87, 0.05)",
+            background: "rgba(192, 240, 251, 0.05)",
           }}
         />
 
@@ -76,7 +76,7 @@ export async function GET(request: Request, { params }: Props) {
             left: "60px",
             fontSize: "22px",
             fontWeight: 900,
-            color: "#D97757",
+            color: "#c0f0fb",
             letterSpacing: "-1px",
           }}
         >
@@ -93,7 +93,7 @@ export async function GET(request: Request, { params }: Props) {
           style={{
             fontSize: "56px",
             fontWeight: 900,
-            color: "#ffd700",
+            color: "#ffea00",
             letterSpacing: "-2px",
           }}
         >
@@ -115,7 +115,7 @@ export async function GET(request: Request, { params }: Props) {
         <div
           style={{
             fontSize: "20px",
-            color: "#F5E6D3",
+            color: "#fafafa",
             fontStyle: "italic",
             textAlign: "center",
             maxWidth: "700px",
@@ -155,7 +155,7 @@ export async function GET(request: Request, { params }: Props) {
                 style={{
                   fontSize: "32px",
                   fontWeight: 900,
-                  color: "#ffd700",
+                  color: "#ffea00",
                 }}
               >
                 {stat.value}
@@ -180,7 +180,7 @@ export async function GET(request: Request, { params }: Props) {
               gap: "16px",
               fontSize: "18px",
               fontWeight: 700,
-              color: "#D97757",
+              color: "#c0f0fb",
             }}
           >
             <span>🏆 md력 상위 {percentile.mdPowerPercentile}%</span>

@@ -1,35 +1,48 @@
 @import "tailwindcss";
 
+/*
+ * 컬러 시스템 — 2026-04-11 AI Native Camp 디자인 시스템과 부분 매칭
+ * - 다크 베이스 톤을 #0a0a0b / #18181b로 깊게 (참고 사이트와 동일)
+ * - subtle 보더 토큰 신설 (#27272a, #1c1c1e)
+ * - strength-blue를 cyan #c0f0fb로 전환 — 참고 사이트 액센트와 일치
+ * - Claude orange는 mdti 시그니처라 그대로 보존
+ */
 :root {
-  --background: #1a1a1a;
-  --foreground: #F5E6D3;
-  --color-bg-primary: #1a1a1a;
-  --color-bg-card: #2a2a2a;
-  --color-bg-elevated: #333333;
-  --color-claude-orange: #D97757;
-  --color-claude-cream: #F5E6D3;
+  --background: #0a0a0b;
+  --foreground: #fafafa;
+  --color-bg-primary: #0a0a0b;
+  --color-bg-card: #18181b;
+  --color-bg-elevated: #27272a;
+  --color-border-subtle: #27272a;
+  --color-border-faint: #1c1c1e;
+  --color-claude-orange: #c0f0fb;
+  --color-claude-cream: #fafafa;
   --color-claude-light: #E8DDD3;
-  --color-roast-red: #f97583;
-  --color-strength-blue: #a5d6ff;
-  --color-compat-gold: #ffd700;
-  --color-rx-green: #7ee787;
+  --color-roast-red: #ff6568;
+  --color-strength-blue: #c0f0fb;
+  --color-strength-cyan-deep: #54a2ff;
+  --color-compat-gold: #fee685;
+  --color-rx-green: #05df72;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Claude 테마 커스텀 컬러 */
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-card: var(--color-bg-card);
   --color-bg-elevated: var(--color-bg-elevated);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-faint: var(--color-border-faint);
   --color-claude-orange: var(--color-claude-orange);
   --color-claude-cream: var(--color-claude-cream);
   --color-claude-light: var(--color-claude-light);
   --color-roast-red: var(--color-roast-red);
   --color-strength-blue: var(--color-strength-blue);
+  --color-strength-cyan-deep: var(--color-strength-cyan-deep);
   --color-compat-gold: var(--color-compat-gold);
   --color-rx-green: var(--color-rx-green);
 }
@@ -37,7 +50,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Claude 아이콘 — 정신없이 활기찬 애니메이션 */
@@ -70,11 +85,11 @@ body {
 .tagline-gradient {
   background: linear-gradient(
     135deg,
-    #C96A4A 0%,
-    #D97757 25%,
-    #F5C6A3 50%,
-    #D97757 75%,
-    #C96A4A 100%
+    #54a2ff 0%,
+    #c0f0fb 25%,
+    #fafafa 50%,
+    #c0f0fb 75%,
+    #54a2ff 100%
   );
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -99,7 +114,7 @@ body {
   top: -4px;
   right: -18px;
   font-size: 14px;
-  background: linear-gradient(135deg, #ffd700, #D97757);
+  background: linear-gradient(135deg, #ffea00, #c0f0fb);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

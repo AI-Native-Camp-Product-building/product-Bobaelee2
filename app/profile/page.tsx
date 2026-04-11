@@ -267,7 +267,7 @@ export default function ProfilePage() {
           <button
             onClick={handleSave}
             disabled={saving || !profile.nickname}
-            className="w-full py-3 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+            className="w-full py-3 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
           >
             {saved ? "✓ 저장됨!" : saving ? "저장 중..." : "저장"}
           </button>
@@ -303,13 +303,13 @@ export default function ProfilePage() {
           border-radius: 10px;
           background: #333;
           border: 1px solid rgba(232, 221, 211, 0.15);
-          color: #F5E6D3;
+          color: #fafafa;
           font-size: 14px;
           outline: none;
           transition: border-color 0.2s;
         }
         .input-field:focus {
-          border-color: rgba(217, 119, 87, 0.5);
+          border-color: rgba(192, 240, 251, 0.5);
         }
         .input-field::placeholder {
           color: rgba(232, 221, 211, 0.3);

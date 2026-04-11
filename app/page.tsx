@@ -82,7 +82,7 @@ export default function HomePage() {
             type="button"
             onClick={handleSubmit}
             disabled={loading || !md.trim()}
-            className="w-full py-3.5 rounded-xl bg-claude-orange text-white font-bold text-base hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-xl bg-claude-orange text-bg-primary font-bold text-base hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

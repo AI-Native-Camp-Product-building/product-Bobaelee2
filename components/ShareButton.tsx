@@ -303,7 +303,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
             {/* MDTI 로고 */}
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <span style={{ color: "rgba(245,230,211,0.5)", fontSize: "14px", fontWeight: 700, fontFamily: "monospace" }}>.md</span>
-              <span style={{ color: "#D97757", fontSize: "14px", fontWeight: 900 }}>TI</span>
+              <span style={{ color: "#c0f0fb", fontSize: "14px", fontWeight: 900 }}>TI</span>
             </div>
 
             {/* 이모지 */}
@@ -311,7 +311,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
 
             {/* 페르소나 이름 */}
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "32px", fontWeight: 900, color: "#ffd700", letterSpacing: "-1px" }}>
+              <div style={{ fontSize: "32px", fontWeight: 900, color: "#ffea00", letterSpacing: "-1px" }}>
                 {personaDef.nameKo}
               </div>
               <div style={{ fontSize: "14px", color: "rgba(245,230,211,0.5)", marginTop: "4px" }}>
@@ -322,7 +322,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
             {/* 태그라인 */}
             <div style={{
               fontSize: "14px",
-              color: "#F5E6D3",
+              color: "#fafafa",
               fontStyle: "italic",
               textAlign: "center",
               maxWidth: "340px",
@@ -349,7 +349,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
                     const r = (v / 100) * 70;
                     return `${100 + Math.cos(a) * r},${100 + Math.sin(a) * r}`;
                   }).join(" ")}
-                  fill="rgba(217,119,87,0.3)" stroke="#D97757" strokeWidth="2"
+                  fill="rgba(192,240,251,0.3)" stroke="#c0f0fb" strokeWidth="2"
                 />
                 {(Object.entries(DIMENSION_LABELS) as [keyof DimensionScores, { label: string }][]).map(([, { label }], i) => {
                   const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
@@ -367,7 +367,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
             <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
               <span style={{
                 padding: "4px 12px", borderRadius: "999px",
-                background: "rgba(217,119,87,0.15)", color: "#D97757",
+                background: "rgba(192,240,251,0.15)", color: "#c0f0fb",
                 fontSize: "11px", fontWeight: 700,
               }}>
                 🏆 md력 상위 {percentile.mdPowerPercentile}%
@@ -406,7 +406,7 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
                   textAlign: "center",
                   flex: 1,
                 }}>
-                  <div style={{ fontSize: "22px", fontWeight: 900, color: "#ffd700" }}>{stat.value}</div>
+                  <div style={{ fontSize: "22px", fontWeight: 900, color: "#ffea00" }}>{stat.value}</div>
                   <div style={{ fontSize: "10px", color: "rgba(245,230,211,0.4)", marginTop: "2px" }}>{stat.label}</div>
                 </div>
               ))}

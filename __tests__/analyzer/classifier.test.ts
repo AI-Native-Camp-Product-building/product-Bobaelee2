@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { classifyPersona } from "@/lib/analyzer/classifier";
+import { classifyPersona, classifyPersonaDebug } from "@/lib/analyzer/classifier";
 import type { DimensionScores, MdStats } from "@/lib/types";
 
 /** 테스트용 기본 MdStats */
@@ -19,6 +19,8 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     mcpServerCount: 0,
     commandCount: 0,
     hookCount: 0,
+    skillCount: 0,
+    agentCount: 0,
     pluginNames: [],
     mcpServerNames: [],
     commandNames: [],
@@ -295,5 +297,181 @@ describe("classifyPersona — 재교정된 임계값", () => {
     });
     const result = classifyPersona(scores, stats);
     expect(result.primary).toBe("huggies");
+  });
+
+  it("architect 게이트 완화: eco=20, hookCount=2에서도 architect 후보 등록", () => {
+    // Rich 케이스 재현: 기존엔 hookCount=3 게이트 때문에 탈락했음
+    const scores = makeScores({ automation: 50, agentOrchestration: 45 });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      pluginCount: 11,
+      mcpServerCount: 0,
+      commandCount: 9,
+      hookCount: 2, // 기존 게이트 미달, 완화된 게이트는 통과
+    });
+    const result = classifyPersona(scores, stats);
+    // 점수들이 낮아 다른 1등 후보가 없으므로 architect가 primary
+    expect(result.primary).toBe("architect");
+  });
+
+  it("architect 게이트 대체 경로: hookCount=0이어도 skillCount+agentCount>=3이면 architect", () => {
+    const scores = makeScores({ automation: 50 });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      pluginCount: 10,
+      mcpServerCount: 5,
+      commandCount: 5,
+      hookCount: 0,
+      skillCount: 2,
+      agentCount: 3,
+    });
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("architect");
+  });
+});
+
+describe("classifyPersona — polymath (팔방미인)", () => {
+  it("Rich 시나리오: 6/7 차원이 88+, agentOrch 55면 polymath", () => {
+    // 실제 Rich의 점수 재현
+    const scores = makeScores({
+      automation: 100,
+      control: 100,
+      toolDiversity: 75,
+      contextAwareness: 100,
+      teamImpact: 100,
+      security: 88,
+      agentOrchestration: 55,
+    });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      totalLines: 2279,
+      pluginCount: 11,
+      commandCount: 9,
+      hookCount: 2,
+    });
+    const result = classifyPersona(scores, stats);
+    expect(result.primary).toBe("polymath");
+  });
+
+  it("min 점수가 50 미만이면 polymath가 되지 않는다", () => {
+    // 6개가 100이지만 1개가 40이면 polymath 아님
+    const scores = makeScores({
+      automation: 100,
+      control: 100,
+      toolDiversity: 100,
+      contextAwareness: 100,
+      teamImpact: 100,
+      security: 100,
+      agentOrchestration: 40,
+    });
+    const result = classifyPersona(scores, makeMdStats({ totalLines: 100 }));
+    expect(result.primary).not.toBe("polymath");
+  });
+
+  it("평균이 80 미만이면 polymath가 되지 않는다", () => {
+    // 모든 차원이 60 전후 — min은 50+지만 avg가 79
+    const scores = makeScores({
+      automation: 80,
+      control: 80,
+      toolDiversity: 80,
+      contextAwareness: 80,
+      teamImpact: 80,
+      security: 75,
+      agentOrchestration: 78,
+    });
+    const result = classifyPersona(scores, makeMdStats({ totalLines: 100 }));
+    // avg ≈ 79.0, 80 미만이므로 polymath 아님
+    expect(result.primary).not.toBe("polymath");
+  });
+
+  it("차원 5개가 70 이상이 아니면 polymath가 되지 않는다", () => {
+    // 4개만 70+, 3개가 50~60 → highDimCount = 4, avg는 높을 수 있지만 조건 미달
+    const scores = makeScores({
+      automation: 95,
+      control: 95,
+      toolDiversity: 95,
+      contextAwareness: 95,
+      teamImpact: 65,
+      security: 60,
+      agentOrchestration: 55,
+    });
+    const result = classifyPersona(scores, makeMdStats({ totalLines: 100 }));
+    // 5개 조건 미달 (4개만 70+)
+    expect(result.primary).not.toBe("polymath");
+  });
+});
+
+describe("classifyPersonaDebug — 투명성 디버그 정보", () => {
+  it("classifyPersona와 동일한 primary/secondary를 리턴해야 한다", () => {
+    const scores = makeScores({
+      automation: 100,
+      control: 100,
+      toolDiversity: 75,
+      contextAwareness: 100,
+      teamImpact: 100,
+      security: 88,
+      agentOrchestration: 55,
+    });
+    const stats = makeMdStats({
+      isExpandedInput: true,
+      pluginCount: 11,
+      commandCount: 9,
+      hookCount: 2,
+    });
+    const plain = classifyPersona(scores, stats);
+    const debug = classifyPersonaDebug(scores, stats);
+    expect(debug.primary).toBe(plain.primary);
+    expect(debug.secondary).toBe(plain.secondary);
+  });
+
+  it("후보 리스트는 fit 내림차순으로 정렬되어야 한다", () => {
+    const scores = makeScores({
+      automation: 80,
+      control: 80,
+      teamImpact: 80,
+    });
+    const debug = classifyPersonaDebug(scores, makeMdStats());
+    for (let i = 1; i < debug.candidates.length; i++) {
+      expect(debug.candidates[i - 1].fit).toBeGreaterThanOrEqual(debug.candidates[i].fit);
+    }
+  });
+
+  it("각 후보에 등록 이유(reason)가 있어야 한다", () => {
+    const scores = makeScores({ control: 80, security: 70 });
+    const debug = classifyPersonaDebug(scores, makeMdStats());
+    expect(debug.candidates.length).toBeGreaterThan(0);
+    debug.candidates.forEach((c) => {
+      expect(c.reason).toBeTruthy();
+      expect(typeof c.reason).toBe("string");
+    });
+  });
+
+  it("B경로 사용 시 notes에 'B경로' 문구가 포함되어야 한다", () => {
+    const stats = makeMdStats({ isExpandedInput: true });
+    const debug = classifyPersonaDebug(makeScores({ automation: 60 }), stats);
+    expect(debug.notes.some((n) => n.includes("B경로"))).toBe(true);
+  });
+
+  it("A경로 사용 시 notes에 'A경로' 문구와 수집 스크립트 안내가 포함되어야 한다", () => {
+    const stats = makeMdStats({ isExpandedInput: false });
+    const debug = classifyPersonaDebug(makeScores({ automation: 60 }), stats);
+    expect(debug.notes.some((n) => n.includes("A경로"))).toBe(true);
+    expect(debug.notes.some((n) => n.includes("수집 스크립트"))).toBe(true);
+  });
+
+  it("minimalist 단축 분기 시 shortCircuitReason이 채워져야 한다", () => {
+    const scores = makeScores({
+      automation: 5,
+      control: 5,
+      toolDiversity: 5,
+      contextAwareness: 5,
+      teamImpact: 5,
+      security: 5,
+      agentOrchestration: 0,
+    });
+    const debug = classifyPersonaDebug(scores, makeMdStats({ totalLines: 3 }));
+    expect(debug.primary).toBe("minimalist");
+    expect(debug.shortCircuitReason).toBeTruthy();
+    expect(debug.candidates).toHaveLength(0);
   });
 });

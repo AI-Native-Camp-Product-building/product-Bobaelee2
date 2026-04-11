@@ -12,6 +12,7 @@ import { getCompatibility } from "@/lib/content/compatibility";
 import type { PersonaKey } from "@/lib/types";
 import ResultHero from "@/components/ResultHero";
 import RoastSection from "@/components/RoastSection";
+import ClassificationDebug from "@/components/ClassificationDebug";
 import StrengthSection from "@/components/StrengthSection";
 import CompatSection from "@/components/CompatSection";
 import PrescriptionSection from "@/components/PrescriptionSection";
@@ -92,6 +93,9 @@ export default async function ResultPage({ params }: Props) {
           </div>
         )}
 
+        {/* 분류 투명성 — "이 분류가 어떻게 나왔나요?" 펼치기 */}
+        <ClassificationDebug scores={result.scores} mdStats={result.mdStats} />
+
         {/* .md력 측정 결과 (레이더 차트 + 점수/티어 + 배지 통합) */}
         {result.isLegacyResult ? (
           <div className="bg-bg-card rounded-2xl p-6 text-center flex flex-col gap-3">
@@ -100,7 +104,7 @@ export default async function ResultPage({ params }: Props) {
             </p>
             <a
               href="/"
-              className="inline-block px-5 py-2.5 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
+              className="inline-block px-5 py-2.5 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity"
             >
               다시 분석해서 새 점수 확인하기 →
             </a>
@@ -163,7 +167,7 @@ export default async function ResultPage({ params }: Props) {
         <div className="text-center pb-8 flex flex-col items-center gap-3">
           <Link
             href="/"
-            className="inline-block px-6 py-3 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            className="inline-block px-6 py-3 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity"
           >
             나도 털리기 →
           </Link>

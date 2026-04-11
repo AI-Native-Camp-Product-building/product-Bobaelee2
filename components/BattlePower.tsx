@@ -55,7 +55,7 @@ export default function BattlePower({
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${percentage}%`,
-                background: "linear-gradient(90deg, #C96A4A, #D97757, #ffd700)",
+                background: "linear-gradient(90deg, #54a2ff, #c0f0fb, #ffea00)",
               }}
             />
           </div>

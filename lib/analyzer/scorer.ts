@@ -14,6 +14,7 @@ import {
   countHooks,
   extractExpandedSignals,
   extractSkillCount,
+  extractAgentCount,
 } from "./patterns";
 
 /**
@@ -143,12 +144,22 @@ export function calculateScores(md: string): DimensionScores {
     if (mcpServers.length >= 3) addBonus("toolDiversity", 10);
     else if (mcpServers.length >= 1) addBonus("toolDiversity", 5);
 
-    // 에이전트 오케스트레이션: defaultMode:auto, AI 판단 hook, 스킬 수
-    if (sig.defaultModeIsAuto) addBonus("agentOrchestration", 15);
+    // 에이전트 오케스트레이션 보너스 재설계 (2026-04-10 수정)
+    // - defaultMode auto는 "진짜 자율운영"의 약한 시그널일 뿐임: +15 → +5 축소
+    // - PreToolUse + PostToolUse 조합 = "신중한 자율운영자": +10 신설
+    // - 스킬/에이전트 파일 수 = 하네스 깊이의 실체적 시그널: 기존 dead code 대체
+    if (sig.defaultModeIsAuto) addBonus("agentOrchestration", 5);
+    if (sig.hasPreToolUseHook && sig.hasPostToolUseHook) {
+      addBonus("agentOrchestration", 10);
+    }
     if (sig.hookTypePromptCount >= 2) addBonus("agentOrchestration", 8);
     const skillCount = extractSkillCount(md);
-    if (skillCount >= 5) addBonus("agentOrchestration", 12);
-    else if (skillCount >= 2) addBonus("agentOrchestration", 6);
+    const agentCount = extractAgentCount(md);
+    // 스킬 + 에이전트 = 하네스 풀스택 시그널. 합쳐서 최대 +15
+    const harnessDepth = skillCount + agentCount;
+    if (harnessDepth >= 10) addBonus("agentOrchestration", 15);
+    else if (harnessDepth >= 5) addBonus("agentOrchestration", 10);
+    else if (harnessDepth >= 2) addBonus("agentOrchestration", 5);
 
     // 팀 임팩트: 프로젝트별 CLAUDE.md = 팀 환경
     if (sig.projectMdCount >= 3) addBonus("teamImpact", 8);
@@ -180,6 +191,8 @@ export function extractMdStats(md: string): MdStats {
       mcpServerCount: 0,
       commandCount: 0,
       hookCount: 0,
+      skillCount: 0,
+      agentCount: 0,
       pluginNames: [],
       mcpServerNames: [],
       commandNames: [],
@@ -246,6 +259,8 @@ export function extractMdStats(md: string): MdStats {
   const mcpServerNames = expanded ? extractMcpServerNames(md) : [];
   const commandNames = expanded ? extractCommandNames(md) : [];
   const hookCount = expanded ? countHooks(md) : (hasHooks ? 1 : 0);
+  const skillCount = expanded ? extractSkillCount(md) : 0;
+  const agentCount = expanded ? extractAgentCount(md) : 0;
 
   // 심층 분석 신호
   const signals = expanded ? extractExpandedSignals(md) : null;
@@ -266,6 +281,8 @@ export function extractMdStats(md: string): MdStats {
     mcpServerCount: mcpServerNames.length,
     commandCount: commandNames.length,
     hookCount,
+    skillCount,
+    agentCount,
     pluginNames,
     mcpServerNames,
     commandNames,

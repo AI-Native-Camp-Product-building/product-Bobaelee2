@@ -16,6 +16,7 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     hasMemory: true,
     hasHooks: true,
     hasProjectMd: true,
+    hasRoleDefinition: false,
     ruleCount: 8,
     claudeMdLines: totalLines,
     keywordHits: {
@@ -38,6 +39,8 @@ function makeMdStats(overrides: Partial<MdStats> = {}): MdStats {
     mcpServerCount: 0,
     commandCount: 0,
     hookCount: 0,
+    skillCount: 0,
+    agentCount: 0,
     pluginNames: [],
     mcpServerNames: [],
     commandNames: [],
@@ -73,6 +76,7 @@ function makeDimScores(overrides: Partial<DimensionScores> = {}): DimensionScore
     contextAwareness: 50,
     teamImpact: 50,
     security: 50,
+    agentOrchestration: 0,
     ...overrides,
   };
 }
@@ -90,11 +94,12 @@ const ALL_PERSONAS: PersonaKey[] = [
   "architect",
   "huggies",
   "daredevil",
+  "polymath",
 ];
 
-describe("PERSONAS — 8개 페르소나 정의", () => {
-  it("12개 페르소나가 모두 정의되어야 한다", () => {
-    expect(Object.keys(PERSONAS)).toHaveLength(12);
+describe("PERSONAS — 페르소나 정의", () => {
+  it("13개 페르소나가 모두 정의되어야 한다", () => {
+    expect(Object.keys(PERSONAS)).toHaveLength(13);
   });
 
   it("각 페르소나에 필수 필드가 있어야 한다", () => {
@@ -172,6 +177,7 @@ describe("generateRoasts — 로스팅 생성", () => {
     });
   });
 });
+
 
 describe("generateStrengths — 강점 생성", () => {
   it("모든 페르소나에서 3개의 강점을 반환해야 한다", () => {
@@ -252,28 +258,19 @@ describe("generatePrescriptions — 처방전 생성", () => {
 });
 
 describe("getCompatibility — 궁합 정보", () => {
-  it("모든 페르소나에서 3개의 궁합 정보를 반환해야 한다", () => {
+  it("모든 페르소나에서 2개의 궁합 정보를 반환해야 한다", () => {
     ALL_PERSONAS.forEach((persona) => {
       const compat = getCompatibility(persona);
-      expect(compat).toHaveLength(3);
+      expect(compat).toHaveLength(2);
     });
   });
 
-  it("perfect, chaos, mirror 타입이 모두 포함되어야 한다", () => {
+  it("perfect, chaos 타입이 모두 포함되어야 한다", () => {
     ALL_PERSONAS.forEach((persona) => {
       const compat = getCompatibility(persona);
       const types = compat.map((c) => c.type);
       expect(types).toContain("perfect");
       expect(types).toContain("chaos");
-      expect(types).toContain("mirror");
-    });
-  });
-
-  it("mirror 궁합의 targetPersona는 자기 자신이어야 한다", () => {
-    ALL_PERSONAS.forEach((persona) => {
-      const compat = getCompatibility(persona);
-      const mirror = compat.find((c) => c.type === "mirror");
-      expect(mirror?.targetPersona).toBe(persona);
     });
   });
 
