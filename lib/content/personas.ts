@@ -141,4 +141,16 @@ export const PERSONAS: Record<PersonaKey, PersonaDefinition> = {
       "'어차피 private repo잖아'라고 자기 합리화하는 당신. " +
       "사고가 터지기 전까지는 가장 효율적인 사람.",
   },
+  polymath: {
+    key: "polymath",
+    nameKo: "팔방미인",
+    nameEn: "The Polymath",
+    emoji: "🧙",
+    tagline: "차원 7개가 다 높은, 이 테스트에서 가장 드문 유형",
+    description:
+      "자동화, 규칙, 도구, 기억, 협업, 보안, 자율까지 — 7개 차원이 모두 고르게 높은 당신. " +
+      "이 테스트를 수십, 수백 명이 돌려도 만나기 힘든 균형형 초과달성자. " +
+      "약점이 없는 게 약점이라는 소리도 듣지만, 실은 그냥 대부분 항목에서 이미 플레이어 레벨을 넘어선 사람입니다. " +
+      "지금은 '뭘 더 해야 하지?'보다 '뭘 팀에 전파할까?'를 고민할 시기예요.",
+  },
 };

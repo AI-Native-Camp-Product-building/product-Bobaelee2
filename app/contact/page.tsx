@@ -44,7 +44,7 @@ export default function ContactPage() {
           <p className="text-sm text-claude-light/60">소중한 의견이 전달되었습니다.</p>
           <a
             href="/"
-            className="px-6 py-3 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            className="px-6 py-3 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity"
           >
             돌아가기
           </a>
@@ -121,7 +121,7 @@ export default function ContactPage() {
           <button
             onClick={handleSubmit}
             disabled={sending || !message.trim()}
-            className="w-full py-3.5 rounded-xl bg-claude-orange text-white font-bold text-base hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-xl bg-claude-orange text-bg-primary font-bold text-base hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {sending ? "보내는 중..." : "보내기"}
           </button>

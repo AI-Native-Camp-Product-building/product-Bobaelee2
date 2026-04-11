@@ -9,7 +9,7 @@ export interface DimensionScores {
   agentOrchestration: number;   // 자율 에이전트 오케스트레이션
 }
 
-/** 12가지 페르소나 키 */
+/** 13가지 페르소나 키 */
 export type PersonaKey =
   | "puppet-master"
   | "speedrunner"
@@ -22,7 +22,8 @@ export type PersonaKey =
   | "evangelist"
   | "architect"
   | "huggies"
-  | "daredevil";
+  | "daredevil"
+  | "polymath";
 
 /** 페르소나 정의 */
 export interface PersonaDefinition {
@@ -51,6 +52,8 @@ export interface MdStats {
   mcpServerCount: number;      // 연동된 MCP 서버 수
   commandCount: number;        // 커스텀 슬래시 명령어 수
   hookCount: number;           // 설정된 hook 수
+  skillCount: number;          // ~/.claude/skills 하위 스킬 수 (확장 입력 시)
+  agentCount: number;          // ~/.claude/agents 하위 에이전트 수 (확장 입력 시)
   pluginNames: string[];       // 활성화된 플러그인 이름 목록
   mcpServerNames: string[];    // MCP 서버 이름 목록
   commandNames: string[];      // 커스텀 명령어 이름 목록
@@ -100,7 +103,7 @@ export interface ConditionalPrescription {
 
 /** 궁합 정보 */
 export interface CompatInfo {
-  type: "perfect" | "chaos" | "mirror";
+  type: "perfect" | "chaos";
   targetPersona: PersonaKey;
   description: string;
 }

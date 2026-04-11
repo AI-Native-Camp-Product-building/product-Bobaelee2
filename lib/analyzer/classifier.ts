@@ -1,5 +1,11 @@
 /**
- * 7개 차원 점수와 통계를 바탕으로 12가지 페르소나를 후보 적합도 기반으로 분류한다
+ * 7개 차원 점수와 통계를 바탕으로 13가지 페르소나를 후보 적합도 기반으로 분류한다
+ *
+ * 공개 API:
+ * - classifyPersona: primary/secondary 페르소나만 리턴 (분석 파이프라인용)
+ * - classifyPersonaDebug: 후보별 fit + 등록 이유 + 메타 노트 (투명성 UI용)
+ *
+ * 두 함수는 buildCandidates 헬퍼를 공유하므로 분류 로직은 단일 출처.
  */
 import type { DimensionScores, MdStats, PersonaKey, PersonaResult } from "@/lib/types";
 
@@ -23,6 +29,17 @@ const DIMENSION_TO_PERSONA: Record<keyof DimensionScores, PersonaKey> = {
   teamImpact: "evangelist",
   security: "fortress",
   agentOrchestration: "architect",
+};
+
+/** 페르소나 → 핵심 차원 매핑 (부 페르소나 선택 시 차원 충돌 회피) */
+const PERSONA_PRIMARY_DIMENSION: Partial<Record<PersonaKey, keyof DimensionScores>> = {
+  "puppet-master": "automation",
+  fortress: "security",
+  legislator: "control",
+  evangelist: "teamImpact",
+  collector: "toolDiversity",
+  "deep-diver": "contextAwareness",
+  daredevil: "automation",
 };
 
 /** DimensionScores의 평균값을 계산한다 */
@@ -57,78 +74,174 @@ function dominantDimension(scores: DimensionScores): keyof DimensionScores {
   return maxKey;
 }
 
+/** 분류 후보 — fit + 등록 이유 (사람이 읽을 수 있는 한국어) */
+export interface ClassificationCandidate {
+  persona: PersonaKey;
+  fit: number;
+  reason: string;
+}
+
+/** buildCandidates 결과 */
+interface BuildResult {
+  candidates: ClassificationCandidate[];
+  shortCircuit: { result: PersonaResult; reason: string } | null;
+  notes: string[];
+}
+
 /**
- * 분석 점수와 통계를 기반으로 페르소나를 분류한다
- *
- * 후보 적합도 기반 분류:
- * 1. 특수 케이스 (minimalist) 선처리
- * 2. 모든 후보 페르소나에 적합도 점수를 매김
- * 3. 적합도 순 정렬 → 주/부 페르소나 추출
+ * 모든 후보 페르소나의 적합도를 계산하고 메타 노트를 수집한다
+ * classifyPersona와 classifyPersonaDebug의 공통 진입점
  */
-export function classifyPersona(scores: DimensionScores, mdStats: MdStats): PersonaResult {
+function buildCandidates(scores: DimensionScores, mdStats: MdStats): BuildResult {
   const avg = average(scores);
   const sd = stdDev(scores);
   const max = maxScore(scores);
+  const notes: string[] = [];
+
+  // 메타 노트: 입력 경로
+  if (mdStats.isExpandedInput) {
+    notes.push("B경로 사용 — settings.json/플러그인/hook/스킬/에이전트 정보가 분석에 포함되었습니다.");
+  } else {
+    notes.push("A경로 사용 — CLAUDE.md 본문만으로 분석. 더 정확한 분류를 원한다면 결과 페이지의 수집 스크립트를 실행해보세요.");
+  }
 
   // Step 1: 특수 케이스 — 내용이 없는 경우
   if (mdStats.totalLines <= 10 && avg < 20) {
-    return { primary: "minimalist", secondary: null };
+    return {
+      candidates: [],
+      shortCircuit: {
+        result: { primary: "minimalist", secondary: null },
+        reason: `totalLines ${mdStats.totalLines} ≤ 10 AND 평균 ${avg.toFixed(0)} < 20 — 분석할 내용이 너무 적음`,
+      },
+      notes,
+    };
   }
   if (max < 25) {
-    return { primary: "minimalist", secondary: null };
+    return {
+      candidates: [],
+      shortCircuit: {
+        result: { primary: "minimalist", secondary: null },
+        reason: `최고 점수 ${max.toFixed(0)} < 25 — 어느 차원도 의미 있는 시그널 없음`,
+      },
+      notes,
+    };
   }
 
-  // Step 2: 모든 후보 페르소나에 적합도 점수를 매김
-  const candidates: { persona: PersonaKey; fit: number }[] = [];
+  // Step 2: 후보 등록
+  const candidates: ClassificationCandidate[] = [];
 
-  // 에코시스템 기반 (확장 수집 시) — 임계값 완화
+  // 팔방미인 (polymath) — 모든 차원이 고르게 높은 희귀 케이스
+  // 조건: min ≥ 50, avg ≥ 80, 차원 5개 이상이 70+
+  // fit을 120+로 강하게 부여해서 단일 차원 페르소나(legislator/evangelist 등 100)를 이김
+  const minScoreVal = Math.min(...Object.values(scores));
+  const highDimCount = Object.values(scores).filter((v) => v >= 70).length;
+  if (minScoreVal >= 50 && avg >= 80 && highDimCount >= 5) {
+    const fit = 120 + (avg - 80) * 2 + (minScoreVal - 50);
+    candidates.push({
+      persona: "polymath",
+      fit,
+      reason: `최저점 ${minScoreVal.toFixed(0)} ≥ 50, 평균 ${avg.toFixed(0)} ≥ 80, ${highDimCount}/7 차원이 70+ — 균형형 초과달성자`,
+    });
+  }
+
+  // 에코시스템 기반 (B경로) — 하네스 깊이 시그널 결합
   if (mdStats.isExpandedInput) {
     const eco = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.commandCount;
-    if (eco >= 20 && mdStats.hookCount >= 3) {
-      candidates.push({ persona: "architect", fit: 95 });
-    } else if (eco >= 8 && mdStats.hookCount >= 1) {
-      candidates.push({ persona: "huggies", fit: 80 });
+    const harnessDepth = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
+    if (eco >= 20 && (mdStats.hookCount >= 2 || harnessDepth >= 3)) {
+      candidates.push({
+        persona: "architect",
+        fit: 95,
+        reason: `에코시스템 ${eco}개 ≥ 20 AND (hook ${mdStats.hookCount} ≥ 2 OR 스킬+에이전트 ${harnessDepth} ≥ 3)`,
+      });
+    } else if (eco >= 8 && (mdStats.hookCount >= 1 || harnessDepth >= 2)) {
+      candidates.push({
+        persona: "huggies",
+        fit: 80,
+        reason: `에코시스템 ${eco}개 ≥ 8 AND (hook ${mdStats.hookCount} ≥ 1 OR 스킬+에이전트 ${harnessDepth} ≥ 2)`,
+      });
     }
   }
 
-  // 차원 기반 후보 — 벤치마크 기반 임계값
+  // A경로 보조 진입: 수집 스크립트 미사용이어도 agentOrchestration이 매우 높으면 architect 후보
+  if (!mdStats.isExpandedInput && scores.agentOrchestration >= 70 && scores.toolDiversity >= 40) {
+    const fit = scores.agentOrchestration - 10;
+    candidates.push({
+      persona: "architect",
+      fit,
+      reason: `A경로 보조 진입: agentOrchestration ${scores.agentOrchestration} ≥ 70 AND toolDiversity ${scores.toolDiversity} ≥ 40`,
+    });
+  }
+
+  // 차원 기반 후보들 — 벤치마크 기반 임계값
   if (scores.automation >= 55 && scores.toolDiversity >= 40) {
     const fit = (scores.automation - 55) / 45 * 50 + (scores.toolDiversity - 40) / 60 * 50;
-    candidates.push({ persona: "puppet-master", fit });
+    candidates.push({
+      persona: "puppet-master",
+      fit,
+      reason: `automation ${scores.automation} ≥ 55 AND toolDiversity ${scores.toolDiversity} ≥ 40`,
+    });
   }
   if (scores.automation >= 45 && scores.security < 20) {
     const gap = scores.automation - scores.security;
     const fit = Math.max(0, (gap - 25) / 75 * 100);
-    candidates.push({ persona: "daredevil", fit });
+    candidates.push({
+      persona: "daredevil",
+      fit,
+      reason: `automation ${scores.automation} ≥ 45 AND security ${scores.security} < 20 (gap ${gap})`,
+    });
   }
-  // macgyver 제거 — 조건(automation>=65, toolDiversity<30)이 비현실적
   if (scores.security >= 55) {
     const fit = (scores.security - 55) / 45 * 100;
-    candidates.push({ persona: "fortress", fit });
+    candidates.push({
+      persona: "fortress",
+      fit,
+      reason: `security ${scores.security} ≥ 55`,
+    });
   }
   if (scores.control >= 55) {
     const fit = (scores.control - 55) / 45 * 100;
-    candidates.push({ persona: "legislator", fit });
+    candidates.push({
+      persona: "legislator",
+      fit,
+      reason: `control ${scores.control} ≥ 55`,
+    });
   }
   if (scores.teamImpact >= 55) {
     const fit = (scores.teamImpact - 55) / 45 * 100;
-    candidates.push({ persona: "evangelist", fit });
+    candidates.push({
+      persona: "evangelist",
+      fit,
+      reason: `teamImpact ${scores.teamImpact} ≥ 55`,
+    });
   }
   if (scores.toolDiversity >= 45 && scores.automation < 30) {
     const fit = (scores.toolDiversity - 45) / 55 * 50 + (30 - scores.automation) / 30 * 50;
-    candidates.push({ persona: "collector", fit });
+    candidates.push({
+      persona: "collector",
+      fit,
+      reason: `toolDiversity ${scores.toolDiversity} ≥ 45 AND automation ${scores.automation} < 30`,
+    });
   }
   if (mdStats.totalLines <= 30 && scores.control < 25 && scores.contextAwareness < 30 && max < 70) {
-    candidates.push({ persona: "speedrunner", fit: 50 });
+    candidates.push({
+      persona: "speedrunner",
+      fit: 50,
+      reason: `totalLines ${mdStats.totalLines} ≤ 30 AND control ${scores.control} < 25 AND contextAwareness ${scores.contextAwareness} < 30 AND max ${max.toFixed(0)} < 70`,
+    });
   }
   if (sd < 20 && avg >= 25) {
     let fit = Math.max(0, (avg - 25) / 75 * 100);
     // 유의미한 경쟁자(fit ≥ 15)가 있을 때만 페널티 적용
-    // fit < 15인 약한 후보(예: fortress fit=6)로는 craftsman을 억제하지 않음
-    const hasStrongCompetitor = candidates.some(c => c.fit >= 15);
+    const hasStrongCompetitor = candidates.some((c) => c.fit >= 15);
     if (hasStrongCompetitor) fit *= 0.5;
-    candidates.push({ persona: "craftsman", fit });
+    candidates.push({
+      persona: "craftsman",
+      fit,
+      reason: `표준편차 ${sd.toFixed(1)} < 20 AND 평균 ${avg.toFixed(0)} ≥ 25 — 균형형${hasStrongCompetitor ? " (강한 경쟁자 있어 fit 50% 감점)" : ""}`,
+    });
   }
+
   // deep-diver: 1위 차원이 2위 차원의 2배 이상 = 극단적 과몰입
   const sortedValues = Object.values(scores).sort((a, b) => b - a);
   const first = sortedValues[0];
@@ -138,7 +251,6 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   if (first >= 70 && dominanceRatio >= 2.0) {
     const dominant = dominantDimension(scores);
     const specificPersonas = DIMENSION_SPECIFIC_PERSONAS[dominant] ?? [];
-    // 지배 차원에 전용 페르소나 정의가 있으면 억제 (후보 등록 여부 불문)
     const hasDimensionSpecificPersona = specificPersonas.length > 0;
 
     // second=0(Infinity)이면 빈약한 파일이지 극단 몰입이 아님 → fit 상한 60
@@ -146,16 +258,27 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     let fit = Math.min(100, (cappedRatio - 2.0) / 3.0 * 50 + (first - 70) / 30 * 50);
     if (second === 0) fit = Math.min(60, fit);
     if (hasDimensionSpecificPersona) {
-      fit *= 0.3; // 전용 페르소나가 정의된 차원이면 deep-diver fit을 대폭 낮춤
+      fit *= 0.3;
     }
-    candidates.push({ persona: "deep-diver", fit });
+    candidates.push({
+      persona: "deep-diver",
+      fit,
+      reason: `1위 차원 ${first.toFixed(0)} ≥ 70 AND 1위/2위 비율 ${dominanceRatio === Infinity ? "∞" : dominanceRatio.toFixed(1)} ≥ 2.0${hasDimensionSpecificPersona ? ` (${dominant}에 전용 페르소나 있어 fit 30%로 억제)` : ""}`,
+    });
   }
 
-  // Step 3: 적합도 순 정렬 → 주/부 추출
-  candidates.sort((a, b) => b.fit - a.fit);
+  return { candidates, shortCircuit: null, notes };
+}
 
+/**
+ * 후보 리스트에서 주/부 페르소나를 추출한다
+ * 후보가 없으면 dominantDimension 기반 fallback
+ */
+function pickPrimaryAndSecondary(
+  candidates: ClassificationCandidate[],
+  scores: DimensionScores,
+): PersonaResult {
   if (candidates.length === 0) {
-    // fallback: 가장 높은 차원 — 단, 최소 40점 이상이어야 의미 있는 분류
     const dominant = dominantDimension(scores);
     if (scores[dominant] < 40) {
       return { primary: "minimalist", secondary: null };
@@ -163,24 +286,14 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
     return { primary: DIMENSION_TO_PERSONA[dominant], secondary: null };
   }
 
-  const primary = candidates[0].persona;
-
-  // 부 페르소나 차원 매핑
-  const PERSONA_PRIMARY_DIMENSION: Partial<Record<PersonaKey, keyof DimensionScores>> = {
-    "puppet-master": "automation",
-    fortress: "security",
-    legislator: "control",
-    evangelist: "teamImpact",
-    collector: "toolDiversity",
-    "deep-diver": "contextAwareness",
-    daredevil: "automation",
-  };
+  const sorted = [...candidates].sort((a, b) => b.fit - a.fit);
+  const primary = sorted[0].persona;
 
   let secondary: PersonaKey | null = null;
-  for (let i = 1; i < candidates.length; i++) {
-    const candidate = candidates[i];
+  for (let i = 1; i < sorted.length; i++) {
+    const candidate = sorted[i];
     if (candidate.fit < 25) break;
-    if (candidate.fit < candidates[0].fit * 0.6) break;
+    if (candidate.fit < sorted[0].fit * 0.6) break;
     if (candidate.persona === primary) continue;
     const primaryDim = PERSONA_PRIMARY_DIMENSION[primary];
     const candidateDim = PERSONA_PRIMARY_DIMENSION[candidate.persona];
@@ -195,4 +308,68 @@ export function classifyPersona(scores: DimensionScores, mdStats: MdStats): Pers
   }
 
   return { primary, secondary };
+}
+
+/**
+ * 분석 점수와 통계를 기반으로 페르소나를 분류한다
+ *
+ * 후보 적합도 기반 분류:
+ * 1. 특수 케이스 (minimalist) 선처리
+ * 2. 모든 후보 페르소나에 적합도 점수를 매김
+ * 3. 적합도 순 정렬 → 주/부 페르소나 추출
+ */
+export function classifyPersona(scores: DimensionScores, mdStats: MdStats): PersonaResult {
+  const built = buildCandidates(scores, mdStats);
+  if (built.shortCircuit) return built.shortCircuit.result;
+  return pickPrimaryAndSecondary(built.candidates, scores);
+}
+
+/** 분류 디버그 정보 — 투명성 UI용 */
+export interface ClassificationDebug {
+  primary: PersonaKey;
+  secondary: PersonaKey | null;
+  /** 적합도 내림차순 정렬된 후보 리스트 (모든 등록 후보) */
+  candidates: ClassificationCandidate[];
+  /** 메타 노트: 입력 경로 등 분류에 영향을 준 컨텍스트 */
+  notes: string[];
+  /** 특수 케이스로 분기됐다면 그 이유 (minimalist 단축 경로) */
+  shortCircuitReason: string | null;
+  /** 후보 0개로 fallback 경로를 탔는지 */
+  fallbackUsed: boolean;
+}
+
+/**
+ * 분류 과정의 디버그 정보를 반환한다 — 투명성 UI에서 "이 분류가 어떻게 나왔나요?" 표시용
+ *
+ * 동일 입력에 대해 classifyPersona와 같은 primary/secondary를 보장한다 (buildCandidates 공유).
+ */
+export function classifyPersonaDebug(
+  scores: DimensionScores,
+  mdStats: MdStats,
+): ClassificationDebug {
+  const built = buildCandidates(scores, mdStats);
+
+  if (built.shortCircuit) {
+    return {
+      primary: built.shortCircuit.result.primary,
+      secondary: built.shortCircuit.result.secondary,
+      candidates: [],
+      notes: built.notes,
+      shortCircuitReason: built.shortCircuit.reason,
+      fallbackUsed: false,
+    };
+  }
+
+  const sortedCandidates = [...built.candidates].sort((a, b) => b.fit - a.fit);
+  const result = pickPrimaryAndSecondary(built.candidates, scores);
+  const fallbackUsed = sortedCandidates.length === 0;
+
+  return {
+    primary: result.primary,
+    secondary: result.secondary,
+    candidates: sortedCandidates,
+    notes: built.notes,
+    shortCircuitReason: null,
+    fallbackUsed,
+  };
 }

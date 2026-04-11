@@ -342,11 +342,30 @@ export interface ExpandedSignals {
 
 /**
  * 확장 수집 데이터의 skills 섹션에서 스킬 수를 추출한다
+ * 섹션이 없거나 비어있으면 0을 반환한다
  */
 export function extractSkillCount(text: string): number {
   const skillSection = text.match(/===\s*skills\s*===\n([\s\S]*?)(?=\n===|$)/);
   if (!skillSection) return 0;
-  return skillSection[1].trim().split("\n").filter(l => l.trim() && !/^===/.test(l.trim())).length;
+  return skillSection[1]
+    .trim()
+    .split("\n")
+    .filter((l) => l.trim() && !/^===/.test(l.trim()))
+    .length;
+}
+
+/**
+ * 확장 수집 데이터의 agents 섹션에서 에이전트 수를 추출한다
+ * ~/.claude/agents 하위의 .md 파일 수에 대응
+ */
+export function extractAgentCount(text: string): number {
+  const section = text.match(/===\s*agents\s*===\n([\s\S]*?)(?=\n===|$)/);
+  if (!section) return 0;
+  return section[1]
+    .trim()
+    .split("\n")
+    .filter((l) => l.trim() && !/^===/.test(l.trim()))
+    .length;
 }
 
 /**

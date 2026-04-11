@@ -258,10 +258,25 @@ describe("deny 이중 가산 해소", () => {
 });
 
 describe("확장 보정 — agentOrchestration/teamImpact", () => {
-  it("defaultMode:auto면 agentOrchestration이 올라가야 한다", () => {
+  it("defaultMode:auto면 agentOrchestration에 약한 보너스(+5)가 붙는다", () => {
     const md = `=== settings.json ===\n{"defaultMode": "auto"}`;
     const scores = calculateScores(md);
-    expect(scores.agentOrchestration).toBeGreaterThanOrEqual(15);
+    // 2026-04-10: +15 → +5로 축소 (auto 모드가 자율 에이전트 사용을 의미하지 않음)
+    expect(scores.agentOrchestration).toBeGreaterThanOrEqual(5);
+  });
+
+  it("PreToolUse + PostToolUse hook 조합이 있으면 agentOrchestration에 +10 보너스가 붙는다", () => {
+    // "신중한 자율 운영자" 시그널: 양쪽 hook으로 가드레일을 거는 스타일
+    const md = `=== settings.json ===\n{"hooks":{"PreToolUse":[],"PostToolUse":[]}}`;
+    const scores = calculateScores(md);
+    expect(scores.agentOrchestration).toBeGreaterThanOrEqual(10);
+  });
+
+  it("skills + agents 섹션의 총합이 하네스 깊이 보너스로 반영된다", () => {
+    const md = `=== settings.json ===\n{}\n=== skills ===\nskill1\nskill2\nskill3\n=== agents ===\nagent1.md\nagent2.md\nagent3.md\n`;
+    const scores = calculateScores(md);
+    // harnessDepth=6 → +10 보너스
+    expect(scores.agentOrchestration).toBeGreaterThanOrEqual(10);
   });
 
   it("projectMdCount 3개 이상이면 teamImpact이 올라가야 한다", () => {

@@ -18,12 +18,12 @@ export default function ClaudeIcon({ size = 48 }: { size?: number }) {
         shapeRendering="crispEdges"
       >
         {/* 왼쪽 귀 */}
-        <rect x="14" y="10" width="14" height="14" rx="3" fill="#D97757" />
+        <rect x="14" y="10" width="14" height="14" rx="3" fill="#c0f0fb" />
         {/* 오른쪽 귀 */}
-        <rect x="52" y="10" width="14" height="14" rx="3" fill="#D97757" />
+        <rect x="52" y="10" width="14" height="14" rx="3" fill="#c0f0fb" />
 
         {/* 메인 바디 — 둥근 사각형 */}
-        <rect x="10" y="20" width="60" height="50" rx="10" fill="#D97757" />
+        <rect x="10" y="20" width="60" height="50" rx="10" fill="#c0f0fb" />
 
         {/* 눈 — 좌 (어두운 사각형) */}
         <rect x="24" y="38" width="10" height="12" rx="2" fill="#1a1a1a" />
@@ -36,9 +36,9 @@ export default function ClaudeIcon({ size = 48 }: { size?: number }) {
         <rect x="47" y="39" width="4" height="4" rx="1" fill="rgba(255,255,255,0.3)" />
 
         {/* 왼쪽 다리 */}
-        <rect x="22" y="68" width="12" height="10" rx="3" fill="#D97757" />
+        <rect x="22" y="68" width="12" height="10" rx="3" fill="#c0f0fb" />
         {/* 오른쪽 다리 */}
-        <rect x="46" y="68" width="12" height="10" rx="3" fill="#D97757" />
+        <rect x="46" y="68" width="12" height="10" rx="3" fill="#c0f0fb" />
       </svg>
     </div>
   );

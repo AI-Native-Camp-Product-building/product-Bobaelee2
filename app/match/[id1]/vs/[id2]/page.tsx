@@ -94,7 +94,7 @@ export default async function MatchPage({ params }: Props) {
         <div className="text-center">
           <p className="text-sm text-claude-light/50 mb-2">MDTI 궁합 비교</p>
           <h1 className="text-2xl font-black text-claude-cream">
-            CLAUDE.md 궁합 결과
+            .md 궁합 결과
           </h1>
         </div>
 
@@ -205,11 +205,11 @@ export default async function MatchPage({ params }: Props) {
         {/* 나도 해보기 CTA */}
         <div className="text-center pb-8 flex flex-col items-center gap-3">
           <p className="text-sm text-claude-light/50">
-            내 CLAUDE.md도 분석해볼까?
+            내 .md도 분석해볼까?
           </p>
           <Link
             href="/"
-            className="inline-block px-6 py-3 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity"
+            className="inline-block px-6 py-3 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity"
           >
             나도 해보기 →
           </Link>

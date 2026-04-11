@@ -33,11 +33,11 @@ export default function ClaudeScouter({ size = 80 }: { size?: number }) {
       >
         {/* === Claude 본체 === */}
         {/* 왼쪽 귀 */}
-        <rect x="24" y="20" width="14" height="14" rx="3" fill="#D97757" />
+        <rect x="24" y="20" width="14" height="14" rx="3" fill="#c0f0fb" />
         {/* 오른쪽 귀 */}
-        <rect x="62" y="20" width="14" height="14" rx="3" fill="#D97757" />
+        <rect x="62" y="20" width="14" height="14" rx="3" fill="#c0f0fb" />
         {/* 메인 바디 */}
-        <rect x="20" y="30" width="60" height="50" rx="10" fill="#D97757" />
+        <rect x="20" y="30" width="60" height="50" rx="10" fill="#c0f0fb" />
         {/* 눈 — 좌 */}
         <rect x="34" y="48" width="10" height="12" rx="2" fill="#1a1a1a" />
         <rect x="35" y="49" width="4" height="4" rx="1" fill="rgba(255,255,255,0.3)" />
@@ -45,8 +45,8 @@ export default function ClaudeScouter({ size = 80 }: { size?: number }) {
         <rect x="56" y="48" width="10" height="12" rx="2" fill="#1a1a1a" />
         <rect x="57" y="49" width="4" height="4" rx="1" fill="rgba(255,255,255,0.3)" />
         {/* 다리 */}
-        <rect x="32" y="78" width="12" height="10" rx="3" fill="#D97757" />
-        <rect x="56" y="78" width="12" height="10" rx="3" fill="#D97757" />
+        <rect x="32" y="78" width="12" height="10" rx="3" fill="#c0f0fb" />
+        <rect x="56" y="78" width="12" height="10" rx="3" fill="#c0f0fb" />
 
         {/* === 스카우터 (드래곤볼 전투력 측정기) === */}
 
@@ -161,7 +161,7 @@ export default function ClaudeScouter({ size = 80 }: { size?: number }) {
           background: radial-gradient(ellipse at 50% 60%,
             rgba(255, 215, 0, 0.45) 0%,
             rgba(255, 180, 0, 0.25) 30%,
-            rgba(217, 119, 87, 0.15) 50%,
+            rgba(192, 240, 251, 0.15) 50%,
             transparent 65%
           );
           animation: aura-pulse 1.2s ease-in-out infinite reverse;
@@ -187,7 +187,7 @@ export default function ClaudeScouter({ size = 80 }: { size?: number }) {
         .spark {
           position: absolute;
           width: 3px; height: 3px;
-          background: #ffd700;
+          background: #ffea00;
           border-radius: 50%;
           box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.8);
           animation: spark-float 2s ease-in-out infinite;

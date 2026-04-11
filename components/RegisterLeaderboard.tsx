@@ -108,7 +108,7 @@ export default function RegisterLeaderboard({ resultId, mdPower }: Props) {
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="w-full py-2.5 rounded-xl bg-claude-orange text-white font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+          className="w-full py-2.5 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
         >
           {loading ? "등록 중..." : registered ? "점수 갱신하기" : "리더보드에 등록하기"}
         </button>

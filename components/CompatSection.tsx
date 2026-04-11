@@ -1,6 +1,6 @@
 /**
  * 궁합 섹션
- * 최고 궁합(perfect), 최악 궁합(chaos), 거울 궁합(mirror) 3개 블록
+ * 최고 궁합(perfect), 최악 궁합(chaos) 2개 블록
  */
 import type { CompatInfo, PersonaKey } from "@/lib/types";
 import { PERSONAS } from "@/lib/content/personas";
@@ -8,7 +8,7 @@ import { PERSONAS } from "@/lib/content/personas";
 interface CompatSectionProps {
   /** 내 페르소나 키 */
   myPersona: PersonaKey;
-  /** 궁합 정보 배열 (perfect, chaos, mirror 순) */
+  /** 궁합 정보 배열 (perfect, chaos 순) */
   compat: CompatInfo[];
 }
 
@@ -27,13 +27,6 @@ const COMPAT_CONFIG = {
     colorClass: "text-roast-red",
     borderClass: "border-roast-red/30",
     bgClass: "bg-roast-red/5",
-  },
-  mirror: {
-    label: "거울 궁합",
-    emoji: "🪞",
-    colorClass: "text-claude-orange",
-    borderClass: "border-claude-orange/30",
-    bgClass: "bg-claude-orange/5",
   },
 } as const;
 
