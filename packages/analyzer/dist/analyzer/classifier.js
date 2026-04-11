@@ -67,10 +67,10 @@ function buildCandidates(scores, mdStats) {
     const notes = [];
     // 메타 노트: 입력 경로
     if (mdStats.isExpandedInput) {
-        notes.push("B경로 사용 — settings.json/플러그인/hook/스킬/에이전트 정보가 분석에 포함되었습니다.");
+        notes.push("전체 수집 분석 — settings.json, 플러그인, hook, 스킬, 에이전트 정보가 포함되어 더 정확한 분류가 가능합니다.");
     }
     else {
-        notes.push("A경로 사용 — CLAUDE.md 본문만으로 분석. 더 정확한 분류를 원한다면 결과 페이지의 수집 스크립트를 실행해보세요.");
+        notes.push("CLAUDE.md 본문만으로 분석했습니다. 더 정확한 분류를 원한다면 수집 스크립트를 실행해보세요.");
     }
     // Step 1: 특수 케이스 — 내용이 없는 경우
     if (mdStats.totalLines <= 10 && avg < 20) {
@@ -108,32 +108,44 @@ function buildCandidates(scores, mdStats) {
             reason: `최저점 ${minScoreVal.toFixed(0)} ≥ 50, 평균 ${avg.toFixed(0)} ≥ 80, ${highDimCount}/7 차원이 70+ — 균형형 초과달성자`,
         });
     }
-    // 에코시스템 기반 (B경로) — 하네스 깊이 시그널 결합
+    // 하네스 숙련도 기반 (전체 수집) — "만든다 vs 쓴다" 구분
     if (mdStats.isExpandedInput) {
-        const eco = mdStats.pluginCount + mdStats.mcpServerCount + mdStats.commandCount;
-        const harnessDepth = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
-        if (eco >= 20 && (mdStats.hookCount >= 2 || harnessDepth >= 3)) {
+        // 직접 작성: SKILL.md, 에이전트 정의 (가장 강한 "만든다" 시그널)
+        const selfAuthored = (mdStats.skillCount ?? 0) + (mdStats.agentCount ?? 0);
+        // 직접 설정: 커스텀 명령어, 훅 (중간 시그널)
+        const selfConfigured = mdStats.commandCount + mdStats.hookCount;
+        // 가져다 쓰기: 플러그인, MCP 서버 (남이 만든 도구)
+        const adopted = mdStats.pluginCount + mdStats.mcpServerCount;
+        const total = selfAuthored + selfConfigured + adopted;
+        // 로데오 마스터: 하네스를 직접 만드는 사람
+        // - 스킬/에이전트를 직접 작성했거나 (selfAuthored >= 2)
+        // - 명령어+훅을 많이 설정하면서 전체 생태계가 큰 경우 (selfConfigured >= 5 AND total >= 15)
+        if (selfAuthored >= 2 || (selfConfigured >= 5 && total >= 15)) {
+            const fit = 90 + Math.min(selfAuthored * 3 + selfConfigured, 15);
             candidates.push({
                 persona: "architect",
-                fit: 95,
-                reason: `에코시스템 ${eco}개 ≥ 20 AND (hook ${mdStats.hookCount} ≥ 2 OR 스킬+에이전트 ${harnessDepth} ≥ 3)`,
+                fit,
+                reason: `하네스 제작자 — 직접 작성 ${selfAuthored}개(스킬 ${mdStats.skillCount ?? 0}, 에이전트 ${mdStats.agentCount ?? 0}), 직접 설정 ${selfConfigured}개(명령어 ${mdStats.commandCount}, 훅 ${mdStats.hookCount})`,
             });
         }
-        else if (eco >= 8 && (mdStats.hookCount >= 1 || harnessDepth >= 2)) {
+        // 하기스 아키텍트: 생태계 위에 올라탄 사람
+        // - 도구는 쓰지만 직접 만든 하네스는 아직 없는 단계
+        if (adopted + selfConfigured >= 6 && selfAuthored < 2) {
+            const fit = 75 + Math.min(adopted + selfConfigured, 15);
             candidates.push({
                 persona: "huggies",
-                fit: 80,
-                reason: `에코시스템 ${eco}개 ≥ 8 AND (hook ${mdStats.hookCount} ≥ 1 OR 스킬+에이전트 ${harnessDepth} ≥ 2)`,
+                fit,
+                reason: `하네스 활용자 — 설치한 도구 ${adopted}개(플러그인 ${mdStats.pluginCount}, MCP ${mdStats.mcpServerCount}), 설정 ${selfConfigured}개 BUT 직접 작성 ${selfAuthored}개 < 2`,
             });
         }
     }
-    // A경로 보조 진입: 수집 스크립트 미사용이어도 agentOrchestration이 매우 높으면 architect 후보
+    // 텍스트 기반 보조 진입: 수집 스크립트 미사용이어도 에이전트 오케스트레이션 시그널이 강하면 후보
     if (!mdStats.isExpandedInput && scores.agentOrchestration >= 70 && scores.toolDiversity >= 40) {
         const fit = scores.agentOrchestration - 10;
         candidates.push({
             persona: "architect",
             fit,
-            reason: `A경로 보조 진입: agentOrchestration ${scores.agentOrchestration} ≥ 70 AND toolDiversity ${scores.toolDiversity} ≥ 40`,
+            reason: `텍스트 기반: agentOrchestration ${scores.agentOrchestration} ≥ 70 AND toolDiversity ${scores.toolDiversity} ≥ 40 — 수집 스크립트 없이도 하네스 제작 시그널 감지`,
         });
     }
     // 차원 기반 후보들 — 벤치마크 기반 임계값
