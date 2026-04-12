@@ -1,5 +1,5 @@
-import type { ModuleBlock, AxisKey } from '../v2-types.js';
-import { AXIS_ORDER, AXIS_LABELS } from '../v2-types.js';
+import type { ModuleBlock, AxisKey } from '../v2-types';
+import { AXIS_ORDER, AXIS_LABELS } from '../v2-types';
 
 export const MODULE_BLOCKS: ModuleBlock[] = [
   // 하기스/하네스
@@ -9,14 +9,14 @@ export const MODULE_BLOCKS: ModuleBlock[] = [
   { axis: 'control', direction: 'R', wit: 'NEVER 12개 써놓고도 불안해서 한 번 더 확인하러 돌아온 적 없나요?', exploration: '한 번쯤 규칙 없이 AI를 풀어보면 의외의 결과가 나올지도' },
   { axis: 'control', direction: 'D', wit: 'bypass 모드 켜놓고 커피 마시러 갔다가, 뭔가 잘못된 적 없나요?', exploration: '중요한 작업에 가드레일 하나만 걸어보면 밤잠이 편할 수도' },
   // 장황/간결
-  { axis: 'verbose', direction: 'V', wit: 'CLAUDE.md 수정하다가 이게 문서인지 자서전인지 헷갈린 적 없나요?', exploration: '한번 핵심 3줄만 남기고 다 지워보면, AI가 의외로 잘할 수도' },
-  { axis: 'verbose', direction: 'C', wit: '3줄 쓰고 "이 정도면 충분하지" 했는데, 클로드가 전혀 다른 걸 해온 적 없나요?', exploration: '자주 반복하는 지시가 있다면, 그건 CLAUDE.md에 적어둘 타이밍' },
+  { axis: 'verbose', direction: 'V', wit: '설정 문서 수정하다가 이게 문서인지 자서전인지 헷갈린 적 없나요?', exploration: '한번 핵심 3줄만 남기고 다 지워보면, AI가 의외로 잘할 수도' },
+  { axis: 'verbose', direction: 'C', wit: '3줄 쓰고 "이 정도면 충분하지" 했는데, AI가 전혀 다른 걸 해온 적 없나요?', exploration: '자주 반복하는 지시가 있다면, 그건 설정 문서에 적어둘 타이밍' },
   // 설계/실행
   { axis: 'plan', direction: 'P', wit: '@import 구조 잡다가 정작 코드는 한 줄도 안 쓴 채로 하루가 간 적 없나요?', exploration: '가끔은 구조 없이 일단 돌려보는 게 더 빠른 발견일 수도' },
   { axis: 'plan', direction: 'X', wit: '일단 돌려보고 고치자 했는데, 고칠 게 산더미가 된 적 없나요?', exploration: '다음 프로젝트는 AGENTS.md부터 써보면 의외로 속도가 날 수도' },
   // 구조화/자유형
   { axis: 'structure', direction: 'S', wit: '헤딩 레벨 정하다가 30분 쓴 적 없나요?', exploration: '다음엔 생각나는 대로 먼저 쓰고 나중에 정리하면 더 빠를 수도' },
-  { axis: 'structure', direction: 'F', wit: '나중에 정리해야지 하고 3개월째 산문체인 적 없나요?', exploration: '헤딩 3개만 넣어보면 클로드가 놀랍도록 다르게 행동할 수도' },
+  { axis: 'structure', direction: 'F', wit: '나중에 정리해야지 하고 3개월째 산문체인 적 없나요?', exploration: '헤딩 3개만 넣어보면 AI가 놀랍도록 다르게 행동할 수도' },
 ];
 
 /**

@@ -61,7 +61,7 @@ const SIGNATURE_PRESCRIPTIONS: ConditionalPrescription[] = [
   },
   {
     id: "sig-evangelist",
-    text: "팀원 1명에게 당신의 CLAUDE.md를 보여주고 '이해되나요?'라고 물어보세요. 읽히지 않는 문서는 독백입니다.",
+    text: "팀원 1명에게 당신의 설정 문서를 보여주고 '이해되나요?'라고 물어보세요. 읽히지 않는 문서는 독백입니다.",
     priority: "high",
     tag: "sig:evangelist",
     tier: "signature",
@@ -93,7 +93,7 @@ const SIGNATURE_PRESCRIPTIONS: ConditionalPrescription[] = [
   },
   {
     id: "sig-deep-diver",
-    text: "집중 영역 외에 기본 업무 맥락도 CLAUDE.md에 추가하세요. 한 가지만 아는 사람으로 인식되면 다른 분야에서 부정확한 답변이 나옵니다.",
+    text: "집중 영역 외에 기본 업무 맥락도 설정 문서에 추가하세요. 한 가지만 아는 사람으로 인식되면 다른 분야에서 부정확한 답변이 나옵니다.",
     priority: "high",
     tag: "sig:deep-diver",
     tier: "signature",
@@ -101,7 +101,7 @@ const SIGNATURE_PRESCRIPTIONS: ConditionalPrescription[] = [
   },
   {
     id: "sig-architect",
-    text: "생태계 구성도를 CLAUDE.md에 추가하세요. 플러그인, Hook, MCP가 어떻게 연결되는지 한눈에 보이면 유지보수와 인수인계가 쉬워집니다.",
+    text: "생태계 구성도를 설정 문서에 추가하세요. 플러그인, Hook, MCP가 어떻게 연결되는지 한눈에 보이면 유지보수와 인수인계가 쉬워집니다.",
     priority: "high",
     tag: "sig:architect",
     tier: "signature",
@@ -143,7 +143,7 @@ const DIMENSIONAL_PRESCRIPTIONS: ConditionalPrescription[] = [
   // conciseness — 길이 초과
   {
     id: "dim-concise-split",
-    text: "CLAUDE.md가 150줄을 넘으면 `.claude/rules/`로 분리하세요. 모델이 안정적으로 따르는 지시는 약 150~200개입니다.",
+    text: "설정 문서가 150줄을 넘으면 `.claude/rules/`로 분리하세요. 모델이 안정적으로 따르는 지시는 약 150~200개입니다.",
     priority: "high",
     tag: "dim:conciseness",
     tier: "dimensional",
@@ -205,7 +205,7 @@ const DIMENSIONAL_PRESCRIPTIONS: ConditionalPrescription[] = [
   // structure — 제네릭
   {
     id: "dim-structure-heading",
-    text: "## Commands, ## Architecture 같은 섹션 헤딩으로 CLAUDE.md를 구조화하세요.",
+    text: "## Commands, ## Architecture 같은 섹션 헤딩으로 설정 문서를 구조화하세요.",
     priority: "medium",
     tag: "dim:structure",
     tier: "dimensional",
@@ -255,7 +255,7 @@ const DIMENSIONAL_PRESCRIPTIONS: ConditionalPrescription[] = [
   // teamImpact — 제네릭
   {
     id: "dim-team-collab",
-    text: "협업 관련 규칙을 추가해보세요. 커뮤니케이션 스타일, 코드 리뷰 규칙 등을 CLAUDE.md에 담으면 Claude가 더 입체적으로 돕습니다.",
+    text: "협업 관련 규칙을 추가해보세요. 커뮤니케이션 스타일, 코드 리뷰 규칙 등을 설정 문서에 담으면 AI가 더 입체적으로 돕습니다.",
     priority: "medium",
     tag: "dim:teamImpact",
     tier: "dimensional",
@@ -268,7 +268,7 @@ const DIMENSIONAL_PRESCRIPTIONS: ConditionalPrescription[] = [
 const COMMON_PRESCRIPTIONS: ConditionalPrescription[] = [
   {
     id: "common-context",
-    text: "~/.claude/CLAUDE.md에 사용자 선호도와 프로젝트 맥락을 저장하면 매 대화마다 같은 설명을 반복하지 않아도 됩니다.",
+    text: "설정 파일에 사용자 선호도와 프로젝트 맥락을 저장하면 매 대화마다 같은 설명을 반복하지 않아도 됩니다.",
     priority: "high",
     tag: "common:context",
     tier: "common",

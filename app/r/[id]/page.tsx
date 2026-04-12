@@ -131,11 +131,11 @@ export default async function ResultPage({ params }: Props) {
             {/* 위트 섹션 */}
             <WitSection items={v2WitItems} />
 
-            {/* 궁합 섹션 (v1 궁합 재사용) */}
-            <CompatSection myPersona={result.persona} compat={compat} />
-
             {/* 탐험 제안 */}
             <ExplorationSection items={v2ExplorationItems} />
+
+            {/* 궁합 섹션 (v1 궁합 재사용) */}
+            <CompatSection myPersona={result.persona} compat={compat} />
 
             {/* 공유 버튼 */}
             <section className="flex flex-col gap-3">

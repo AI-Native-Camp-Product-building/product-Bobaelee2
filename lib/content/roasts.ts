@@ -86,20 +86,20 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     {
       text: "'Claude야 알아서 해' — 가장 비싼 프롬프트",
       detail: stats.isExpandedInput
-        ? `플러그인 ${stats.pluginCount}개 깔아놓고 CLAUDE.md는 ${stats.claudeMdLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
-        : `${stats.claudeMdLines}줄. Claude가 매 세션 당신 취향 재추론하느라 독심술 쓰고 있어요 — 그 토큰비 합치면 밥값은 나옵니다. 한 줄 추가가 그대로 내 시간으로 돌아오는 거래.`,
+        ? `플러그인 ${stats.pluginCount}개 깔아놓고 설정 문서는 ${stats.claudeMdLines}줄. 자동차는 샀는데 운전면허가 없는 격이에요.`
+        : `${stats.claudeMdLines}줄. AI가 매 세션 당신 취향 재추론하느라 독심술 쓰고 있어요 — 그 토큰비 합치면 밥값은 나옵니다. 한 줄 추가가 그대로 내 시간으로 돌아오는 거래.`,
       color: "red",
     },
     {
       text: "귀찮아서 안 쓴 건지, 뭘 써야 하는지 모르는 건지",
       detail: stats.toolNames.length === 0
-        ? "도구 언급 0개. Claude Code를 ChatGPT처럼 쓰고 있어요. 터미널에서 실행하는 이유가 있거든요."
+        ? "도구 언급 0개. AI를 ChatGPT처럼 쓰고 있어요. 터미널에서 실행하는 이유가 있거든요."
         : `도구 ${stats.toolNames.length}개만 적어놨네요. '나머지는 알아서 해줘'가 통하는 세상이 아닙니다.`,
       color: "orange",
     },
     {
-      text: "CLAUDE.md 빈칸이 당신의 가능성을 잡아먹고 있어요",
-      detail: `섹션 ${stats.sectionCount}개. 역할, 도구, 금지사항만 적어도 Claude의 답변 퀄리티가 2배는 올라요. 5분 투자, 매일 30분 절약.`,
+      text: "설정 문서 빈칸이 당신의 가능성을 잡아먹고 있어요",
+      detail: `섹션 ${stats.sectionCount}개. 역할, 도구, 금지사항만 적어도 AI의 답변 퀄리티가 2배는 올라요. 5분 투자, 매일 30분 절약.`,
       color: "blue",
     },
   ],
@@ -111,7 +111,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
         text: "도구함이 창고 수준인데 실제로 쓰는 건 3개",
         detail: stats.pluginCount > 0
           ? `플러그인 ${stats.pluginCount}개, MCP ${stats.mcpServerCount}개, 도구 ${stats.toolNames.length}개. 이 중 이번 주에 실제로 쓴 거 손가락으로 꼽아보세요.`
-          : `${stats.toolNames.join(", ")} — 전부 CLAUDE.md에 적어놨는데, 마지막으로 직접 연동한 게 언제예요?`,
+          : `${stats.toolNames.join(", ")} — 전부 설정 문서에 적어놨는데, 마지막으로 직접 연동한 게 언제예요?`,
         color: "red" as const,
       },
       {
@@ -131,13 +131,13 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
 
   legislator: (stats) => [
     {
-      text: "CLAUDE.md가 사내 취업규칙보다 긴 사람",
-      detail: `MUST ${stats.keywordHits?.control ?? "수십"}회 등장. 규칙을 만드는 게 일인지 취미인지 경계가 사라졌어요. Claude는 로봇이지 공무원이 아닙니다.`,
+      text: "설정 문서가 사내 취업규칙보다 긴 사람",
+      detail: `MUST ${stats.keywordHits?.control ?? "수십"}회 등장. 규칙을 만드는 게 일인지 취미인지 경계가 사라졌어요. AI는 로봇이지 공무원이 아닙니다.`,
       color: "red",
     },
     {
-      text: "규칙 100개 만들어놓고 Claude가 3개만 지키는 사람",
-      detail: `${stats.ruleCount}개 규칙. 솔직히 이 중 Claude가 실제로 따르는 비율이 몇 %인지 확인해본 적 있어요? 규칙은 적을수록 지켜져요.`,
+      text: "규칙 100개 만들어놓고 AI가 3개만 지키는 사람",
+      detail: `${stats.ruleCount}개 규칙. 솔직히 이 중 AI가 실제로 따르는 비율이 몇 %인지 확인해본 적 있어요? 규칙은 적을수록 지켜져요.`,
       color: "orange",
     },
     {
@@ -150,7 +150,7 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   craftsman: (stats) => [
     {
       text: "모든 게 적당한데, 그게 문제",
-      detail: `${stats.claudeMdLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. 모범생 답안지 같은 CLAUDE.md예요. 근데 모범생은 기억에 안 남아요.`,
+      detail: `${stats.claudeMdLines}줄, ${stats.sectionCount}섹션, ${stats.toolNames.length}개 도구. 모범생 답안지 같은 설정 문서예요. 근데 모범생은 기억에 안 남아요.`,
       color: "red",
     },
     {
@@ -174,13 +174,13 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
     {
       text: "전문가와 집착의 차이를 아시나요?",
       detail: stats.hasMemory
-        ? "memory, session, context 관리에 올인했군요. Claude 세션 끊기면 하루가 망가지는 수준이면 전문성이 아니라 의존성이에요."
+        ? "memory, session, context 관리에 올인했군요. AI 세션 끊기면 하루가 망가지는 수준이면 전문성이 아니라 의존성이에요."
         : "특정 자동화 하나에 소설 분량을 쏟았어요. 그 시간에 다른 영역 하나만 더 건드렸으면 10배 효율이었을 텐데.",
       color: "orange",
     },
     {
-      text: "다른 사람이 당신의 CLAUDE.md를 읽으면 논문인 줄 알아요",
-      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.claudeMdLines}줄. 한 영역에 500줄 쏟은 시간에 옆 영역 50줄만 건드렸어도 지금보다 3배 넓은 Claude가 됐을 거예요. 다음 주제 하나만 골라보세요.`,
+      text: "다른 사람이 당신의 설정 문서를 읽으면 논문인 줄 알아요",
+      detail: `도구 ${stats.toolNames.length}개뿐이면서 줄 수는 ${stats.claudeMdLines}줄. 한 영역에 500줄 쏟은 시간에 옆 영역 50줄만 건드렸어도 지금보다 3배 넓은 AI 활용자가 됐을 거예요. 다음 주제 하나만 골라보세요.`,
       color: "blue",
     },
   ],
@@ -188,12 +188,12 @@ const ROAST_TEMPLATES: Record<PersonaKey, RoastTemplate> = {
   evangelist: (stats) => [
     {
       text: "혼자 코딩할 때도 PR 올리는 사람",
-      detail: `협업 키워드가 CLAUDE.md를 뒤덮고 있어요. 1인 프로젝트에서도 코드 리뷰를 Claude에게 시키고 있죠? 인정하세요.`,
+      detail: `협업 키워드가 설정 문서를 뒤덮고 있어요. 1인 프로젝트에서도 코드 리뷰를 Claude에게 시키고 있죠? 인정하세요.`,
       color: "red",
     },
     {
       text: "팀 프로세스 만드느라 정작 본인은 코딩 안 하는 사람",
-      detail: `${stats.ruleCount}개 규칙 중 절반이 '팀원은 이렇게 하라'는 내용. Claude한테 시킨 건지 팀원한테 시킨 건지 구분이 안 돼요.`,
+      detail: `${stats.ruleCount}개 규칙 중 절반이 '팀원은 이렇게 하라'는 내용. AI한테 시킨 건지 팀원한테 시킨 건지 구분이 안 돼요.`,
       color: "orange",
     },
     {

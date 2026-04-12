@@ -46,7 +46,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
     {
       text: stats.hookPromptCount > 0
         ? "PreToolUse Hook으로 실수를 시스템적으로 차단. 규칙을 적는 수준을 넘어 강제하는 수준까지 간 거예요."
-        : "민감 정보 관리를 문서화한 건 팀 전체의 보안 수준을 올려요. 당신의 CLAUDE.md가 곧 팀의 보안 교과서.",
+        : "민감 정보 관리를 문서화한 건 팀 전체의 보안 수준을 올려요. 당신의 설정 문서가 곧 팀의 보안 교과서.",
     },
     {
       text: "보안 사고는 '이 정도면 괜찮겠지'에서 시작해요. 그 '이 정도'를 차단하는 사람이 팀에 한 명은 있어야 하는데, 그게 당신이에요.",
@@ -87,7 +87,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: `${stats.ruleCount}개 규칙이 지켜지든 안 지켜지든, 명시한 것 자체가 가치예요. 모호한 지시보다 명확한 규칙이 10배 나은 결과를 만들어요.`,
     },
     {
-      text: "당신의 CLAUDE.md는 팀 AI 활용 가이드북이 될 수 있어요. 규칙을 글로 명시하는 능력은 온보딩과 지식 전수에 직결돼요.",
+      text: "당신의 설정 문서는 팀 AI 활용 가이드북이 될 수 있어요. 규칙을 글로 명시하는 능력은 온보딩과 지식 전수에 직결돼요.",
     },
     {
       text: "사전에 경계를 설정하는 건 사후에 수습하는 것보다 10배 효율적이에요. 그걸 실천하는 사람이 적다는 게 당신의 가치.",
@@ -125,7 +125,7 @@ const STRENGTH_TEMPLATES: Record<PersonaKey, StrengthTemplate> = {
       text: "협업 규칙을 문서화하는 능력은 팀의 암묵지를 형식지로 바꾸는 거예요. 이건 시니어의 핵심 역량이에요.",
     },
     {
-      text: `${stats.sectionCount}개 섹션에 팀 워크플로우를 체계적으로 정리했어요. 이 CLAUDE.md를 신입에게 주면 온보딩 시간이 절반으로 줄어요.`,
+      text: `${stats.sectionCount}개 섹션에 팀 워크플로우를 체계적으로 정리했어요. 이 설정 문서를 신입에게 주면 온보딩 시간이 절반으로 줄어요.`,
     },
     {
       text: "혼자 잘하는 것보다 같이 잘하게 만드는 게 더 어려워요. 그 어려운 걸 하고 있는 사람.",

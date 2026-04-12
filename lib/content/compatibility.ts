@@ -25,7 +25,7 @@ const PERSONA_NAME_KO: Record<PersonaKey, string> = {
   "puppet-master": "봇 농장주",
   speedrunner: "손이 빠른 무법자",
   fortress: "보안 편집증 환자",
-  minimalist: "CLAUDE.md 3줄러",
+  minimalist: "설정 문서 3줄러",
   collector: "플러그인 수집가",
   legislator: "규칙 제왕",
   craftsman: "조용한 장인",
