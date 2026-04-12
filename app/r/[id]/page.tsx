@@ -27,6 +27,8 @@ import WitSection from "@/components/WitSection";
 import ExplorationSection from "@/components/ExplorationSection";
 import { getV2Compatibility } from "@/lib/content/v2-compatibility";
 import V2CompatSection from "@/components/V2CompatSection";
+import { getHarnessLevel } from "@/lib/content/harness-level";
+import HarnessLevelBadge from "@/components/HarnessLevelBadge";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -98,6 +100,9 @@ export default async function ResultPage({ params }: Props) {
     ? getExplorationItems(result.typeCode!, result.axisScores.judgments)
     : [];
   const v2Compat = isV2Result ? getV2Compatibility(result.typeCode!) : [];
+  const harnessLevel = isV2Result && result.axisScores
+    ? getHarnessLevel(result.axisScores.judgments.harness)
+    : null;
 
   return (
     <main className="min-h-screen bg-bg-primary px-4 py-8">
@@ -128,6 +133,9 @@ export default async function ResultPage({ params }: Props) {
                 {v2PersonaDef.narrative}
               </p>
             </section>
+
+            {/* 3.5. 하네스 레벨 */}
+            {harnessLevel && <HarnessLevelBadge level={harnessLevel} />}
 
             {/* 4. 위트 */}
             <WitSection items={v2WitItems} />
