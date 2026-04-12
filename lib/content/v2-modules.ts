@@ -12,24 +12,24 @@ export const MODULE_BLOCKS: ModuleBlock[] = [
   // 통제/위임
   { axis: 'control', direction: 'R',
     wit: '"절대 하지 마"라고 써놨는데, AI가 그거 정확히 그대로 한 적 없나요?',
-    exploration: 'CLAUDE.md에서 NEVER 하나만 지워보세요. 그 규칙 없이도 돌아가면 — 처음부터 필요 없던 규칙이었어요.' },
+    exploration: '.md에서 NEVER 하나만 지워보세요. 그 규칙 없이도 돌아가면 — 처음부터 필요 없던 규칙이었어요.' },
   { axis: 'control', direction: 'D',
     wit: '"알아서 해" 했더니 진짜로 알아서 해버려서 되돌리느라 더 오래 걸린 적 없나요?',
-    exploration: 'CLAUDE.md에 deny 규칙 딱 하나만 추가해보세요. git push --force 같은 거. Hook으로 막으면 하네스 레벨업 보너스. 🐴' },
+    exploration: '.md에 deny 규칙 딱 하나만 추가해보세요. git push --force 같은 거. Hook으로 막으면 하네스 레벨업 보너스. 🐴' },
   // 맥락/핵심
   { axis: 'verbose', direction: 'V',
     wit: 'AI한테 설명하다가 "이거 내가 왜 이렇게까지 설명하고 있지?" 한 적 없나요?',
-    exploration: 'CLAUDE.md에서 가장 긴 섹션을 3줄로 요약하고 나머지는 @references.md로 빼보세요. AI 응답 속도가 체감될 겁니다.' },
+    exploration: '.md에서 가장 긴 섹션을 3줄로 요약하고 나머지는 @references.md로 빼보세요. AI 응답 속도가 체감될 겁니다.' },
   { axis: 'verbose', direction: 'C',
     wit: '"이 정도면 알아듣겠지" 했는데 AI가 완전 다른 걸 만들어온 적 없나요?',
-    exploration: 'AI가 같은 실수를 반복하면, CLAUDE.md에 "왜 이 규칙이 필요한지" 한 줄만 추가해보세요. 그 한 줄이 반복 실수를 끊어줍니다.' },
+    exploration: 'AI가 같은 실수를 반복하면, .md에 "왜 이 규칙이 필요한지" 한 줄만 추가해보세요. 그 한 줄이 반복 실수를 끊어줍니다.' },
   // 구조화/자유형
   { axis: 'structure', direction: 'S',
-    wit: 'CLAUDE.md를 정리하다가 "정리하는 규칙"까지 적기 시작한 적 없나요?',
+    wit: '.md를 정리하다가 "정리하는 규칙"까지 적기 시작한 적 없나요?',
     exploration: '합칠 수 있는 섹션 3개를 찾아서 하나로 묶어보세요. AI는 구조가 깊어질수록 컨텍스트를 놓칩니다.' },
   { axis: 'structure', direction: 'F',
-    wit: '지난달에 쓴 CLAUDE.md를 열었는데 본인이 적은 게 맞나 싶었던 적 없나요?',
-    exploration: 'CLAUDE.md에 ## 헤딩 3개만 넣어보세요 — "규칙", "스타일", "금지사항". 이것만으로 AI 이해도가 달라집니다.' },
+    wit: '지난달에 쓴 .md를 열었는데 본인이 적은 게 맞나 싶었던 적 없나요?',
+    exploration: '.md에 ## 헤딩 3개만 넣어보세요 — "규칙", "스타일", "금지사항". 이것만으로 AI 이해도가 달라집니다.' },
 ];
 
 /**
