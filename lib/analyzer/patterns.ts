@@ -322,7 +322,6 @@ export function countAxisSignals(
     control: { a: 0, b: 0 },
     verbose: { a: 0, b: 0 },
     plan: { a: 0, b: 0 },
-    structure: { a: 0, b: 0 },
   };
 
   // DIMENSION_PATTERNS 순회

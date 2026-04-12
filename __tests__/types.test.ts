@@ -312,8 +312,8 @@ describe("GlobalStats", () => {
 // === v2 타입 테스트 ===
 
 describe("v2 AXIS_ORDER", () => {
-  it("5개 축이어야 한다", () => {
-    expect(AXIS_ORDER).toHaveLength(5);
+  it("4개 축이어야 한다", () => {
+    expect(AXIS_ORDER).toHaveLength(4);
   });
 });
 

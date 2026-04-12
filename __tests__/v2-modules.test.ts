@@ -3,8 +3,8 @@ import { MODULE_BLOCKS, getWitItems, getExplorationItems } from '@/lib/content/v
 import type { AxisKey } from '@/lib/v2-types';
 
 describe('v2 modules', () => {
-  test('10개 모듈 블록 존재 (5축 × 2방향)', () => {
-    expect(MODULE_BLOCKS).toHaveLength(10);
+  test('8개 모듈 블록 존재 (4축 × 2방향)', () => {
+    expect(MODULE_BLOCKS).toHaveLength(8);
   });
 
   test('모든 블록에 wit, exploration 존재', () => {
@@ -22,9 +22,8 @@ describe('v2 modules', () => {
       control: { direction: 'R', confidence: 0.8 },
       verbose: { direction: 'V', confidence: 0.7 },
       plan: { direction: 'P', confidence: 0.6 },
-      structure: { direction: 'S', confidence: 0.5 },
     };
-    const items = getWitItems('GRVPS', judgments);
+    const items = getWitItems('GRVP', judgments);
     expect(items.length).toBeGreaterThanOrEqual(2);
     expect(items.length).toBeLessThanOrEqual(3);
     // 확신도 높은 순: harness, control, verbose
@@ -37,9 +36,8 @@ describe('v2 modules', () => {
       control: { direction: 'R', confidence: 0.8 },
       verbose: { direction: 'V', confidence: 0.7 },
       plan: { direction: 'P', confidence: 0.6 },
-      structure: { direction: 'S', confidence: 0.5 },
     };
-    const items = getExplorationItems('GRVPS', judgments);
+    const items = getExplorationItems('GRVP', judgments);
     expect(items.length).toBeGreaterThanOrEqual(2);
     // harness G → 반대(H)의 exploration
     expect(items[0]).toContain('새로운 도구');  // harness H exploration

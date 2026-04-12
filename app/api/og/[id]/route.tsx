@@ -9,7 +9,6 @@ import { ImageResponse } from "next/og";
 import { getResult, getPercentiles } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import { getPersonaByTypeCode } from "@/lib/content/v2-personas";
-import { AXIS_LABELS, AXIS_ORDER } from "@/lib/v2-types";
 import type { MdStats } from "@/lib/types";
 
 type Props = {
@@ -27,14 +26,7 @@ export async function GET(request: Request, { params }: Props) {
   const v2Persona = isV2 ? getPersonaByTypeCode(result!.typeCode!) : null;
 
   if (isV2 && v2Persona && result) {
-    // --- v2 OG 이미지 ---
-    const isHarness = result.typeCode![0] === 'H';
-    const axisLabels = AXIS_ORDER.map(axis => {
-      const judgment = result.axisScores!.judgments[axis];
-      const labels = AXIS_LABELS[axis];
-      return judgment.direction === labels.a ? labels.aLabel : labels.bLabel;
-    });
-
+    // --- v2 OG 이미지 — 찔리는 한마디 + 이름 ---
     return new ImageResponse(
       (
         <div
@@ -46,8 +38,8 @@ export async function GET(request: Request, { params }: Props) {
             width: "1200px",
             height: "630px",
             background: "#0a0a0b",
-            gap: "20px",
-            padding: "60px",
+            gap: "32px",
+            padding: "80px",
             position: "relative",
           }}
         >
@@ -60,9 +52,7 @@ export async function GET(request: Request, { params }: Props) {
               width: "450px",
               height: "450px",
               borderRadius: "50%",
-              background: isHarness
-                ? "rgba(168, 85, 247, 0.08)"
-                : "rgba(245, 158, 11, 0.08)",
+              background: "rgba(192, 240, 251, 0.06)",
             }}
           />
 
@@ -82,105 +72,49 @@ export async function GET(request: Request, { params }: Props) {
             MDTI
           </div>
 
-          {/* 하기스/하네스 뱃지 */}
+          {/* 찔리는 한마디 — 가장 큰 텍스트 */}
           <div
             style={{
-              display: "flex",
-              position: "absolute",
-              top: "36px",
-              right: "60px",
-              padding: "6px 16px",
-              borderRadius: "20px",
-              fontSize: "16px",
-              fontWeight: 600,
-              background: isHarness
-                ? "rgba(168, 85, 247, 0.2)"
-                : "rgba(245, 158, 11, 0.2)",
-              color: isHarness ? "#c084fc" : "#fbbf24",
-              border: `1px solid ${isHarness ? "rgba(168,85,247,0.3)" : "rgba(245,158,11,0.3)"}`,
-            }}
-          >
-            {isHarness ? "🔧 하네스" : "🧸 하기스"}
-          </div>
-
-          {/* 이모지 */}
-          <div style={{ fontSize: "90px", lineHeight: "1" }}>
-            {v2Persona.emoji}
-          </div>
-
-          {/* 페르소나 이름 */}
-          <div
-            style={{
-              fontSize: "52px",
+              fontSize: "42px",
               fontWeight: 900,
-              color: "#ffea00",
-              letterSpacing: "-2px",
-            }}
-          >
-            {v2Persona.name}
-          </div>
-
-          {/* 타입코드 */}
-          <div
-            style={{
-              display: "flex",
-              fontSize: "28px",
-              fontWeight: 700,
-              color: "rgba(245, 230, 211, 0.5)",
-              letterSpacing: "8px",
-            }}
-          >
-            {result.typeCode}
-          </div>
-
-          {/* 태그라인 */}
-          <div
-            style={{
-              fontSize: "20px",
               color: "#fafafa",
-              fontStyle: "italic",
               textAlign: "center",
-              maxWidth: "700px",
-              lineHeight: "1.5",
+              maxWidth: "900px",
+              lineHeight: "1.4",
+              letterSpacing: "-1px",
             }}
           >
-            &ldquo;{v2Persona.tagline}&rdquo;
+            &ldquo;{v2Persona.punchline}&rdquo;
           </div>
 
-          {/* 5축 라벨 가로 배치 */}
+          {/* 이모지 + 이름 */}
           <div
             style={{
               display: "flex",
+              alignItems: "center",
               gap: "16px",
-              marginTop: "12px",
             }}
           >
-            {axisLabels.map((label) => (
-              <div
-                key={label}
-                style={{
-                  display: "flex",
-                  padding: "8px 20px",
-                  borderRadius: "10px",
-                  background: "rgba(255,255,255,0.06)",
-                  fontSize: "18px",
-                  fontWeight: 600,
-                  color: "rgba(245, 230, 211, 0.7)",
-                }}
-              >
-                {label}
-              </div>
-            ))}
+            <span style={{ fontSize: "48px" }}>{v2Persona.emoji}</span>
+            <span
+              style={{
+                fontSize: "36px",
+                fontWeight: 900,
+                color: "#ffea00",
+                letterSpacing: "-1px",
+              }}
+            >
+              {v2Persona.name}
+            </span>
           </div>
 
-          {/* 하단 푸터 */}
+          {/* 하단 CTA */}
           <div
             style={{
               position: "absolute",
               bottom: "36px",
-              right: "60px",
-              fontSize: "16px",
-              color: "rgba(245, 230, 211, 0.35)",
+              fontSize: "18px",
+              color: "rgba(245, 230, 211, 0.4)",
             }}
           >
             나도 .md 털어보기 → mdti.vercel.app

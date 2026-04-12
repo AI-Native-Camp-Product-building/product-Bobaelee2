@@ -1,0 +1,100 @@
+=== CLAUDE.md ===
+# 프로젝트 규칙
+
+## 언어
+- 한국어로 답변
+
+## 코딩 규칙
+- TypeScript 사용
+- 테스트 작성 후 커밋
+- 커밋 메시지는 한글로
+
+## 도구
+- Slack으로 팀 커뮤니케이션
+- Notion에 문서 정리
+- GitHub PR 리뷰 필수
+- Vercel로 배포
+- Supabase 사용
+- Google Sheets 연동
+
+## 협업
+- 코드리뷰 필수
+- 브랜치 전략: feature -> main
+- 온보딩 문서 관리
+
+=== settings.json ===
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "matcher": "Bash",
+        "command": "echo 'bash executed'"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "matcher": "Write",
+        "command": "echo 'write check'"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": "echo 'session ended'"
+      }
+    ]
+  },
+  "enabledPlugins": [
+    "plugin:context7:context7",
+    "plugin:slack:slack",
+    "plugin:superpowers:superpowers",
+    "plugin:session-wrap:session-wrap",
+    "plugin:hookify:hookify",
+    "plugin:commit-commands:commit-commands"
+  ]
+}
+
+=== mcp_settings.json ===
+{
+  "mcpServers": {
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/notion-mcp"],
+      "env": { "NOTION_TOKEN": "***REDACTED***" }
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/slack-mcp"],
+      "env": { "SLACK_TOKEN": "***REDACTED***" }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/github-mcp"],
+      "env": { "GITHUB_TOKEN": "***REDACTED***" }
+    },
+    "google-sheets": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/google-sheets-mcp"],
+      "env": { "GOOGLE_TOKEN": "***REDACTED***" }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/supabase-mcp"],
+      "env": { "SUPABASE_TOKEN": "***REDACTED***" }
+    }
+  }
+}
+
+=== commands ===
+commit
+review-pr
+deploy
+test-run
+
+=== PROJECT MEMORY ===
+# 메모리
+
+- 프로젝트 시작일: 2026-03-01
+- 주요 스택: Next.js + Supabase

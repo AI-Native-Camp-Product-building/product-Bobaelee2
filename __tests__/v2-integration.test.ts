@@ -18,21 +18,19 @@ describe('v2 full pipeline', () => {
 - NEVER skip tests`;
 
     const result = analyzeV2(text);
-    expect(result.typeCode).toHaveLength(5);
+    expect(result.typeCode).toHaveLength(4);
     expect(result.persona).toBeDefined();
     expect(result.persona.name).toBeTruthy();
     expect(result.witItems.length).toBeGreaterThanOrEqual(2);
     expect(result.explorationItems.length).toBeGreaterThanOrEqual(2);
-    // 통제(R), 구조화(S) 기대
+    // 통제(R) 기대
     expect(result.axisScores.judgments.control.direction).toBe('R');
-    expect(result.axisScores.judgments.structure.direction).toBe('S');
   });
 
-  test('짧은 자유형 텍스트 → 간결+자유형', () => {
+  test('짧은 자유형 텍스트 → 간결', () => {
     const text = 'just use common sense\nbe helpful';
     const result = analyzeV2(text);
     expect(result.axisScores.judgments.verbose.direction).toBe('C');
-    expect(result.axisScores.judgments.structure.direction).toBe('F');
   });
 
   test('모든 결과 필드가 존재', () => {

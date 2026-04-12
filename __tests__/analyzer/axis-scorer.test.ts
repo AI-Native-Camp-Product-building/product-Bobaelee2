@@ -51,22 +51,16 @@ describe('scoreAxes', () => {
     expect(result.judgments.verbose.direction).toBe('C');
   });
 
-  test('헤딩이 많은 텍스트는 structure축 S(구조화)', () => {
-    const text = '# Title\n## A\ncontent\n## B\ncontent\n## C\ncontent';
-    const result = scoreAxes(text, mockStats());
-    expect(result.judgments.structure.direction).toBe('S');
-  });
-
-  test('typeCode는 5글자', () => {
+  test('typeCode는 4글자', () => {
     const text = 'some text';
     const result = scoreAxes(text, mockStats());
-    expect(result.typeCode).toHaveLength(5);
+    expect(result.typeCode).toHaveLength(4);
   });
 
   test('typeCode는 유효한 글자로만 구성', () => {
     const text = 'some text with hooks and NEVER rules';
     const result = scoreAxes(text, mockStats());
-    const validChars = ['G', 'H', 'R', 'D', 'V', 'C', 'P', 'X', 'S', 'F'];
+    const validChars = ['G', 'H', 'R', 'D', 'V', 'C', 'P', 'X'];
     for (const char of result.typeCode) {
       expect(validChars).toContain(char);
     }

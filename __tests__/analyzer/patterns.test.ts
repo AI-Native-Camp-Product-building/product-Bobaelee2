@@ -421,8 +421,6 @@ describe("countAxisSignals", () => {
     expect(result.verbose.b).toBe(0);
     expect(result.plan.a).toBe(0);
     expect(result.plan.b).toBe(0);
-    expect(result.structure.a).toBe(0);
-    expect(result.structure.b).toBe(0);
   });
 });
 
