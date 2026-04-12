@@ -1,59 +1,45 @@
 {
   "version": "1.0",
-  "timestamp": "2026-04-12T22:30:00+09:00",
+  "timestamp": "2026-04-12T22:45:00+09:00",
   "repo": "mdti",
   "branch": "feat/v2-combination-type",
   "git_state": {
-    "uncommitted_files": [
-      "app/r/[id]/page.tsx",
-      "lib/content/compatibility.ts",
-      "lib/content/personas.ts",
-      "lib/content/prescriptions.ts",
-      "lib/content/roasts.ts",
-      "lib/content/strengths.ts",
-      "lib/content/v2-modules.ts",
-      "lib/content/v2-personas.ts",
-      "packages/analyzer/src/content/v2-modules.ts",
-      "packages/analyzer/src/content/v2-personas.ts"
-    ],
-    "last_commit_hash": "5803032",
-    "last_commit_message": "홈페이지 클라이언트 분석에 v2 파이프라인 연결"
+    "uncommitted_files": [],
+    "last_commit_hash": "2039ca2",
+    "last_commit_message": "16개 페르소나 일상 언어로 전면 재작성"
   },
   "summary": {
-    "what_we_were_doing": "mdTI v2를 5축 32타입에서 4축 16타입으로 축소 + 결과지를 '구체적 행동 묘사로 찔리는' 디자인으로 전면 리디자인",
+    "what_we_were_doing": "mdTI v2 결과지의 근본 프레임 재설계 — '습관 프레임'으로 방향은 잡았으나, 축(axis) 설계가 미확정 상태에서 세션 종료",
     "key_decisions": [
-      "5축→4축: 구조화(structure) 축 제거 — 하네스 축과 개념적 겹침",
-      "4글자 코드 사용자에게 미노출 — 내부 판정 로직으로만 사용",
-      "하기스/하네스 뱃지 제거 — 설명 없이 뱃지만 던지면 의미 전달 불가",
-      "md력 점수 + 리더보드 v2 결과에서 제거 — 서열화가 공유 동기를 죽임",
-      "펜타곤 차트 제거 — 내부 축을 사용자에게 보여줄 필요 없음",
-      "결과지 핵심: '찔리는 한마디'(구체적 행동 묘사) + 페르소나 이름 — 'MCP 12개 깔아놓고 쓰는 건 3개' 같은 톤",
-      "결과지 순서: 찔리는 한마디(최상단) → 이름 → 행동 묘사 → 위트 → 탐험 → 공유",
-      "CLAUDE.md/클로드 표현 전면 제거 완료 — 도구 비종속적 서비스"
+      "능력 프레임 완전 폐기 — '너의 .md가 잘 되어있다'는 공감 불가. 'ENTJ가 리더십에 좋다'는 시장이 만들 내러티브지 제품이 말할 게 아님",
+      "습관 프레임 채택 — '너도 모르게 반복하는 AI 사용 패턴'. .md 파일이 본질적으로 습관의 기록이라 매핑이 자연스러움",
+      "전문 용어 전면 배제 — hooks, MCP, NEVER 등은 타겟을 좁힘. 일상 언어로 AI 사용자면 누구나 공감하는 행동으로",
+      "관계 프레임(AI 독재자 vs 파트너)은 너무 뻔해서 탈락",
+      "4글자 코드 사용자 미노출, 하기스/하네스 뱃지 제거, md력 점수/리더보드 v2에서 제거, 펜타곤 차트 제거 — 전부 확정",
+      "CLAUDE.md/클로드 표현 전면 제거 완료",
+      "결과지 순서 확정: 찔리는 한마디(최상단) → 이름 → 행동 묘사 → 위트 → 탐험 → 공유"
     ],
-    "current_blockers": [],
+    "current_blockers": [
+      "축(axis) 설계 미확정 — 현재 4축 중 확실한 건 2개(제한 습관, 설명 습관), 나머지 2개(탐색/구축, 설계/실행)는 '습관'인지 '단계/경험'인지 검증 필요",
+      "축이 확정되어야 타입 수(4/8/16개)와 페르소나 콘텐츠가 결정됨",
+      "코드는 4축 16타입으로 이미 구현되어 있으나 축이 바뀌면 다시 수정 필요"
+    ],
     "next_steps": [
-      "1. v2-types.ts에서 structure 축 제거 → 4축 16타입",
-      "2. 16개 페르소나 재작성: 이름 + 찔리는 한마디 + 행동 묘사(구체적, 찌르는 톤)",
-      "3. axis-scorer.ts/patterns.ts에서 structure 판정 제거",
-      "4. 결과 페이지 리디자인: 한마디→이름→행동묘사→위트→탐험→공유",
-      "5. 불필요 컴포넌트 제거(PentagonChart, 하기스뱃지 등)",
-      "6. OG 이미지: 찔리는 한마디 + 페르소나 이름만",
-      "7. v2-modules.ts structure축 관련 위트/탐험 제거 (8→8개)",
-      "8. 빌드+테스트+Vercel 배포"
+      "1. [설계] 습관 프레임에서 독립적이고 .md로 측정 가능한 축 확정 (2축? 3축? 4축?)",
+      "2. [설계] 축 조합으로 나오는 타입들이 진짜 찔리는지 검증 — 실제 사용자 .md로 돌려서 '이거 나인데?' 확인",
+      "3. [설계] 축 확정 후 페르소나(이름 + punchline + narrative) 작성",
+      "4. [구현] 확정된 설계를 코드에 반영 — types, scorer, personas, modules, UI 한번에"
     ],
     "files_touched": [
-      "lib/v2-types.ts",
-      "lib/analyzer/axis-scorer.ts",
-      "lib/analyzer/patterns.ts",
-      "lib/content/v2-personas.ts",
-      "lib/content/v2-modules.ts",
-      "app/r/[id]/page.tsx",
-      "app/api/og/[id]/route.tsx",
-      "components/ResultHero.tsx",
-      "components/PentagonChart.tsx",
-      "app/page.tsx"
+      "lib/v2-types.ts (4축으로 이미 수정됨 — 축 변경 시 재수정)",
+      "lib/analyzer/axis-scorer.ts (structure 제거됨)",
+      "lib/content/v2-personas.ts (16개 일상 언어로 작성됨 — 축 변경 시 재작성)",
+      "lib/content/v2-modules.ts (8개 위트/탐험 — 축 변경 시 재작성)",
+      "app/r/[id]/page.tsx (한마디 중심 레이아웃 — 구조는 유지 가능)",
+      "app/api/og/[id]/route.tsx (한마디+이름 OG — 구조는 유지 가능)",
+      "app/page.tsx (analyzeV2 연결 완료)",
+      "app/profile/layout.tsx (force-dynamic 추가 — Vercel 배포 수정)"
     ],
-    "important_context": "스택: Next.js 16 + Supabase + Tailwind CSS 4 + Vitest. Vercel(mdti.vercel.app). 프라이버시: 클라이언트 분석. 홈페이지: analyze()+analyzeV2() 후 /api/results POST. Supabase type_code+axis_scores 컬럼 존재. packages/analyzer/src/는 독립패키지(.js확장자유지). Vercel Preview 환경변수 설정 완료. 톤 예시: 'MCP 12개 깔아놓고 쓰는 건 3개', '남이 만든 건 다 써봤는데 본인이 만든 건 없다'"
+    "important_context": "스택: Next.js 16 + Supabase + Tailwind CSS 4 + Vitest. Vercel(mdti.vercel.app). Supabase에 type_code+axis_scores 컬럼 존재. Vercel Preview 환경변수(feat/v2-combination-type 브랜치)에 SUPABASE URL/KEY 설정 완료. v1/v2 공존 구조 — typeCode 존재 여부로 분기. 탈락한 프레임: 능력('잘한다'), 관계('AI 독재자'), Before/After('성장'). 채택 프레임: 습관('무의식적 반복 패턴'). 핵심 미해결: 축 설계. 참고 자료: references.md(하네스 6축), memory/project_mdti_dimension_redesign.md(CIVC)"
   }
 }
