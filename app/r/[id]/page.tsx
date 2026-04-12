@@ -25,7 +25,8 @@ import ExpandedAnalysis from "@/components/ExpandedAnalysis";
 import ResultPageTracker from "@/components/ResultPageTracker";
 import WitSection from "@/components/WitSection";
 import ExplorationSection from "@/components/ExplorationSection";
-import MatchInviteButton from "@/components/MatchInviteButton";
+import { getV2Compatibility } from "@/lib/content/v2-compatibility";
+import V2CompatSection from "@/components/V2CompatSection";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -96,6 +97,7 @@ export default async function ResultPage({ params }: Props) {
   const v2ExplorationItems = isV2Result && result.axisScores
     ? getExplorationItems(result.typeCode!, result.axisScores.judgments)
     : [];
+  const v2Compat = isV2Result ? getV2Compatibility(result.typeCode!) : [];
 
   return (
     <main className="min-h-screen bg-bg-primary px-4 py-8">
@@ -133,7 +135,10 @@ export default async function ResultPage({ params }: Props) {
             {/* 5. 탐험 제안 */}
             <ExplorationSection items={v2ExplorationItems} />
 
-            {/* 6. 공유 버튼 */}
+            {/* 6. 페르소나 궁합 */}
+            <V2CompatSection myEmoji={v2PersonaDef.emoji} compat={v2Compat} />
+
+            {/* 7. 공유 버튼 */}
             <section className="flex flex-col gap-3">
               <ShareButton
                 id={id}
@@ -186,17 +191,6 @@ export default async function ResultPage({ params }: Props) {
             </section>
           </>
         )}
-
-        {/* 궁합 초대 CTA — v1/v2 공통 */}
-        <section className="bg-bg-card rounded-2xl p-6 flex flex-col items-center gap-4 border border-compat-gold/20">
-          <p className="text-2xl">🤝</p>
-          <h2 className="text-lg font-black text-compat-gold">궁합 확인하기</h2>
-          <p className="text-sm text-claude-cream/60 text-center leading-relaxed">
-            친구에게 링크를 보내면<br />
-            서로의 결과를 비교할 수 있어요
-          </p>
-          <MatchInviteButton resultId={id} />
-        </section>
 
         {/* 하단 CTA — v1/v2 공통 */}
         <div className="text-center pb-8 flex flex-col items-center gap-3">
