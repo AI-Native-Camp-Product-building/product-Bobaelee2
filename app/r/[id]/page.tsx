@@ -7,7 +7,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getResult, getGlobalStats, getPercentiles } from "@/lib/store";
+import { getResult, getGlobalStats } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import { getCompatibility } from "@/lib/content/compatibility";
 import { getPersonaByTypeCode } from "@/lib/content/v2-personas";
@@ -22,8 +22,6 @@ import PrescriptionSection from "@/components/PrescriptionSection";
 import StatsSection from "@/components/StatsSection";
 import ShareButton from "@/components/ShareButton";
 import ExpandedAnalysis from "@/components/ExpandedAnalysis";
-import RegisterLeaderboard from "@/components/RegisterLeaderboard";
-import BattlePower from "@/components/BattlePower";
 import ResultPageTracker from "@/components/ResultPageTracker";
 import WitSection from "@/components/WitSection";
 import ExplorationSection from "@/components/ExplorationSection";
@@ -84,8 +82,6 @@ export default async function ResultPage({ params }: Props) {
     notFound();
   }
 
-  const percentile = await getPercentiles(id);
-
   const personaDef = PERSONAS[result.persona];
   const secondaryDef = result.secondaryPersona ? PERSONAS[result.secondaryPersona] : null;
   const compat = getCompatibility(result.persona);
@@ -145,7 +141,6 @@ export default async function ResultPage({ params }: Props) {
                 roasts={result.roasts}
                 mdStats={result.mdStats}
                 scores={result.scores}
-                percentile={percentile}
               />
             </section>
           </>
@@ -163,34 +158,6 @@ export default async function ResultPage({ params }: Props) {
             )}
 
             <ClassificationDebug scores={result.scores} mdStats={result.mdStats} />
-
-            {result.isLegacyResult ? (
-              <div className="bg-bg-card rounded-2xl p-6 text-center flex flex-col gap-3">
-                <p className="text-sm text-claude-light/70">
-                  md력 점수 산정 기준이 개선되었습니다.
-                </p>
-                <a
-                  href="/"
-                  className="inline-block px-5 py-2.5 rounded-xl bg-claude-orange text-bg-primary font-bold text-sm hover:opacity-90 transition-opacity"
-                >
-                  다시 분석해서 새 점수 확인하기 →
-                </a>
-              </div>
-            ) : (
-              <>
-                <BattlePower
-                  persona={personaDef}
-                  scores={result.scores}
-                  percentile={percentile}
-                  detectedPatterns={
-                    Object.values(result.mdStats.keywordUniqueHits ?? {}).reduce((sum, v) => sum + v, 0)
-                  }
-                  mdPower={result.mdPower}
-                  totalUsers={globalStats.totalUsers}
-                />
-                <RegisterLeaderboard resultId={id} mdPower={result.mdPower} />
-              </>
-            )}
 
             <RoastSection roasts={result.roasts} />
             <StrengthSection strengths={result.strengths} />
@@ -214,7 +181,6 @@ export default async function ResultPage({ params }: Props) {
                 roasts={result.roasts}
                 mdStats={result.mdStats}
                 scores={result.scores}
-                percentile={percentile}
               />
             </section>
           </>

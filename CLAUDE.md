@@ -1,5 +1,5 @@
 ## 이 프로젝트는
-- 운영자: 퓨쳐스콜레 HR Lead (Vivi)
+- 운영자: ENFP의 상상력을 맘껏 펼치고 싶은 이보배가
 - 목적: CLAUDE.md를 분석해서 AI 활용 성향을 12가지 페르소나로 분류하는 소셜 바이럴 서비스
 - 스택: Next.js 16 + Supabase + Tailwind CSS 4 + Vitest
 - 배포: Vercel (mdti.vercel.app)

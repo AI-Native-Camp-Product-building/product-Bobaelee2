@@ -10,7 +10,6 @@ import { track } from "@/lib/analytics";
 
 const TABS = [
   { href: "/", label: "🔬 .mdTI", action: "rerun" as const },
-  { href: "/leaderboard", label: "🏆 .md력", action: "leaderboard" as const },
   { href: "/profile", label: "👤 내 정보", action: "profile" as const },
   { href: "/contact", label: "✉️ Contact", action: "contact" as const },
 ];

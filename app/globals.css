@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "../node_modules/tailwindcss/index.css";
 
 /*
  * 컬러 시스템 — 2026-04-11 AI Native Camp 디자인 시스템과 부분 매칭

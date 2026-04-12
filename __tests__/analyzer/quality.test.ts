@@ -9,6 +9,7 @@ function makeStats(overrides: Partial<MdStats> = {}): MdStats {
     hasProjectMd: false, hasRoleDefinition: false, ruleCount: 0, claudeMdLines: totalLines, keywordHits: {}, keywordUniqueHits: {},
     pluginCount: 0, mcpServerCount: 0, commandCount: 0, hookCount: 0,
     skillCount: 0, agentCount: 0,
+    skillNames: [], pluginSkillCount: 0, userSkillCount: 0, pluginAgentCount: 0, userAgentCount: 0,
     pluginNames: [], mcpServerNames: [], commandNames: [], isExpandedInput: false,
     denyCount: 0, blocksDangerousOps: false, hookPromptCount: 0, hookCommandCount: 0,
     pluginEnabledRatio: 0, projectMdCount: 0,

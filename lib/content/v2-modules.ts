@@ -8,12 +8,12 @@ export const MODULE_BLOCKS: ModuleBlock[] = [
   // 통제/위임
   { axis: 'control', direction: 'R', wit: 'NEVER 12개 써놓고도 불안해서 한 번 더 확인하러 돌아온 적 없나요?', exploration: '한 번쯤 규칙 없이 AI를 풀어보면 의외의 결과가 나올지도' },
   { axis: 'control', direction: 'D', wit: 'bypass 모드 켜놓고 커피 마시러 갔다가, 뭔가 잘못된 적 없나요?', exploration: '중요한 작업에 가드레일 하나만 걸어보면 밤잠이 편할 수도' },
-  // 장황/간결
-  { axis: 'verbose', direction: 'V', wit: '설정 문서 수정하다가 이게 문서인지 자서전인지 헷갈린 적 없나요?', exploration: '한번 핵심 3줄만 남기고 다 지워보면, AI가 의외로 잘할 수도' },
-  { axis: 'verbose', direction: 'C', wit: '3줄 쓰고 "이 정도면 충분하지" 했는데, AI가 전혀 다른 걸 해온 적 없나요?', exploration: '자주 반복하는 지시가 있다면, 그건 설정 문서에 적어둘 타이밍' },
-  // 설계/실행
-  { axis: 'plan', direction: 'P', wit: '구조 잡다가 정작 코드는 한 줄도 안 쓴 채로 하루가 간 적 없나요?', exploration: '가끔은 구조 없이 일단 돌려보는 게 더 빠른 발견일 수도' },
-  { axis: 'plan', direction: 'X', wit: '일단 돌려보고 고치자 했는데, 고칠 게 산더미가 된 적 없나요?', exploration: '다음 프로젝트에선 설계부터 해보면 의외로 속도가 날 수도' },
+  // 맥락/핵심
+  { axis: 'verbose', direction: 'V', wit: '배경 설명 쓰다가 이게 프롬프트인지 에세이인지 헷갈린 적 없나요?', exploration: '한 번 핵심만 툭 던져보면, AI가 의외로 잘 알아챌 수도' },
+  { axis: 'verbose', direction: 'C', wit: '짧게 쓰고 "이 정도면 충분하지" 했는데, AI가 엉뚱한 걸 해온 적 없나요?', exploration: '자주 반복하는 지시가 있다면, 그건 시스템 프롬프트에 넣을 타이밍' },
+  // 구조화/자유형
+  { axis: 'structure', direction: 'S', wit: '문서 정리하다가 목차가 점점 길어지는 걸 본 적 없나요?', exploration: '가끔은 구조 없이 자유롭게 쓰면, 새로운 관점이 나올 수도' },
+  { axis: 'structure', direction: 'F', wit: '그냥 자유롭게 써서 넘겼는데, 나중에 뭐 했는지 기억 안 난 적 없나요?', exploration: '다음 번에는 기본 틀이라도 만들어두면 나중 일이 편할 수도' },
 ];
 
 /**

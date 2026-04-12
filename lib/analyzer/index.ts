@@ -65,19 +65,19 @@ export function analyze(md: string): AnalysisResult {
 }
 
 /**
- * v2 분석 — 5축 조합형 성향 분류
+ * v2 분석 — 4축 조합형 성향 분류
  *
  * 처리 순서:
  * 1. extractMdStats — 기존 파일 통계 추출 (재사용)
- * 2. scoreAxes — 5축 이분법 판정
- * 3. getPersonaByTypeCode — 32개 페르소나 중 매칭
+ * 2. scoreAxes — 4축 이분법 판정 (harness, control, verbose, structure)
+ * 3. getPersonaByTypeCode — 16개 페르소나 중 매칭
  * 4. getWitItems / getExplorationItems — 모듈 콘텐츠 선택
  */
 export function analyzeV2(md: string): V2AnalysisResult {
   // 1. 기존 MdStats 추출 (패턴 감지 재사용)
   const mdStats = extractMdStats(md);
 
-  // 2. 5축 판정
+  // 2. 4축 판정
   const axisScores = scoreAxes(md, mdStats);
 
   // 3. 페르소나 조회

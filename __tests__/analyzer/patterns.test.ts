@@ -383,19 +383,19 @@ describe("countAxisSignals", () => {
     expect(result.harness.b).toBeGreaterThan(0);
   });
 
-  it("automation 스크립트 패턴이 있으면 plan.b가 증가해야 한다", () => {
+  it("automation 스크립트 패턴이 있으면 structure.b가 증가해야 한다", () => {
     const text = "cron 스케줄 설정, 자동 deploy 배포, script 실행";
     const stats = makeMockStats();
     const result = countAxisSignals(text, stats);
-    expect(result.plan.b).toBeGreaterThan(0);
+    expect(result.structure.b).toBeGreaterThan(0);
   });
 
-  it("agentOrchestration 패턴이 있으면 harness.b와 plan.a가 모두 증가해야 한다", () => {
+  it("agentOrchestration 패턴이 있으면 harness.b와 structure.a가 모두 증가해야 한다", () => {
     const text = "autonomous agent loop 설정, iteration 반복 실행, stop condition 설정";
     const stats = makeMockStats();
     const result = countAxisSignals(text, stats);
     expect(result.harness.b).toBeGreaterThan(0);
-    expect(result.plan.a).toBeGreaterThan(0);
+    expect(result.structure.a).toBeGreaterThan(0);
   });
 
   it("확장 입력 보너스: 플러그인 5개 이상 → harness.a 증가", () => {
@@ -419,8 +419,8 @@ describe("countAxisSignals", () => {
     expect(result.control.b).toBe(0);
     expect(result.verbose.a).toBe(0);
     expect(result.verbose.b).toBe(0);
-    expect(result.plan.a).toBe(0);
-    expect(result.plan.b).toBe(0);
+    expect(result.structure.a).toBe(0);
+    expect(result.structure.b).toBe(0);
   });
 });
 

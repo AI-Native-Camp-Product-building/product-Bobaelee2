@@ -21,9 +21,9 @@ describe('v2 modules', () => {
       harness: { direction: 'G', confidence: 0.9 },
       control: { direction: 'R', confidence: 0.8 },
       verbose: { direction: 'V', confidence: 0.7 },
-      plan: { direction: 'P', confidence: 0.6 },
+      structure: { direction: 'S', confidence: 0.6 },
     };
-    const items = getWitItems('GRVP', judgments);
+    const items = getWitItems('GRVS', judgments);
     expect(items.length).toBeGreaterThanOrEqual(2);
     expect(items.length).toBeLessThanOrEqual(3);
     // 확신도 높은 순: harness, control, verbose
@@ -35,9 +35,9 @@ describe('v2 modules', () => {
       harness: { direction: 'G', confidence: 0.9 },
       control: { direction: 'R', confidence: 0.8 },
       verbose: { direction: 'V', confidence: 0.7 },
-      plan: { direction: 'P', confidence: 0.6 },
+      structure: { direction: 'S', confidence: 0.6 },
     };
-    const items = getExplorationItems('GRVP', judgments);
+    const items = getExplorationItems('GRVS', judgments);
     expect(items.length).toBeGreaterThanOrEqual(2);
     // harness G → 반대(H)의 exploration
     expect(items[0]).toContain('새로운 도구');  // harness H exploration

@@ -1,19 +1,19 @@
 /**
  * mdTI v2: 4축 이분법 조합형 타입 시스템
  *
- * 4축: harness(탐색/구축), control(통제/위임), verbose(장황/간결), plan(설계/실행)
+ * 4축: harness(탐색/구축), control(통제/위임), verbose(맥락/핵심), structure(구조화/자유형)
  * 각 축의 양방향 조합 → 16타입 (2^4)
  */
 
 /** 4축 키 */
-export type AxisKey = 'harness' | 'control' | 'verbose' | 'plan';
+export type AxisKey = 'harness' | 'control' | 'verbose' | 'structure';
 
 /** 각 축의 양방향 */
 export type AxisDirection = {
-  harness: 'G' | 'H';    // 탐색(Gather) / 구축(Harness)
-  control: 'R' | 'D';    // 통제(Restrict) / 위임(Delegate)
-  verbose: 'V' | 'C';    // 장황(Verbose) / 간결(Concise)
-  plan: 'P' | 'X';       // 설계(Plan) / 실행(eXecute)
+  harness: 'G' | 'H';      // 탐색(Gather) / 구축(Harness)
+  control: 'R' | 'D';      // 통제(Restrict) / 위임(Delegate)
+  verbose: 'V' | 'C';      // 맥락(Verbose) / 핵심(Core)
+  structure: 'S' | 'F';    // 구조화(Structured) / 자유형(Free-form)
 };
 
 /** 4글자 타입 코드 (내부용, 사용자 미노출) */
@@ -65,9 +65,9 @@ export interface V2AnalysisResult {
 export const AXIS_LABELS: Record<AxisKey, { a: string; b: string; aLabel: string; bLabel: string }> = {
   harness:   { a: 'G', b: 'H', aLabel: '탐색', bLabel: '구축' },
   control:   { a: 'R', b: 'D', aLabel: '통제', bLabel: '위임' },
-  verbose:   { a: 'V', b: 'C', aLabel: '장황', bLabel: '간결' },
-  plan:      { a: 'P', b: 'X', aLabel: '설계', bLabel: '실행' },
+  verbose:   { a: 'V', b: 'C', aLabel: '맥락', bLabel: '핵심' },
+  structure: { a: 'S', b: 'F', aLabel: '구조화', bLabel: '자유형' },
 };
 
 /** 축 순서 (타입 코드 생성 시) */
-export const AXIS_ORDER: AxisKey[] = ['harness', 'control', 'verbose', 'plan'];
+export const AXIS_ORDER: AxisKey[] = ['harness', 'control', 'verbose', 'structure'];

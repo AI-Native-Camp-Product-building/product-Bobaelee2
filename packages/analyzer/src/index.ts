@@ -52,9 +52,9 @@ export type {
   V2PersonaDefinition,
   ModuleBlock,
   V2AnalysisResult,
-} from "./v2-types.js";
+} from "@/lib/v2-types";
 
-export { AXIS_LABELS, AXIS_ORDER } from "./v2-types.js";
+export { AXIS_LABELS, AXIS_ORDER } from "@/lib/v2-types";
 
 // v2 콘텐츠
 export { V2_PERSONAS, getPersonaByTypeCode } from "./content/v2-personas.js";

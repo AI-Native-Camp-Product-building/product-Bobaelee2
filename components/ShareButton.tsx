@@ -9,7 +9,6 @@ import { useRef, useState, useCallback } from "react";
 import type { PersonaKey, PersonaDefinition, RoastItem, MdStats, DimensionScores } from "@/lib/types";
 import { PERSONAS } from "@/lib/content/personas";
 import { DIMENSION_LABELS } from "@/lib/types";
-import type { PercentileData } from "@/lib/store";
 import { track } from "@/lib/analytics";
 
 interface ShareButtonProps {
@@ -19,10 +18,9 @@ interface ShareButtonProps {
   roasts: RoastItem[];
   mdStats: MdStats;
   scores: DimensionScores;
-  percentile: PercentileData;
 }
 
-export default function ShareButton({ id, persona, personaDef, roasts, mdStats, scores, percentile }: ShareButtonProps) {
+export default function ShareButton({ id, persona, personaDef, roasts, mdStats, scores }: ShareButtonProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [capturing, setCapturing] = useState<string | null>(null); // 'linkedin' | 'x' | 'download' | 'copy' | null
@@ -366,17 +364,6 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
                   );
                 })}
               </svg>
-            </div>
-
-            {/* 상위 N% 배지 */}
-            <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
-              <span style={{
-                padding: "4px 12px", borderRadius: "999px",
-                background: "rgba(192,240,251,0.15)", color: "#c0f0fb",
-                fontSize: "11px", fontWeight: 700,
-              }}>
-                🏆 md력 상위 {percentile.mdPowerPercentile}%
-              </span>
             </div>
 
             {/* 대표 로스팅 */}
