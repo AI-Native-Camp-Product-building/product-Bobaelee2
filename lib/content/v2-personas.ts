@@ -62,7 +62,7 @@ export const V2_PERSONAS: Record<string, V2PersonaDefinition> = {
   // === HRVS: 구축+통제+맥락+구조화 ===
   'HRVS': {
     typeCode: 'HRVS', name: '결계사', emoji: '🏰',
-    punchline: '규칙을 만들기 위해 규칙을 먼저 만드는 사람',
+    punchline: '규칙을 만들기 위한 규칙을 먼저 만드는 사람',
     narrative: '직접 시스템을 짜고, 왜 그렇게 설계했는지 설명할 수 있다. 모든 예외와 경계를 미리 정의하고, 문서로 남긴다. 신뢰는 이해에서 온다고 믿는다. (유지보수는 지옥이지만.)',
   },
   // === HRVF: 구축+통제+맥락+자유형 ===
