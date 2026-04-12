@@ -11,11 +11,11 @@ interface HarnessLevelBadgeProps {
 
 /** 5단계 레벨 로드맵 */
 const LEVEL_ROADMAP = [
-  { emoji: '🥚', title: '갓부화', hint: 'Claude Code 깔긴 했다' },
-  { emoji: '👶', title: '하기스', hint: '남이 만든 거 퍼다 쓰는 단계' },
-  { emoji: '🧲', title: '하네스 수집가', hint: '좋은 거 고르는 눈이 생긴 단계' },
-  { emoji: '🐴', title: '목장 견습생', hint: '직접 만들기 시작한 단계' },
   { emoji: '🤠', title: '로데오급', hint: '깎아서 남한테 나눠주는 단계' },
+  { emoji: '🐴', title: '목장 견습생', hint: '직접 만들기 시작한 단계' },
+  { emoji: '🧲', title: '하네스 수집가', hint: '좋은 거 고르는 눈이 생긴 단계' },
+  { emoji: '👶', title: '하기스', hint: '남이 만든 거 퍼다 쓰는 단계' },
+  { emoji: '🥚', title: '갓부화', hint: 'Claude Code 깔긴 했다' },
 ];
 
 export default function HarnessLevelBadge({ level }: HarnessLevelBadgeProps) {
