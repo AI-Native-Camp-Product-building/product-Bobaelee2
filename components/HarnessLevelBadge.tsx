@@ -1,7 +1,7 @@
 /**
  * 하네스 레벨 뱃지
  * "당신의 하네스 레벨" — v1의 로데오/하기스 비유 부활
- * 내 레벨 강조 + 전체 4단계 로드맵
+ * 내 레벨 강조 + 전체 5단계 로드맵
  */
 import type { HarnessLevel } from '@/lib/content/harness-level';
 
@@ -9,12 +9,13 @@ interface HarnessLevelBadgeProps {
   level: HarnessLevel;
 }
 
-/** 4단계 레벨 로드맵 */
+/** 5단계 레벨 로드맵 */
 const LEVEL_ROADMAP = [
-  { emoji: '👶', title: '하기스', hint: '하네스가 뭔지는 아는 단계' },
-  { emoji: '🧲', title: '하네스 수집가', hint: '좋은 하네스 고르는 눈이 생긴 단계' },
+  { emoji: '🥚', title: '갓부화', hint: 'Claude Code 깔긴 했다' },
+  { emoji: '👶', title: '하기스', hint: '남이 만든 거 퍼다 쓰는 단계' },
+  { emoji: '🧲', title: '하네스 수집가', hint: '좋은 거 고르는 눈이 생긴 단계' },
   { emoji: '🐴', title: '목장 견습생', hint: '직접 만들기 시작한 단계' },
-  { emoji: '🤠', title: '로데오급', hint: '하네스를 깎아서 나눠주는 단계' },
+  { emoji: '🤠', title: '로데오급', hint: '깎아서 남한테 나눠주는 단계' },
 ];
 
 export default function HarnessLevelBadge({ level }: HarnessLevelBadgeProps) {

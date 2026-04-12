@@ -101,7 +101,7 @@ export default async function ResultPage({ params }: Props) {
     : [];
   const v2Compat = isV2Result ? getV2Compatibility(result.typeCode!) : [];
   const harnessLevel = isV2Result && result.axisScores
-    ? getHarnessLevel(result.axisScores.judgments.harness)
+    ? getHarnessLevel(result.axisScores.judgments.harness, result.mdStats)
     : null;
 
   return (
