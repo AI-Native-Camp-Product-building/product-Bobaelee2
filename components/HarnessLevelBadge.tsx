@@ -40,8 +40,8 @@ export default function HarnessLevelBadge({ level }: HarnessLevelBadgeProps) {
       <div className="flex flex-col gap-2">
         <p className="text-xs text-claude-light/40 font-medium">하네스 레벨이 뭔가요?</p>
         <p className="text-xs text-claude-light/50 leading-relaxed">
-          AI 에이전트를 다루는 장비를 &ldquo;하네스&rdquo;라고 부릅니다.
-          남이 만든 하네스를 쓰는 단계에서, 직접 깎아서 나눠주는 단계까지 — 당신은 지금 어디쯤인가요?
+          .md 파일, Hook, 스킬, 플러그인 — AI 에이전트를 내 방식대로 세팅하는 이 모든 걸 &ldquo;하네스&rdquo;라고 부릅니다.
+          남이 만든 하네스를 그대로 쓰는 단계부터, 직접 만들어서 배포하는 단계까지.
         </p>
 
         {/* 4단계 로드맵 */}
