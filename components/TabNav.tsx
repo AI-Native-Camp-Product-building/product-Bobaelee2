@@ -2,7 +2,6 @@
 
 /**
  * 상단 탭 네비게이션
- * MD 분석 | .md력 | 내 정보
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,7 +9,6 @@ import { track } from "@/lib/analytics";
 
 const TABS = [
   { href: "/", label: "🔬 .mdTI", action: "rerun" as const },
-  { href: "/profile", label: "👤 내 정보", action: "profile" as const },
   { href: "/contact", label: "✉️ Contact", action: "contact" as const },
 ];
 
