@@ -3,6 +3,7 @@ import {
   DIMENSION_LABELS,
   TOTAL_PATTERN_COUNT,
 } from "@/lib/types";
+import { AXIS_LABELS, AXIS_ORDER } from "@/lib/v2-types";
 import type {
   PersonaKey,
   DimensionScores,
@@ -305,6 +306,31 @@ describe("GlobalStats", () => {
     expect(stats.userPercentile.lines).toBeDefined();
     expect(stats.userPercentile.tools).toBeDefined();
     expect(stats.userPercentile.complexity).toBeDefined();
+  });
+});
+
+// === v2 타입 테스트 ===
+
+describe("v2 AXIS_ORDER", () => {
+  it("5개 축이어야 한다", () => {
+    expect(AXIS_ORDER).toHaveLength(5);
+  });
+});
+
+describe("v2 AXIS_LABELS", () => {
+  it("모든 축에 대해 a/b 라벨 보유", () => {
+    for (const axis of AXIS_ORDER) {
+      expect(AXIS_LABELS[axis]).toHaveProperty("a");
+      expect(AXIS_LABELS[axis]).toHaveProperty("b");
+      expect(AXIS_LABELS[axis]).toHaveProperty("aLabel");
+      expect(AXIS_LABELS[axis]).toHaveProperty("bLabel");
+    }
+  });
+
+  it("a와 b 글자는 서로 달라야 한다", () => {
+    for (const axis of AXIS_ORDER) {
+      expect(AXIS_LABELS[axis].a).not.toBe(AXIS_LABELS[axis].b);
+    }
   });
 });
 

@@ -6,7 +6,13 @@ import {
   TOOL_NAMES,
   extractToolNames,
   extractSkillCount,
+  countAxisSignals,
+  judgeVerboseAxis,
+  judgeStructureAxis,
+  judgeControlFromSettings,
+  PATTERN_AXIS_MAP,
 } from "@/lib/analyzer/patterns";
+import type { MdStats } from "@/lib/types";
 
 describe("DIMENSION_PATTERNS", () => {
   it("7개 차원이 모두 정의되어야 한다", () => {
@@ -285,5 +291,223 @@ deploy
     const text = `=== skills ===
 === END ===`;
     expect(extractSkillCount(text)).toBe(0);
+  });
+});
+
+// --- v2 5축 매핑 테스트 ---
+
+/** 테스트용 최소 MdStats 생성 헬퍼 */
+function makeMockStats(overrides: Partial<MdStats> = {}): MdStats {
+  return {
+    totalLines: 10,
+    sectionCount: 1,
+    toolNames: [],
+    hasMemory: false,
+    hasHooks: false,
+    hasProjectMd: false,
+    ruleCount: 0,
+    claudeMdLines: 10,
+    keywordHits: {},
+    keywordUniqueHits: {},
+    pluginCount: 0,
+    mcpServerCount: 0,
+    commandCount: 0,
+    hookCount: 0,
+    skillCount: 0,
+    agentCount: 0,
+    skillNames: [],
+    pluginSkillCount: 0,
+    userSkillCount: 0,
+    pluginAgentCount: 0,
+    userAgentCount: 0,
+    pluginNames: [],
+    mcpServerNames: [],
+    commandNames: [],
+    hasRoleDefinition: false,
+    isExpandedInput: false,
+    denyCount: 0,
+    blocksDangerousOps: false,
+    hookPromptCount: 0,
+    hookCommandCount: 0,
+    pluginEnabledRatio: 0,
+    projectMdCount: 0,
+    ...overrides,
+  };
+}
+
+describe("PATTERN_AXIS_MAP", () => {
+  it("모든 DIMENSION_PATTERNS 패턴이 매핑되어야 한다 (teamImpact 제외)", () => {
+    for (const [dim, patterns] of Object.entries(DIMENSION_PATTERNS)) {
+      if (dim === "teamImpact") continue;
+      for (let i = 0; i < patterns.length; i++) {
+        const key = `${dim}:${i}`;
+        expect(PATTERN_AXIS_MAP[key], `${key}가 PATTERN_AXIS_MAP에 없음`).toBeDefined();
+      }
+    }
+  });
+
+  it("teamImpact 패턴은 매핑되지 않아야 한다", () => {
+    const teamKeys = Object.keys(PATTERN_AXIS_MAP).filter(k => k.startsWith("teamImpact:"));
+    expect(teamKeys).toHaveLength(0);
+  });
+});
+
+describe("countAxisSignals", () => {
+  it("NEVER 키워드(control 패턴)가 있으면 control.a > 0이어야 한다", () => {
+    // "NEVER"는 control 패턴의 "DO NOT" 또는 "MUST" 패턴에 직접 매칭되지 않으므로
+    // "금지" (보안 맥락 아닌) 키워드로 테스트
+    const text = "반드시 한국어로 답변하라. DO NOT use emojis.";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.control.a).toBeGreaterThan(0);
+  });
+
+  it("security 패턴(.env, token 등)이 있으면 control.a가 증가해야 한다", () => {
+    const text = ".env 파일 커밋 금지. API 키 노출 절대 금지. token 보호";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.control.a).toBeGreaterThan(0);
+  });
+
+  it("toolDiversity 패턴(Slack, Notion 등)이 있으면 harness.a가 증가해야 한다", () => {
+    const text = "Slack Notion GitHub Supabase Vercel";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.harness.a).toBeGreaterThan(0);
+  });
+
+  it("automation 파이프라인 패턴이 있으면 harness.b가 증가해야 한다", () => {
+    const text = "PostToolUse hook 설정, CI/CD pipeline, webhook 연동, workflow trigger";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.harness.b).toBeGreaterThan(0);
+  });
+
+  it("automation 스크립트 패턴이 있으면 plan.b가 증가해야 한다", () => {
+    const text = "cron 스케줄 설정, 자동 deploy 배포, script 실행";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.plan.b).toBeGreaterThan(0);
+  });
+
+  it("agentOrchestration 패턴이 있으면 harness.b와 plan.a가 모두 증가해야 한다", () => {
+    const text = "autonomous agent loop 설정, iteration 반복 실행, stop condition 설정";
+    const stats = makeMockStats();
+    const result = countAxisSignals(text, stats);
+    expect(result.harness.b).toBeGreaterThan(0);
+    expect(result.plan.a).toBeGreaterThan(0);
+  });
+
+  it("확장 입력 보너스: 플러그인 5개 이상 → harness.a 증가", () => {
+    const stats = makeMockStats({ isExpandedInput: true, pluginCount: 5 });
+    const result = countAxisSignals("", stats);
+    expect(result.harness.a).toBeGreaterThanOrEqual(1);
+  });
+
+  it("확장 입력 보너스: hookCount 3 이상 → harness.b 증가", () => {
+    const stats = makeMockStats({ isExpandedInput: true, hookCount: 3 });
+    const result = countAxisSignals("", stats);
+    expect(result.harness.b).toBeGreaterThanOrEqual(1);
+  });
+
+  it("빈 텍스트 + 기본 stats에서 모든 축이 0이어야 한다", () => {
+    const stats = makeMockStats();
+    const result = countAxisSignals("", stats);
+    expect(result.harness.a).toBe(0);
+    expect(result.harness.b).toBe(0);
+    expect(result.control.a).toBe(0);
+    expect(result.control.b).toBe(0);
+    expect(result.verbose.a).toBe(0);
+    expect(result.verbose.b).toBe(0);
+    expect(result.plan.a).toBe(0);
+    expect(result.plan.b).toBe(0);
+    expect(result.structure.a).toBe(0);
+    expect(result.structure.b).toBe(0);
+  });
+});
+
+describe("judgeVerboseAxis", () => {
+  it("긴 텍스트(claudeMdLines > threshold)에서 a=1이어야 한다", () => {
+    const stats = makeMockStats({ claudeMdLines: 50, isExpandedInput: false });
+    const result = judgeVerboseAxis(stats);
+    expect(result.a).toBe(1);
+    expect(result.b).toBe(0);
+  });
+
+  it("짧은 텍스트(claudeMdLines <= threshold)에서 b=1이어야 한다", () => {
+    const stats = makeMockStats({ claudeMdLines: 10, isExpandedInput: false });
+    const result = judgeVerboseAxis(stats);
+    expect(result.a).toBe(0);
+    expect(result.b).toBe(1);
+  });
+
+  it("확장 입력 시 threshold가 100으로 높아져야 한다", () => {
+    // 50줄: 일반은 장황(>30), 확장은 간결(<=100)
+    const normalStats = makeMockStats({ claudeMdLines: 50, isExpandedInput: false });
+    const expandedStats = makeMockStats({ claudeMdLines: 50, isExpandedInput: true });
+    expect(judgeVerboseAxis(normalStats).a).toBe(1);  // 일반: 50 > 30 → 장황
+    expect(judgeVerboseAxis(expandedStats).b).toBe(1); // 확장: 50 <= 100 → 간결
+  });
+});
+
+describe("judgeStructureAxis", () => {
+  it("헤딩이 3개 이상이면 a=1(구조화)이어야 한다", () => {
+    const text = "# 섹션1\n내용\n## 섹션2\n내용\n### 섹션3\n내용";
+    const result = judgeStructureAxis(text);
+    expect(result.a).toBe(1);
+    expect(result.b).toBe(0);
+  });
+
+  it("리스트 비율 20% 이상이면 a=1(구조화)이어야 한다", () => {
+    const text = "- 항목1\n- 항목2\n- 항목3\n내용\n내용";
+    const result = judgeStructureAxis(text);
+    expect(result.a).toBe(1);
+    expect(result.b).toBe(0);
+  });
+
+  it("플랫 텍스트에서 b=1(자유형)이어야 한다", () => {
+    const text = "이것은 단순한 텍스트입니다.\n별다른 구조 없이 작성되었습니다.\n그냥 글입니다.\n추가 내용.\n더 많은 내용.\n또 다른 줄.\n마지막 줄.";
+    const result = judgeStructureAxis(text);
+    expect(result.a).toBe(0);
+    expect(result.b).toBe(1);
+  });
+
+  it("번호 리스트도 구조화로 인식해야 한다", () => {
+    const text = "1. 첫 번째\n2. 두 번째\n3. 세 번째\n4. 네 번째\n5. 다섯 번째";
+    const result = judgeStructureAxis(text);
+    expect(result.a).toBe(1);
+    expect(result.b).toBe(0);
+  });
+});
+
+describe("judgeControlFromSettings", () => {
+  it("bypassPermissions가 있으면 b > 0(위임)이어야 한다", () => {
+    const text = '"bypassPermissions": true';
+    const result = judgeControlFromSettings(text);
+    expect(result.b).toBeGreaterThan(0);
+  });
+
+  it("deny 규칙이 있으면 a > 0(통제)이어야 한다", () => {
+    const text = '"deny": ["rm -rf", "git push --force"]';
+    const result = judgeControlFromSettings(text);
+    expect(result.a).toBeGreaterThan(0);
+  });
+
+  it('"plan" 모드가 있으면 a가 증가해야 한다', () => {
+    const text = '"defaultMode": "plan"';
+    const result = judgeControlFromSettings(text);
+    expect(result.a).toBeGreaterThan(0);
+  });
+
+  it('"auto" 모드가 있으면 b > 0(위임)이어야 한다', () => {
+    const text = '"defaultMode": "auto"';
+    const result = judgeControlFromSettings(text);
+    expect(result.b).toBeGreaterThan(0);
+  });
+
+  it("deny + plan 조합이면 a가 2 이상이어야 한다", () => {
+    const text = '"deny": ["rm -rf"], "defaultMode": "plan"';
+    const result = judgeControlFromSettings(text);
+    expect(result.a).toBeGreaterThanOrEqual(2);
   });
 });

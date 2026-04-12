@@ -3,7 +3,14 @@
  * 로컬 개발 시 환경변수 없이도 전체 플로우 동작
  */
 import type { AnalysisResult, SavedResult, PersonaKey, QualityScores } from "@/lib/types";
+import type { AxisScores, TypeCode } from "@/lib/v2-types";
 import { calculateMdPower } from "@/lib/analyzer/power";
+
+/** v2 필드 — 선택적 (v1 결과는 없음) */
+export interface V2Fields {
+  typeCode: TypeCode;
+  axisScores: AxisScores;
+}
 
 const isSupabaseConfigured =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -23,13 +30,16 @@ async function getSupabase() {
 export async function saveResult(
   id: string,
   result: AnalysisResult,
-  sessionId: string | null = null
+  sessionId: string | null = null,
+  v2?: V2Fields | null,
 ): Promise<void> {
   const saved: SavedResult = {
     ...result,
     id,
     createdAt: new Date().toISOString(),
     isLegacyResult: false,
+    typeCode: v2?.typeCode ?? null,
+    axisScores: v2?.axisScores ?? null,
   };
 
   if (!isSupabaseConfigured) {
@@ -51,6 +61,9 @@ export async function saveResult(
     prescriptions: result.prescriptions,
     md_stats: result.mdStats,
     session_id: sessionId,
+    // v2 필드 (nullable — v1 결과는 null)
+    type_code: v2?.typeCode ?? null,
+    axis_scores: v2?.axisScores ?? null,
   });
 
   await supabase
@@ -103,6 +116,11 @@ export async function getResult(id: string): Promise<SavedResult | null> {
     actionability: 0, conciseness: 0, structure: 0, uniqueness: 0, safety: 0,
   };
 
+  // v2 필드 (없으면 null)
+  const rawRow = data as Record<string, unknown>;
+  const typeCode = (rawRow.type_code as string) ?? null;
+  const axisScores = (rawRow.axis_scores as AxisScores) ?? null;
+
   return {
     id: data.id,
     persona: data.persona as PersonaKey,
@@ -116,6 +134,8 @@ export async function getResult(id: string): Promise<SavedResult | null> {
     mdPower: calculateMdPower(qualityScores, mdStats),
     createdAt: data.created_at,
     isLegacyResult,
+    typeCode,
+    axisScores,
   };
 }
 

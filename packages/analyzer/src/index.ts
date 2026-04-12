@@ -9,7 +9,7 @@
  */
 
 // 핵심 분석 함수
-export { analyze } from "./analyzer/index.js";
+export { analyze, analyzeV2 } from "./analyzer/index.js";
 
 // 타입
 export type {
@@ -41,3 +41,21 @@ export { calculateScores, extractMdStats } from "./analyzer/scorer.js";
 export { classifyPersona } from "./analyzer/classifier.js";
 export { calculateQualityScores } from "./analyzer/quality.js";
 export { calculateMdPower } from "./analyzer/power.js";
+
+// v2 타입
+export type {
+  AxisKey,
+  AxisDirection,
+  TypeCode,
+  AxisJudgment,
+  AxisScores,
+  V2PersonaDefinition,
+  ModuleBlock,
+  V2AnalysisResult,
+} from "./v2-types.js";
+
+export { AXIS_LABELS, AXIS_ORDER } from "./v2-types.js";
+
+// v2 콘텐츠
+export { V2_PERSONAS, getPersonaByTypeCode } from "./content/v2-personas.js";
+export { MODULE_BLOCKS } from "./content/v2-modules.js";

@@ -157,6 +157,9 @@ export interface SavedResult extends AnalysisResult {
   id: string;
   createdAt: string;
   isLegacyResult: boolean;    // DB에 quality_scores가 null이면 true
+  // v2 필드 (nullable — v1 결과는 null)
+  typeCode: string | null;
+  axisScores: import('./v2-types').AxisScores | null;
 }
 
 /** 전체 사용자 통계 */

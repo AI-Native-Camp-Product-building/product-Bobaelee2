@@ -3,6 +3,8 @@
  * 각 RegExp는 CLAUDE.md 텍스트에서 해당 차원의 신호를 감지한다
  */
 
+import type { AxisKey } from '../v2-types.js';
+
 /** 차원별 정규식 패턴 목록 */
 export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
   // 자동화 성향 — 스크립트, 봇, 배포 자동화 관련 키워드
@@ -148,6 +150,249 @@ export const DIMENSION_PATTERNS: Record<string, RegExp[]> = {
     /에이전트|agent(?!s\.md)/gi,
   ],
 };
+
+// --- v2 5축 매핑 ---
+
+/** 패턴 → 5축 매핑 방향 */
+export interface AxisMapping {
+  axis: AxisKey;
+  direction: 'a' | 'b';  // a = 첫 번째 방향, b = 두 번째 방향
+}
+
+/**
+ * 각 차원의 패턴을 v2 5축에 매핑한다.
+ * 키 형식: "차원명:인덱스" (예: "automation:0")
+ *
+ * 매핑 규칙:
+ * - automation → harness:b (하네스/수렴) hooks/pipeline/workflow류, plan:b (실행) script/deploy/cron류
+ * - control → control:a (통제/R)
+ * - toolDiversity → harness:a (하기스/발산)
+ * - contextAwareness → plan:a (설계/P) 및/또는 harness:b (하네스/수렴)
+ * - teamImpact → 매핑 안함
+ * - security → control:a (통제/R)
+ * - agentOrchestration → harness:b (하네스/수렴) + plan:a (설계/P)
+ */
+export const PATTERN_AXIS_MAP: Record<string, AxisMapping[]> = {
+  // --- automation (15개) ---
+  // 0: hooks?[^a-z] → harness:b (수렴 — 빌드 자동화)
+  'automation:0': [{ axis: 'harness', direction: 'b' }],
+  // 1: cron|schedule|스케줄 → plan:b (실행)
+  'automation:1': [{ axis: 'plan', direction: 'b' }],
+  // 2: 자동|auto(?:mat) → plan:b (실행)
+  'automation:2': [{ axis: 'plan', direction: 'b' }],
+  // 3: script|스크립트 → plan:b (실행)
+  'automation:3': [{ axis: 'plan', direction: 'b' }],
+  // 4: deploy|배포 → plan:b (실행)
+  'automation:4': [{ axis: 'plan', direction: 'b' }],
+  // 5: bot|봇 → harness:b (수렴 — 봇 구축)
+  'automation:5': [{ axis: 'harness', direction: 'b' }],
+  // 6: pipeline|파이프라인 → harness:b (수렴)
+  'automation:6': [{ axis: 'harness', direction: 'b' }],
+  // 7: webhook → harness:b (수렴)
+  'automation:7': [{ axis: 'harness', direction: 'b' }],
+  // 8: ci/cd|github action → harness:b (수렴)
+  'automation:8': [{ axis: 'harness', direction: 'b' }],
+  // 9: workflow|trigger|트리거 → harness:b (수렴)
+  'automation:9': [{ axis: 'harness', direction: 'b' }],
+  // 10: pre-commit|husky → harness:b (수렴)
+  'automation:10': [{ axis: 'harness', direction: 'b' }],
+  // 11: terraform|ansible|pulumi → harness:b (수렴)
+  'automation:11': [{ axis: 'harness', direction: 'b' }],
+  // 12: clasp push → plan:b (실행/배포)
+  'automation:12': [{ axis: 'plan', direction: 'b' }],
+  // 13: rollback|복구 → plan:b (실행/운영)
+  'automation:13': [{ axis: 'plan', direction: 'b' }],
+  // 14: 반드시.*후.*배포 → plan:b (실행/배포 절차)
+  'automation:14': [{ axis: 'plan', direction: 'b' }],
+
+  // --- control (15개) → control:a (통제/R) ---
+  'control:0': [{ axis: 'control', direction: 'a' }],
+  'control:1': [{ axis: 'control', direction: 'a' }],
+  'control:2': [{ axis: 'control', direction: 'a' }],
+  'control:3': [{ axis: 'control', direction: 'a' }],
+  'control:4': [{ axis: 'control', direction: 'a' }],
+  'control:5': [{ axis: 'control', direction: 'a' }],
+  'control:6': [{ axis: 'control', direction: 'a' }],
+  'control:7': [{ axis: 'control', direction: 'a' }],
+  'control:8': [{ axis: 'control', direction: 'a' }],
+  'control:9': [{ axis: 'control', direction: 'a' }],
+  'control:10': [{ axis: 'control', direction: 'a' }],
+  'control:11': [{ axis: 'control', direction: 'a' }],
+  'control:12': [{ axis: 'control', direction: 'a' }],
+  'control:13': [{ axis: 'control', direction: 'a' }],
+  'control:14': [{ axis: 'control', direction: 'a' }],
+
+  // --- toolDiversity (20개) → harness:a (하기스/발산) ---
+  'toolDiversity:0': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:1': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:2': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:3': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:4': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:5': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:6': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:7': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:8': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:9': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:10': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:11': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:12': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:13': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:14': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:15': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:16': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:17': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:18': [{ axis: 'harness', direction: 'a' }],
+  'toolDiversity:19': [{ axis: 'harness', direction: 'a' }],
+
+  // --- contextAwareness (14개) → plan:a (설계/P) 및/또는 harness:b (하네스/수렴) ---
+  // 0: memory|메모리 → plan:a (설계)
+  'contextAwareness:0': [{ axis: 'plan', direction: 'a' }],
+  // 1: 프로젝트.*CLAUDE → plan:a (설계) + harness:b (수렴)
+  'contextAwareness:1': [{ axis: 'plan', direction: 'a' }, { axis: 'harness', direction: 'b' }],
+  // 2: 컨텍스트|context → plan:a (설계)
+  'contextAwareness:2': [{ axis: 'plan', direction: 'a' }],
+  // 3: 세션|session → plan:a (설계)
+  'contextAwareness:3': [{ axis: 'plan', direction: 'a' }],
+  // 4: 피드백|feedback → plan:a (설계)
+  'contextAwareness:4': [{ axis: 'plan', direction: 'a' }],
+  // 5: .claude/rules → harness:b (수렴)
+  'contextAwareness:5': [{ axis: 'harness', direction: 'b' }],
+  // 6: @참조.md → plan:a (설계)
+  'contextAwareness:6': [{ axis: 'plan', direction: 'a' }],
+  // 7: CLAUDE.local.md → harness:b (수렴)
+  'contextAwareness:7': [{ axis: 'harness', direction: 'b' }],
+  // 8: compact|컴팩트 → plan:a (설계)
+  'contextAwareness:8': [{ axis: 'plan', direction: 'a' }],
+  // 9: subagent|서브에이전트 → harness:b (수렴)
+  'contextAwareness:9': [{ axis: 'harness', direction: 'b' }],
+  // 10: handoff|핸드오프 → plan:a (설계)
+  'contextAwareness:10': [{ axis: 'plan', direction: 'a' }],
+  // 11: 요약|summarize → plan:a (설계)
+  'contextAwareness:11': [{ axis: 'plan', direction: 'a' }],
+  // 12: 프로젝트|project → plan:a (설계)
+  'contextAwareness:12': [{ axis: 'plan', direction: 'a' }],
+  // 13: 배경|background → plan:a (설계)
+  'contextAwareness:13': [{ axis: 'plan', direction: 'a' }],
+
+  // --- teamImpact (14개) → 매핑 안함 (skip) ---
+  // teamImpact 패턴은 v2 5축에 매핑하지 않는다
+
+  // --- security (11개) → control:a (통제/R) ---
+  'security:0': [{ axis: 'control', direction: 'a' }],
+  'security:1': [{ axis: 'control', direction: 'a' }],
+  'security:2': [{ axis: 'control', direction: 'a' }],
+  'security:3': [{ axis: 'control', direction: 'a' }],
+  'security:4': [{ axis: 'control', direction: 'a' }],
+  'security:5': [{ axis: 'control', direction: 'a' }],
+  'security:6': [{ axis: 'control', direction: 'a' }],
+  'security:7': [{ axis: 'control', direction: 'a' }],
+  'security:8': [{ axis: 'control', direction: 'a' }],
+  'security:9': [{ axis: 'control', direction: 'a' }],
+  'security:10': [{ axis: 'control', direction: 'a' }],
+
+  // --- agentOrchestration (15개) → harness:b (하네스/수렴) + plan:a (설계/P) ---
+  'agentOrchestration:0': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:1': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:2': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:3': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:4': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:5': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:6': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:7': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:8': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:9': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:10': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:11': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:12': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:13': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+  'agentOrchestration:14': [{ axis: 'harness', direction: 'b' }, { axis: 'plan', direction: 'a' }],
+};
+
+/**
+ * 텍스트에서 v2 5축별 시그널 수를 카운트한다.
+ * DIMENSION_PATTERNS의 각 패턴을 PATTERN_AXIS_MAP을 통해 5축으로 변환한다.
+ */
+export function countAxisSignals(
+  text: string,
+  stats: import('../types.js').MdStats
+): Record<AxisKey, { a: number; b: number }> {
+  // 초기 카운트
+  const counts: Record<AxisKey, { a: number; b: number }> = {
+    harness: { a: 0, b: 0 },
+    control: { a: 0, b: 0 },
+    verbose: { a: 0, b: 0 },
+    plan: { a: 0, b: 0 },
+    structure: { a: 0, b: 0 },
+  };
+
+  // DIMENSION_PATTERNS 순회
+  for (const [dim, patterns] of Object.entries(DIMENSION_PATTERNS)) {
+    for (let i = 0; i < patterns.length; i++) {
+      const key = `${dim}:${i}`;
+      const mappings = PATTERN_AXIS_MAP[key];
+      if (!mappings) continue;
+
+      const pattern = new RegExp(patterns[i].source, patterns[i].flags);
+      if (pattern.test(text)) {
+        for (const mapping of mappings) {
+          counts[mapping.axis][mapping.direction] += 1;
+        }
+      }
+    }
+  }
+
+  // 확장 입력 보너스 시그널
+  if (stats.isExpandedInput) {
+    // 플러그인 수 → harness:a (많을수록 하기스/탐색 성향)
+    if (stats.pluginCount >= 5) counts.harness.a += 1;
+    // Hook 수 → harness:b (많을수록 하네스/구축 성향)
+    if (stats.hookCount >= 3) counts.harness.b += 1;
+    // 직접 만든 스킬 → harness:b (구축)
+    if (stats.userSkillCount >= 2) counts.harness.b += 1;
+    // MCP 서버 다수 → harness:a (탐색)
+    if (stats.mcpServerCount >= 3) counts.harness.a += 1;
+  }
+
+  return counts;
+}
+
+/**
+ * verbose 축 판정 — CLAUDE.md 줄 수 기반
+ * 긴 텍스트(threshold 초과) → a(장황/V), 짧은 텍스트 → b(간결/C)
+ */
+export function judgeVerboseAxis(stats: import('../types.js').MdStats): { a: number; b: number } {
+  const threshold = stats.isExpandedInput ? 100 : 30;
+  return stats.claudeMdLines > threshold
+    ? { a: 1, b: 0 }
+    : { a: 0, b: 1 };
+}
+
+/**
+ * structure 축 판정 — 헤딩/리스트 비율 기반
+ * 헤딩 3개 이상 또는 리스트 비율 20% 이상 → a(구조화/S), 아니면 → b(자유형/F)
+ */
+export function judgeStructureAxis(text: string): { a: number; b: number } {
+  const lines = text.split('\n');
+  const headingCount = lines.filter(l => /^#{1,6}\s/.test(l)).length;
+  const listCount = lines.filter(l => /^\s*[-*]\s/.test(l) || /^\s*\d+\.\s/.test(l)).length;
+  const listRatio = lines.length > 0 ? listCount / lines.length : 0;
+  const isStructured = headingCount >= 3 || listRatio >= 0.2;
+  return isStructured ? { a: 1, b: 0 } : { a: 0, b: 1 };
+}
+
+/**
+ * control 축 보조 판정 — settings.json 분석 기반
+ * deny 규칙/plan 모드 → a(통제/R), bypass/auto 모드 → b(위임/D)
+ */
+export function judgeControlFromSettings(text: string): { a: number; b: number } {
+  const hasBypass = /bypassPermissions|"auto"/i.test(text);
+  const hasPlan = /"plan"|"default"/i.test(text);
+  const denyCount = (text.match(/deny/gi) || []).length;
+  let a = denyCount > 0 ? 1 : 0;
+  if (hasPlan) a += 1;
+  let b = hasBypass ? 1 : 0;
+  return { a, b };
+}
 
 /**
  * 텍스트에서 패턴 목록의 총 매칭 횟수를 센다 (통계 표시용)

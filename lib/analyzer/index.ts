@@ -1,8 +1,10 @@
 /**
  * CLAUDE.md 분석 통합 진입점
- * scorer → classifier → content 생성 파이프라인을 조합한다
+ * v1: scorer → classifier → content 생성 파이프라인
+ * v2: 5축 이분법 조합형 (32타입) 파이프라인
  */
 import type { AnalysisResult } from "@/lib/types";
+import type { V2AnalysisResult } from "@/lib/v2-types";
 import { calculateScores, extractMdStats } from "./scorer";
 import { classifyPersona } from "./classifier";
 import { calculateQualityScores } from "./quality";
@@ -10,6 +12,9 @@ import { generateRoasts } from "@/lib/content/roasts";
 import { generateStrengths } from "@/lib/content/strengths";
 import { generatePrescriptions } from "@/lib/content/prescriptions";
 import { calculateMdPower } from "./power";
+import { scoreAxes } from "./axis-scorer";
+import { getPersonaByTypeCode } from "@/lib/content/v2-personas";
+import { getWitItems, getExplorationItems } from "@/lib/content/v2-modules";
 
 /**
  * CLAUDE.md 텍스트를 받아 완전한 분석 결과를 반환한다
@@ -56,5 +61,41 @@ export function analyze(md: string): AnalysisResult {
     prescriptions,
     mdStats,
     mdPower,
+  };
+}
+
+/**
+ * v2 분석 — 5축 조합형 성향 분류
+ *
+ * 처리 순서:
+ * 1. extractMdStats — 기존 파일 통계 추출 (재사용)
+ * 2. scoreAxes — 5축 이분법 판정
+ * 3. getPersonaByTypeCode — 32개 페르소나 중 매칭
+ * 4. getWitItems / getExplorationItems — 모듈 콘텐츠 선택
+ */
+export function analyzeV2(md: string): V2AnalysisResult {
+  // 1. 기존 MdStats 추출 (패턴 감지 재사용)
+  const mdStats = extractMdStats(md);
+
+  // 2. 5축 판정
+  const axisScores = scoreAxes(md, mdStats);
+
+  // 3. 페르소나 조회
+  const persona = getPersonaByTypeCode(axisScores.typeCode);
+  if (!persona) {
+    throw new Error(`Unknown type code: ${axisScores.typeCode}`);
+  }
+
+  // 4. 모듈 콘텐츠 선택
+  const witItems = getWitItems(axisScores.typeCode, axisScores.judgments);
+  const explorationItems = getExplorationItems(axisScores.typeCode, axisScores.judgments);
+
+  return {
+    typeCode: axisScores.typeCode,
+    axisScores,
+    persona,
+    witItems,
+    explorationItems,
+    mdStats,
   };
 }

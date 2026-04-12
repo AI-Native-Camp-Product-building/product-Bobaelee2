@@ -4,7 +4,7 @@
  * 요청 본문: { "text": "CLAUDE.md 내용" }
  * 응답: { persona, secondaryPersona, scores, prescriptions, roasts, strengths, mdPower, stats }
  */
-import { analyze } from "@/lib/analyzer";
+import { analyze, analyzeV2 } from "@/lib/analyzer";
 import { saveResult } from "@/lib/store";
 import { PERSONAS } from "@/lib/content/personas";
 import { nanoid } from "nanoid";
@@ -172,9 +172,15 @@ export async function POST(request: Request) {
 
   const result = analyze(trimmed);
 
-  // 결과 저장 → shareUrl 생성
+  // v2 분석 — 5축 조합형 성향 분류
+  const v2Result = analyzeV2(trimmed);
+
+  // 결과 저장 → shareUrl 생성 (v2 필드 포함)
   const id = nanoid(10);
-  await saveResult(id, result);
+  await saveResult(id, result, null, {
+    typeCode: v2Result.typeCode,
+    axisScores: v2Result.axisScores,
+  });
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mdti.vercel.app";
   const shareUrl = `${baseUrl}/r/${id}`;
 
@@ -191,6 +197,7 @@ export async function POST(request: Request) {
   );
 
   return Response.json({
+    // v1 필드 (하위호환)
     persona: {
       primary: result.persona,
       secondary: result.secondaryPersona,
@@ -207,6 +214,12 @@ export async function POST(request: Request) {
       hasRoleDefinition: result.mdStats.hasRoleDefinition,
       isExpandedInput: result.mdStats.isExpandedInput,
     },
+    // v2 필드 — 5축 조합형 성향 분류
+    typeCode: v2Result.typeCode,
+    axisScores: v2Result.axisScores,
+    v2Persona: v2Result.persona,
+    witItems: v2Result.witItems,
+    explorationItems: v2Result.explorationItems,
     shareUrl,
     markdownReport,
   });
