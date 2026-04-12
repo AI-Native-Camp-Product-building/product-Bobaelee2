@@ -11,7 +11,7 @@ export const MODULE_BLOCKS: ModuleBlock[] = [
     exploration: '플러그인 마켓에서 남이 만든 거 하나 깔아보세요. 내가 뭘 더 만들어야 할지 선명해집니다.' },
   // 통제/위임
   { axis: 'control', direction: 'R',
-    wit: '"절대 하지 마"라고 써놨는데, AI가 그거 정확히 그대로 한 적 없나요?',
+    wit: '"절대 하지 마"라고 써놨는데, AI가 또 한 적 없나요?',
     exploration: '.md에서 NEVER 하나만 지워보세요. 그 규칙 없이도 돌아가면 — 처음부터 필요 없던 규칙이었어요.' },
   { axis: 'control', direction: 'D',
     wit: '"알아서 해" 했더니 진짜로 알아서 해버려서 되돌리느라 더 오래 걸린 적 없나요?',
