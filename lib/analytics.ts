@@ -23,7 +23,8 @@ export type EventName =
   | "analysis_failed"
   | "result_shared"
   | "result_page_viewed"
-  | "post_result_action";
+  | "post_result_action"
+  | "match_invite_copied";
 
 const MAX_STRING_LEN = 100;
 
