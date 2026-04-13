@@ -116,7 +116,7 @@ export async function GET(request: Request, { params }: Props) {
               color: "rgba(245, 230, 211, 0.4)",
             }}
           >
-            나도 .md 털어보기 → mdti.vercel.app
+            나도 .md 털어보기 → mdti.dev
           </div>
         </div>
       ),

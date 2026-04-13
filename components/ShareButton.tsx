@@ -6,7 +6,7 @@
  * LinkedIn/X 클릭 → 이미지 캡처 → 클립보드 복사 → SNS 글쓰기 창 열기
  */
 import { useRef, useState, useCallback } from "react";
-import type { PersonaKey, PersonaDefinition, RoastItem, MdStats, DimensionScores } from "@/lib/types";
+import type { PersonaKey, PersonaDefinition, RoastItem, MdStats } from "@/lib/types";
 import { PERSONAS } from "@/lib/content/personas";
 import { track } from "@/lib/analytics";
 
@@ -16,10 +16,9 @@ interface ShareButtonProps {
   personaDef: PersonaDefinition;
   roasts: RoastItem[];
   mdStats: MdStats;
-  scores: DimensionScores;
 }
 
-export default function ShareButton({ id, persona, personaDef, roasts, mdStats, scores }: ShareButtonProps) {
+export default function ShareButton({ id, persona, personaDef, roasts, mdStats }: ShareButtonProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [capturing, setCapturing] = useState<string | null>(null); // 'linkedin' | 'x' | null
