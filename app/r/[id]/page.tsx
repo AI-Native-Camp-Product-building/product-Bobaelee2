@@ -144,11 +144,11 @@ export default async function ResultPage({ params }: Props) {
             {/* 5. 탐험 제안 */}
             <ExplorationSection items={v2ExplorationItems} />
 
-            {/* 6. 페르소나 궁합 */}
-            <V2CompatSection myEmoji={v2PersonaDef.emoji} compat={v2Compat} />
-
-            {/* 7. 하네스 레벨 — 궁합 아래에 별도 섹션으로 */}
+            {/* 6. 하네스 레벨 */}
             {harnessLevel && <HarnessLevelBadge level={harnessLevel} />}
+
+            {/* 7. 페르소나 궁합 */}
+            <V2CompatSection myEmoji={v2PersonaDef.emoji} compat={v2Compat} />
 
             {/* 8. 공유 버튼 */}
             <section className="flex flex-col gap-3">
