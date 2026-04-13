@@ -42,6 +42,10 @@ export default function HarnessLevelBadge({ level }: HarnessLevelBadgeProps) {
         <p className="text-xs text-claude-light/50 leading-relaxed">
           .md 파일, Hook, 스킬, 플러그인 — AI 에이전트를 내 방식대로 세팅하는 이 모든 걸 &ldquo;하네스&rdquo;라고 부릅니다.
           남이 만든 하네스를 그대로 쓰는 단계부터, 직접 만들어서 배포하는 단계까지.
+          <br /><br />
+          <span className="text-claude-orange/80 font-medium">
+            지금 어디쯤에 있든 괜찮아요. 한 칸씩 올라가는 재미, 그게 하네스의 진짜 맛이니까요. 🐴
+          </span>
         </p>
 
         {/* 4단계 로드맵 */}
