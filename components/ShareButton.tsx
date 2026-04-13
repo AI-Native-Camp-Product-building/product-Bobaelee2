@@ -8,7 +8,6 @@
 import { useRef, useState, useCallback } from "react";
 import type { PersonaKey, PersonaDefinition, RoastItem, MdStats, DimensionScores } from "@/lib/types";
 import { PERSONAS } from "@/lib/content/personas";
-import { DIMENSION_LABELS } from "@/lib/types";
 import { track } from "@/lib/analytics";
 
 interface ShareButtonProps {
@@ -23,7 +22,7 @@ interface ShareButtonProps {
 export default function ShareButton({ id, persona, personaDef, roasts, mdStats, scores }: ShareButtonProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const [capturing, setCapturing] = useState<string | null>(null); // 'linkedin' | 'x' | 'download' | 'copy' | null
+  const [capturing, setCapturing] = useState<string | null>(null); // 'linkedin' | 'x' | null
   const [showCard, setShowCard] = useState(false);
 
   const shareUrl =
@@ -117,40 +116,6 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
     setCapturing(null);
   }, [captureToClipboard, shareText, shareUrl, persona, id]);
 
-  /** 이미지 저장 (다운로드) */
-  const handleDownload = useCallback(async () => {
-    track("result_shared", { channel: "download", persona, result_id: id });
-    setShowCard(true);
-    setCapturing("download");
-    await new Promise((r) => setTimeout(r, 100));
-
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const el = cardRef.current;
-      if (!el) return;
-
-      const canvas = await html2canvas(el, {
-        backgroundColor: "#1a1a1a",
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const link = document.createElement("a");
-      link.download = `mdti-${personaDef.key}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch {
-      const link = document.createElement("a");
-      link.href = `/api/og/${id}`;
-      link.download = `mdti-${personaDef.key}.png`;
-      link.click();
-    } finally {
-      setCapturing(null);
-      setShowCard(false);
-    }
-  }, [personaDef.key, id]);
-
   /** 링크 + 텍스트 클립보드 복사 */
   const handleCopyLink = useCallback(async () => {
     track("result_shared", { channel: "copy_link", persona, result_id: id });
@@ -233,58 +198,30 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
           </button>
         </div>
 
-        {/* 이미지 저장 + 링크 복사 */}
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={isCapturing}
-            className="flex-1 py-3 rounded-xl bg-bg-elevated text-claude-cream font-bold text-sm hover:opacity-90 transition-opacity border border-claude-light/20 flex items-center justify-center gap-2 disabled:opacity-40"
-          >
-            {capturing === "download" ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                </svg>
-                캡쳐 중...
-              </span>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                이미지 저장
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCopyLink}
-            disabled={isCapturing}
-            className="flex-1 py-3 rounded-xl bg-bg-elevated text-claude-cream font-bold text-sm hover:opacity-90 transition-opacity border border-claude-light/20 flex items-center justify-center gap-2 disabled:opacity-40"
-          >
-            {copied ? (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-rx-green">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <span className="text-rx-green">복사 완료!</span>
-              </>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
-                링크 복사
-              </>
-            )}
-          </button>
-        </div>
+        {/* 링크 복사 */}
+        <button
+          type="button"
+          onClick={handleCopyLink}
+          disabled={isCapturing}
+          className="w-full py-3 rounded-xl bg-bg-elevated text-claude-cream font-bold text-sm hover:opacity-90 transition-opacity border border-claude-light/20 flex items-center justify-center gap-2 disabled:opacity-40"
+        >
+          {copied ? (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-rx-green">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span className="text-rx-green">복사 완료!</span>
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              링크 복사
+            </>
+          )}
+        </button>
       </div>
 
       {/* 캡쳐 대상 카드 — 캡쳐 시에만 렌더링 (화면 밖) */}
@@ -332,38 +269,6 @@ export default function ShareButton({ id, persona, personaDef, roasts, mdStats, 
               lineHeight: "1.6",
             }}>
               &ldquo;{personaDef.tagline}&rdquo;
-            </div>
-
-            {/* 미니 레이더 */}
-            <div style={{ width: "200px", height: "200px" }}>
-              <svg viewBox="0 0 200 200" width="200" height="200">
-                {[20, 40, 60, 80, 100].map((level) => {
-                  const pts = Array.from({ length: 7 }, (_, i) => {
-                    const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
-                    const r = (level / 100) * 70;
-                    return `${100 + Math.cos(a) * r},${100 + Math.sin(a) * r}`;
-                  }).join(" ");
-                  return <polygon key={level} points={pts} fill="none" stroke="rgba(245,230,211,0.1)" strokeWidth="1" />;
-                })}
-                <polygon
-                  points={(Object.keys(DIMENSION_LABELS) as (keyof DimensionScores)[]).map((dim, i) => {
-                    const v = scores[dim];
-                    const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
-                    const r = (v / 100) * 70;
-                    return `${100 + Math.cos(a) * r},${100 + Math.sin(a) * r}`;
-                  }).join(" ")}
-                  fill="rgba(192,240,251,0.3)" stroke="#c0f0fb" strokeWidth="2"
-                />
-                {(Object.entries(DIMENSION_LABELS) as [keyof DimensionScores, { label: string }][]).map(([, { label }], i) => {
-                  const a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
-                  return (
-                    <text key={i} x={100 + Math.cos(a) * 90} y={100 + Math.sin(a) * 90}
-                      textAnchor="middle" fill="rgba(245,230,211,0.6)" fontSize="9" fontWeight="600">
-                      {label}
-                    </text>
-                  );
-                })}
-              </svg>
             </div>
 
             {/* 대표 로스팅 */}
