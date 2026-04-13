@@ -134,9 +134,6 @@ export default async function ResultPage({ params }: Props) {
               </p>
             </section>
 
-            {/* 3.5. 하네스 레벨 */}
-            {harnessLevel && <HarnessLevelBadge level={harnessLevel} />}
-
             {/* 4. 위트 */}
             <WitSection items={v2WitItems} />
 
@@ -146,7 +143,10 @@ export default async function ResultPage({ params }: Props) {
             {/* 6. 페르소나 궁합 */}
             <V2CompatSection myEmoji={v2PersonaDef.emoji} compat={v2Compat} />
 
-            {/* 7. 공유 버튼 */}
+            {/* 7. 하네스 레벨 — 궁합 아래에 별도 섹션으로 */}
+            {harnessLevel && <HarnessLevelBadge level={harnessLevel} />}
+
+            {/* 8. 공유 버튼 */}
             <section className="flex flex-col gap-3">
               <ShareButton
                 id={id}
