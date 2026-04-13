@@ -64,7 +64,7 @@ export function getHarnessLevel(harnessJudgment: AxisJudgment, stats?: Partial<M
     return {
       emoji: '🥚',
       title: '갓부화',
-      shortLabel: '갓부화',
+      shortLabel: '갓부화한',
       description: 'Claude Code 깔긴 했다. .md 파일이 있다는 것도 안다. 근데 거기까지다. 아직 세상이 눈부시다.',
     };
   }
