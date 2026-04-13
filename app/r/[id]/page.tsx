@@ -45,9 +45,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const isV2 = !!result.typeCode;
   const v2Persona = isV2 ? getPersonaByTypeCode(result.typeCode!) : null;
+  const harness = isV2 && result.axisScores
+    ? getHarnessLevel(result.axisScores.judgments.harness, result.mdStats)
+    : null;
 
   const persona = PERSONAS[result.persona];
-  const displayName = v2Persona ? v2Persona.name : persona.nameKo;
+  const baseName = v2Persona ? v2Persona.name : persona.nameKo;
+  const displayName = harness ? `${harness.shortLabel} ${baseName}` : baseName;
   const displayEmoji = v2Persona ? v2Persona.emoji : persona.emoji;
   const displayPunchline = v2Persona ? v2Persona.punchline : persona.tagline;
 
@@ -119,11 +123,11 @@ export default async function ResultPage({ params }: Props) {
               </p>
             </section>
 
-            {/* 2. 페르소나 이름 + 이모지 */}
+            {/* 2. 페르소나 이름 + 이모지 (하네스 레벨 prefix 포함) */}
             <div className="flex flex-col items-center gap-2 -mt-4">
               <span className="text-5xl">{v2PersonaDef.emoji}</span>
-              <h1 className="text-3xl font-black text-compat-gold">
-                {v2PersonaDef.name}
+              <h1 className="text-3xl font-black text-compat-gold text-center">
+                {harnessLevel ? `${harnessLevel.shortLabel} ${v2PersonaDef.name}` : v2PersonaDef.name}
               </h1>
             </div>
 
