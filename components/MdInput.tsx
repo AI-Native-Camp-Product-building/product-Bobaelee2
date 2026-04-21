@@ -15,7 +15,7 @@ interface MdInputProps {
 type OS = "mac" | "windows";
 
 /** Mac: pbcopy */
-const MAC_CMD = `pbcopy < <(
+const MAC_CMD = `(
   for f in ~/.claude/CLAUDE.md ~/.claude/settings.json; do
     [ -f "$f" ] && echo "=== $(basename "$f") ===" && cat "$f" && echo ""
   done
@@ -47,7 +47,8 @@ print(json.dumps(d,indent=2,ensure_ascii=False))
   -e 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/***EMAIL***/g' \\
   -e 's/(xoxb-|xoxp-|sk-|ghp_|gho_|Bearer )[A-Za-z0-9_-]+/\\1***/g' \\
   -e 's/AKfycb[A-Za-z0-9_-]+/***DEPLOY_ID***/g' \\
-  -e 's/ntn_[A-Za-z0-9_-]+/***NOTION***/g'`;
+  -e 's/ntn_[A-Za-z0-9_-]+/***NOTION***/g' | pbcopy
+echo "✨ 털기 완료! mdti 입력창에 ⌘V 눌러주세요 :)"`;
 
 /** Windows: PowerShell */
 const WIN_CMD = `$ErrorActionPreference="SilentlyContinue"
@@ -87,7 +88,8 @@ Get-ChildItem "$home" -Recurse -Depth 3 -Include "CLAUDE.md","AGENTS.md" -ErrorA
 $out -replace '[\\w.+-]+@[\\w.-]+\\.[a-zA-Z]{2,}','***EMAIL***' \`
   -replace '(xoxb-|xoxp-|sk-|ghp_|gho_|Bearer )[\\w-]+','$1***' \`
   -replace 'AKfycb[\\w-]+','***DEPLOY_ID***' \`
-  -replace 'ntn_[\\w-]+','***NOTION***' | Set-Clipboard`;
+  -replace 'ntn_[\\w-]+','***NOTION***' | Set-Clipboard
+Write-Host "✨ 털기 완료! mdti 입력창에 Ctrl+V 눌러주세요 :)"`;
 
 const COMMANDS: Record<OS, string> = { mac: MAC_CMD, windows: WIN_CMD };
 const OS_LABELS: Record<OS, string> = { mac: "Mac", windows: "Windows" };
@@ -172,7 +174,7 @@ export default function MdInput({ value, onChange, disabled }: MdInputProps) {
         {/* 사용법 안내 */}
         <div className="text-xs text-claude-light/40 leading-relaxed flex flex-col gap-1">
           <p><span className="text-claude-orange/70 font-medium">1.</span> 위 버튼으로 스크립트 복사</p>
-          <p><span className="text-claude-orange/70 font-medium">2.</span> {os === "windows" ? "PowerShell" : "터미널"}에 붙여넣기 후 Enter <span className="text-claude-orange font-bold">(터미널 화면에 아무것도 안 뜨는 게 정상!)</span></p>
+          <p><span className="text-claude-orange/70 font-medium">2.</span> {os === "windows" ? "PowerShell" : "터미널"}에 붙여넣기 후 Enter <span className="text-claude-orange font-bold">(&quot;털기 완료!&quot; 메시지가 뜨면 성공)</span></p>
           <p><span className="text-claude-orange/70 font-medium">3.</span> 아래 입력창에 <span className="text-claude-cream/60">{PASTE_HINT[os]}</span> 붙여넣기</p>
           <p className="text-claude-light/30 mt-0.5">API 키·토큰·이메일은 자동 마스킹됩니다</p>
         </div>
